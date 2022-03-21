@@ -6,6 +6,7 @@ import argparse
 from .create_planar_triangle_free_graph import get_graph
 from .neumann import compute_mtds
 from .neumann_a_t_0 import compute_mtds_a_t_0
+from .arg_parser import parse_cli_args
 
 # Data export imports.
 from .export_data.Export_manager import Export_manager
@@ -16,57 +17,7 @@ from .export_data.plantuml_compile import compile_diagrams_in_dir_relative_to_ro
 from .export_data.plantuml_to_tex import export_diagrams_to_latex
 
 
-# TODO: move into separate argument parser.
-# Instantiate the parser
-parser = argparse.ArgumentParser(description="Optional app description")
-
-# Compile Latex
-parser.add_argument(
-    "--l", action="store_true", help="Boolean indicating if code compiles latex"
-)
-
-# Generate, compile and export Dynamic PlantUML diagrams.
-parser.add_argument(
-    "--dd",
-    action="store_true",
-    help="A boolean indicating if code generated diagrams are compiled and exported.",
-)
-# Generate, compile and export Static PlantUML diagrams.
-parser.add_argument(
-    "--sd",
-    action="store_true",
-    help="A boolean indicating if static diagrams are compiled and exported.",
-)
-
-# Export the project code to latex.
-parser.add_argument(
-    "--c2l",
-    action="store_true",
-    help="A boolean indicating if project code is exported to latex.",
-)
-
-# Export the exporting code to latex.
-parser.add_argument(
-    "--ec2l",
-    action="store_true",
-    help="A boolean indicating if code that exports code is exported to latex.",
-)
-
-parser.add_argument(
-    "--g",
-    dest="graph_from_file",
-    action="store_true",
-    help="boolean flag, determines whether energy analysis graph is created from file ",
-)
-parser.add_argument("infile", nargs="?", type=argparse.FileType("r"))
-
-
-parser.set_defaults(
-    infile=None, graph_from_file=False,
-)
-
-# Load the arguments that are given.
-args = parser.parse_args()
+args = parse_cli_args()
 
 # Run main code.
 G = get_graph(args, False)
