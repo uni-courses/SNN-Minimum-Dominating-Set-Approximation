@@ -1,0 +1,149 @@
+@startuml
+:How to perform radiation tests.;
+split
+   :Perform Physical\n Radiation Test;
+   split
+      :Emulated Radiation;
+   split again
+      :Space Radiation;
+      split
+         :Space Deployment;
+      split again
+         :Ground Deployment;
+      end split
+   end split
+split again
+   :Perform Softwarematic\n Radiation Test;
+   split
+      :Simulate Radiation-Chip\n Interaction;
+   split again
+      :Simulate Radiation\n Effects;
+   end split
+end split
+:;
+
+detach
+
+:Scope of Radiation tests;
+split
+      :Include non-neuronic\n components;
+   split again
+      :Exclude non-neuronic\n components;
+   end split
+' How to implement brain adaptation.
+:;
+
+detach
+
+:Brain adaptation implementation;
+split
+   :Neural Pathway Redundancy;
+split again
+   :Reorganisation Towards\n Increased Hierarchy;
+split again
+   :Niche Construction;
+split again
+   :Developmental Trajectory Timing;
+split again
+   :;
+split again
+   :;
+split again
+   :;
+split again
+   :;
+end split
+:;
+
+detach
+
+:Neuroplasticity Mechanism;
+split
+   :Rate/frequency coding;
+split again
+   :Temporal Coding;
+split again
+   :Population Coding;
+split again
+   :Sparse coding;
+split again
+   :;
+end split
+:;
+
+detach
+
+' 24 (30/73) of literature study
+:Neuromorphic Architecture Type;
+split
+   :Analog Electronics;
+   split
+      :Brainscales (HBP);
+   split again
+      :;
+   end split
+split again
+   :Digital Electronics;
+   split
+      :TrueNorth\n(IBM);
+   split again
+      :Loihi\n(Intel);
+   split again
+      :Braindrop\n2019\n(Stanford/Yale);
+   split again
+      :Neurogrid\n2014\n(Stanford);
+   split again
+      :SpiNNaker\n(University of\nManchester);
+   split again
+      :NPU\n(Qualcomm);
+   split again
+      :AKIDA\n(Brainchip);
+   split again
+      :Pattern\nRecognition\n(Innatera);
+   split again
+      :GrAI VIP\n(graimatterlabs);
+   split again
+      :Konikore\n(Koniku);
+   split again
+      :Virtual\nMemcomputing\nCPU\n(Memcomputing);
+   split again
+      :;
+   split again
+   end split
+split again
+   :Photonics;
+split again
+   :Plasmonics;
+end split
+:;
+
+' Ignored: Neuromorphic Retina (INI): https://www.eetimes.com/neuromorphic-vision-sensors-eye-the-future-of-autonomy/ Sensor (mainly)
+' Ignored: ROLLS (INI) Cortical network
+' Ignored: Memristive crossbar University of Michigan
+' Ignored: CMOL (UCSB)
+' Ignored: PCM Synapses (IBM)
+' Ignored: NOMFET
+' Ignored: Organic Memristor
+' Ignored: CECT
+' Ignored: PNC
+' Ignored: Instar Robotics https://instar-robotics.com/en/ logistics and agriculture.
+' Ignored: Ceryx Medical https://www.ceryxmedical.com/
+
+detach
+
+:Result Quantification;
+split
+   :Radiation Effect Analysis;
+split again
+   :Energy Consumption;
+split again
+   :Algorithmic Performance;
+split again
+   :Recovery time;
+split again
+   :Recovery degree;
+split again
+   :...;
+end split
+
+@enduml
