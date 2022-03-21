@@ -18,7 +18,7 @@ def get_graph(args, show_graph):
     else:
         graph = create_manual_test_graph()
     if show_graph:
-        show_graph(graph)
+        plot_graph(graph)
     return graph
 
 
@@ -41,10 +41,11 @@ def create_manual_test_graph():
         [
             ("a", "b"),
             ("a", "c"),
-            ("b", "c"),
-            ("b", "d"),
+            #("b", "c"),
+            #("b", "d"),
             ("c", "d"),
             ("d", "e"),
+            ("e", "g"),
             ("b", "e"),
             ("b", "f"),
             ("f", "g"),
@@ -54,7 +55,7 @@ def create_manual_test_graph():
 
 
 # TODO: move to helper
-def show_graph(G):
+def plot_graph(G):
     options = {"with_labels": True, "node_color": "white", "edgecolors": "blue"}
     nx.draw_networkx(G, **options)
     plt.show()
