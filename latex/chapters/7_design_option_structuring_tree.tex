@@ -3,7 +3,7 @@ The purpose of the design option tree is to find a feasible design option that c
 \begin{figure}[H]
     \centering
     %\includegraphics[width=0.6\linewidth]{Images/Diagrams/trivial_gantt.png}
-    \includegraphics[width=0.6\linewidth]{latex/Images/dot.png}
+    \includegraphics[width=0.6\linewidth]{latex/Images/Diagrams/dot.png}
     \caption{A functional flow diagram with the high-level functions of the system that is to be designed.}
     \label{fig:baseline_dot}
 \end{figure}
@@ -43,16 +43,16 @@ At the time of writing, no neuroplasticitiy mechanisms can be eliminated.
 \begin{figure}[H]
     \centering
     %\includegraphics[width=0.6\linewidth]{Images/Diagrams/trivial_gantt.png}
-    \includegraphics[width=0.6\linewidth]{code/src/Static_diagrams/dot_pruned.png}
+    \includegraphics[width=0.6\linewidth]{latex/Images/Diagrams/dot_pruned.png}
     \caption{A functional flow diagram with the high-level functions of the system that is to be designed.}
-    \label{fig:baseline_dot}
+    \label{fig:baseline_dot_pruned}
 \end{figure}
 
 
 \section{Preliminary Design Option Selection}\label{sec:baseline_preliminary_design_option_selection}
 With some design options eliminated, an analysis can be performed to see whether some design options are considered to be more feasible than others. This analysis is started by taking the \textbf{STKH-SPACEBRAINS-01} requirement into account, which implies results need to be produced by April 15th. This allows for expressing some design option preferences as listed in \cref{subsec:baseline_tested_functionality_preference} to \cref{subsec:baseline_result_quantification_preference}. Taking the full scope of the thesis project into account allows identification of design options that seem most feasible for a follow-up with physical radiation testing.
 
-\subsection{Tested Functionality Preference}\cref{subsec:baseline_tested_functionality_preference}
+\subsection{Tested Functionality Preference}\label{subsec:baseline_tested_functionality_preference}
 For performing a \textit{generic algorithmic functionality} for the following two reasons:
 \begin{enumerate}
     \item No additional dependencies such as datasets, panda packages, tensorflow etc. is required. This lowers the probability of allocating time on work that does not directly support the objective of this thesis project.
@@ -61,22 +61,22 @@ For performing a \textit{generic algorithmic functionality} for the following tw
     \item Thorough testing can quickly be set up for graph algorithms.
 \end{enumerate}
  
-\subsection{How To Perform Radiation Tests Preference}\cref{subsec:baseline_how_to_perform_radiation_tests_preference}
+\subsection{How To Perform Radiation Tests Preference}\label{subsec:baseline_how_to_perform_radiation_tests_preference}
 Using softwarematic radiation tests that simulate radiation effects.
 
-\subsection{Scope of Radiation Tests Preference}\cref{subsec:baseline_scope_of_radiation_tests_preference}
+\subsection{Scope of Radiation Tests Preference}\label{subsec:baseline_scope_of_radiation_tests_preference}
 Excluding non-neural components from radiation effects allows for a complete focus using the expected radiation effects on the neural and synaptic properties, without having to model additional radiation interactions with (other) hardware elements. This increases the feasibility of producing results by April 15th.
 
-\subsection{Brain Adaptation Implementation Preference}\cref{subsec:baseline_brain_adaptation_implementation_preference}
+\subsection{Brain Adaptation Implementation Preference}\label{subsec:baseline_brain_adaptation_implementation_preference}
 No preference in brain adaptation implementations is expressed at the time of writing.
 
-\subsection{Neuroplasticity Mechanism Preference}\cref{subsec:baseline_neuroplasticity_mechanism_preference}
+\subsection{Neuroplasticity Mechanism Preference}\label{subsec:baseline_neuroplasticity_mechanism_preference}
 No preference in neuroplasticity mechanisms is expressed at the time of writing.
 
-\subsection{Neuromorphic Architecture Type Preference}\cref{subsec:baseline_neuromorphic_architecture_preference}
+\subsection{Neuromorphic Architecture Type Preference}\label{subsec:baseline_neuromorphic_architecture_preference}
 Based on availability and previous experience, a preference is expressed for the Loihi platform for the softwarematic simulation. Insights from this simulation will be used to determine the best way forward towards hardware simulations. Since the Innatera chips are expected to be available for testing in the second quarter of 2022, combined with there relatively low cost, this option is mentioned as a possible suitable candidate for physical radiation testing. The Spinnaker boards appear to have a higher unit cost.
 
-\subsection{Result Quantification Preference}\cref{subsec:baseline_result_quantification_preference}
+\subsection{Result Quantification Preference}\label{subsec:baseline_result_quantification_preference}
 Based on the vicinity of the ICONS deadline of April 15th, 2022, a preference is expressed for measuring the softwarematic results in terms of algorithmic performance. This is because it forms the most direct measurement that can be used to determine whether the principle of brain adaptation is indeed able to increase the radiation robustness of neuromorphic space hardware.
 
 \subsection{Preliminary Design Option Tree}\label{subsec:preliminary_design_option_tree}
@@ -85,7 +85,7 @@ The preferences expressed in \cref{sec:baseline_preliminary_design_option_select
 \begin{figure}[H]
     \centering
     %\includegraphics[width=0.6\linewidth]{Images/Diagrams/trivial_gantt.png}
-    \includegraphics[width=0.6\linewidth]{latex/Images/Diagrams/Static_diagrams/dot_preliminary.png}
+    \includegraphics[width=0.6\linewidth]{latex/Images/Diagrams/dot_preliminary.png}
     \caption{todo}
     \label{fig:baseline_preliminary_dot}
 \end{figure}
