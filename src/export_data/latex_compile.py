@@ -20,9 +20,7 @@ def compile_latex(await_compilation, verbose):
     """
 
     # Ensure compile script is runnable.
-    bash_make_compile_script_runnable_command = (
-        f"chmod +x latex/compile_script.sh"
-    )
+    bash_make_compile_script_runnable_command = f"chmod +x latex/compile_script.sh"
     run_bash_command(
         await_compilation, bash_make_compile_script_runnable_command, verbose
     )

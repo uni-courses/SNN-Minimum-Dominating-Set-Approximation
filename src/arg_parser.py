@@ -2,6 +2,7 @@
 # outputting the results to latex.
 import argparse
 
+
 def parse_cli_args():
     # Instantiate the parser
     parser = argparse.ArgumentParser(description="Optional app description")
@@ -15,11 +16,9 @@ def parse_cli_args():
     )
     parser.add_argument("infile", nargs="?", type=argparse.FileType("r"))
 
-
     parser.set_defaults(
         infile=None, graph_from_file=False,
     )
-
 
     ## Include argument parsing for data exporting code.
     # Compile Latex
