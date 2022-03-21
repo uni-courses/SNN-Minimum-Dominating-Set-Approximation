@@ -36,8 +36,10 @@ def compute_mtds(G):
         G.nodes[node]["mark"]=0
     for node in G.nodes:
         neighbor_with_max_weight=G.nodes[node]["neighbor_with_max_weight"]
+        print(f'node={node}neighbor_with_max_weight={neighbor_with_max_weight}')
         G.nodes[neighbor_with_max_weight]["mark"]=G.nodes[neighbor_with_max_weight]["mark"]+1
-        print(f'node={node},mark={G.nodes[neighbor_with_max_weight]["mark"]}')
+        print(f'node={node},mark={G.nodes[node]["mark"]}')
+        print(f'neighbor_with_max_weight={neighbor_with_max_weight},mark={G.nodes[neighbor_with_max_weight]["mark"]}')
     # 3 for k in range [0,m] rounds, do:
 
     # 4.a Each node v_i computes how many marks it has received, as (x_i)_k.

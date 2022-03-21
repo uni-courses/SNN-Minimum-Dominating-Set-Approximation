@@ -1,4 +1,5 @@
 # 1.a Each vertex v_i chooses random float r_i in range 0<r_i<1
+
 # 1.b Each vertex v_i computes d_i. d_i=degree of vertex v_i
 # 1.c Each vertex v_i computes weight: w_i=d_i+r_i
 # 1.d Each vertex v_i sends w_i to each of its neighbours.
