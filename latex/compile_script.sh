@@ -1,11 +1,14 @@
 #!/bin/bash
-# compiles the latex report in project 7. Run from /latex/project7/ directory.
+# Compiles the latex report and removes compilation artifacts.
+# Run from root directory (that contains dir:latex). Run with:
+# chmod +x latex/compile_script.sh
+# latex/./compile_script.sh
+
 
 ## Specify global variables that are used in this script.
-PROJECT_ID=8
-PROJECT_FOLDERNAME="project"
+
 REPORT_FILENAME="report"
-PATH_TO_REPORT_TEX="latex/$PROJECT_FOLDERNAME$PROJECT_ID"
+PATH_TO_REPORT_TEX="latex"
 PATH_TO_REPORT_TEX_FILE="$PATH_TO_REPORT_TEX/$REPORT_FILENAME.tex"
 OUTPUT_DIR="output"
 OUTPUT_PATH="$PATH_TO_REPORT_TEX/$OUTPUT_DIR"
@@ -170,7 +173,6 @@ else
 	fi
 fi
 
-
 ## Create clean output directories
 # Clean up build artifacts prior to compilation.
 rm -r $PATH_TO_REPORT_TEX/$OUTPUT_DIR/*
@@ -186,7 +188,8 @@ mkdir -p $OUTPUT_PATH/$PATH_TO_REPORT_TEX
 assert_dir_exists $OUTPUT_PATH/$PATH_TO_REPORT_TEX
 
 # Copy zotero.bib file into output directory
-cp zotero.bib $OUTPUT_PATH/zotero.bib
+assert_file_exists "../zotero.bib"
+cp ../zotero.bib $OUTPUT_PATH/zotero.bib
 assert_file_exists "$OUTPUT_PATH/zotero.bib"
 
 # Copy tudelft-report.bst file into relative directory from root to report.tex
@@ -237,13 +240,13 @@ makeglossaries report
 bibtex report
 
 # Go back up into root directory
-cd ../../..
+cd ../../
 assert_is_root_dir "$PATH_TO_REPORT_TEX_FILE"
 
 # Recompile report to include the bibliography.
-pdflatex -output-directory=$OUTPUT_PATH latex/project$PROJECT_ID/report
+pdflatex -output-directory=$OUTPUT_PATH latex/report
 # Recompile report to include acronyms, glossary and nomenclature (in TOC).
-pdflatex -output-directory=$OUTPUT_PATH latex/project$PROJECT_ID/report
+pdflatex -output-directory=$OUTPUT_PATH latex/report
 
 ## Post processing/clean-up.
 # Move pdf back into "$PATH_TO_REPORT_TEX.
@@ -251,3 +254,5 @@ mv $OUTPUT_PATH/report.pdf "$PATH_TO_REPORT_TEX/report.pdf"
 
 # Clean up build artifacts.
 rm $OUTPUT_PATH/report.*
+rm $OUTPUT_PATH/*.bib
+rm $OUTPUT_PATH/latex/*.bst
