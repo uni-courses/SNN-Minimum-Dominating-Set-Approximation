@@ -5,6 +5,7 @@ import argparse
 # Project code imports.
 from .create_planar_triangle_free_graph import get_graph
 from .neumann import compute_mtds
+from .neumann_a_t_0 import compute_mtds_a_t_0
 
 # Data export imports.
 from .export_data.Export_manager import Export_manager
@@ -69,7 +70,8 @@ args = parser.parse_args()
 
 # Run main code.
 G = get_graph(args, True)
-compute_mtds(G)
+#compute_mtds(G)
+compute_mtds_a_t_0(G)
 
 print(f"Done with main code.")
 exit()

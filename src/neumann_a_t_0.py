@@ -2,13 +2,11 @@
 import random
 
 
-def compute_mtds(G, m=1):
+def compute_mtds_a_t_0(G, m=2):
 
     # No directed graphs supported in this algorithm.
     if G.is_directed():
         raise Exception("Parameter graph should be undirected")
-
-    
 
     # 1.a Each vertex v_i chooses random float r_i in range 0<r_i<1
     for node in G.nodes:
@@ -31,9 +29,10 @@ def compute_mtds(G, m=1):
 
     # 2.a Each vertex v_i gets the index of the
     # neighbouring vertex v_j_(w_max) that has the heighest w_i, with i!=j.
-    # 2.b Each vertex v_i adds a mark to that neighbour vertex v_j_(w_max).
+    # 2.b Initialise the mark counter x_i
     for node in G.nodes:
         G.nodes[node]["mark"]=0
+    # 2.c Each vertex v_i adds a mark to that neighbour vertex v_j_(w_max).
     for node in G.nodes:
         neighbor_with_max_weight=G.nodes[node]["neighbor_with_max_weight"]
         G.nodes[neighbor_with_max_weight]["mark"]=G.nodes[neighbor_with_max_weight]["mark"]+1
@@ -48,12 +47,26 @@ def compute_mtds(G, m=1):
             print(f'weight={G.nodes[node]["weight"]}')
 
         # 5. Reset marked vertices: for each vertex v_i, (x_i)_k=0
+        for node in G.nodes:
+            G.nodes[node]["mark"]=0
 
         # 6.a Each vertex v_i computes d_i. d_i=degree of vertex v_i
         # 6.b Each vertex v_i sends w_i to each of its neighbours.
         # 6.c Each vertex v_i gets the index of the
         # neighbouring vertex v_j_(w_max) that has the heighest w_i, with i!=j.
+        store_index_max_neighbour_weight(G)
         # 6.d Each vertex v_i adds a mark to that neighbour vertex v_j_(w_max).
+        for node in G.nodes:
+            neighbor_with_max_weight=G.nodes[node]["neighbor_with_max_weight"]
+            G.nodes[neighbor_with_max_weight]["mark"]=G.nodes[neighbor_with_max_weight]["mark"]+1
+
+        # Print Minimum Total Dominating Set approximation.
+        mtds=[]
+        for node in G.nodes:
+            print(f'node {node} has {G.nodes[node]["mark"]} marks')
+            if 0 < G.nodes[node]["mark"]:
+                mtds.append(node)
+        print(f"mtds={mtds}")
 
 def store_index_max_neighbour_weight(G):
     for node in G.nodes:
