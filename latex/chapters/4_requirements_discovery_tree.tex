@@ -1,0 +1,51 @@
+\chapter{Requirements Discovery Tree}\label{chap:baseline_requirements_discovery_tree}
+This section presents an overview of the requirements that are identified within this thesis project. Its purpose consists of listing the requirements that drive the design, identifying killer requirements and presenting an overview of the project requirements. \cref{sec:baseline_mission_need_statement} contains the mission need statement of this project. Next, the stakeholder requirements are identified in \cref{sec:baseline_stakeholder_requirements}. The top level requirements are presented in \cref{sec:baseline_top_level_requirements}, and the key requirements are presented in \cref{sec:baseline_identification_key_requirements}. From these combined requirements, the \acrlong{rdt} is drafted in \cref{sec:baseline_requirements_discovery_tree}.
+
+\section{Mission Need Statement}\label{sec:baseline_mission_need_statement}
+The mission need statement is generated in the project plan phase, and is included in this section again to provide the context of the requirement derivation process. The \acrshort{msn} is:
+
+\textit{Increase the radiation robustness of neuromorphic space hardware by leveraging the principle of brain adaptation in neuromorphic hardware.}
+
+\section{Stakeholder Requirements}\label{sec:baseline_stakeholder_requirements}
+The following stakeholder requirements are identified:
+\begin{itemize}
+    \item \textbf{STKH-UNI-01} - The research that is performed shall be reproducible.
+    \item \textbf{STKH-UNI-02} - The sustainability of the design concepts shall be taken into account in the design trade-off process.
+    \item \textbf{STKH-SPACEBRAINS-01} - Achieve results towards the REACH research by Q2 2022.
+    \item \textbf{STKH-SPACEBRAINS-01-a} - Achieve results towards the REACH research by either: 2022-03-01, 2022-04-07, 2022-07-01.
+    \item \textbf{STKH-ICONS-01} - Submit paper documenting research results before April 15th, 2022.
+    \item \textbf{STKH-ICONS-01-a} - Submit full paper of 6-8 pages, presenting original research, or submit short paper of 3-4 pages that has preliminary results.
+    \item \textbf{STKH-ICONS-02} - Upon acceptance for a presentation, submit presentation before July 27th, 2022.
+    \item \textbf{STKH-RADBOUD-01} - The research proceedings shall be documented and submitted in a format accepted by Dr. J.H.P. Kwisthout before the SOW-MKI92 Research Project is completed.
+    \item \textbf{STKH-RADBOUD-02} - The research for the SOW-MKI92 Research Project shall be performed using at least 28 EC of work.
+    \item \textbf{STKH-Delft-01} - The research proceedings shall be documented and submitted in a format accepted by Dr. D.M. Stam and Dr. A. Menicucci before the AE5810 Thesis Project is completed.
+    \item \textbf{STKH-Delft-02} - The research for the AE5810 Thesis Project shall be performed using at least 42 EC of work.
+\end{itemize}
+% Either Q2 2022 implies 3 monts after the last quarterly report, which was February 2022. Or after 3 after January 1st.
+% Based on Q3 reports, which were requested on 2021-10-01 (October 2021), Q4 reports would take place on (January 2022). However these Q4 reports were requested at 2022-02-07, implying a delay of 5 weeks.
+% Since one more quarter (Q2 2022) is granted to achieve results towards the REACH research, this is supposed to be at (2022-03-01) without delay. With a 5 week delay this would be approximately 2022-04-07. The end of Q2 2022 would be on end of June 2022=start of July=2022-07-01. It is not specified which time is intended.
+
+\section{Top Level Requirements}\label{sec:baseline_top_level_requirements}
+The following requirements for this thesis project are identified:
+\begin{itemize}
+	\item \textbf{TECH-01} - Technology Readiness Level (TRL) of the used technology shall be at least TRL 4 [-].
+	\item \textbf{TEST-01} - Radiation robustness shall be tested in terms of algorithmic performance.
+	\item \textbf{TEST-02} - The radiation tests shall be technically and economically feasible.
+	\item \textbf{TEST-03} - The radiation tests results shall be generated before September 2022.
+	\item \textbf{SUS-01} - Sustainability management shall be integrated in each phase of this project.
+	\item \textbf{SUS-02} - Sustainability shall be assessed in the design trade-off process.
+	\item \textbf{SAF-01} - All participants involved in testing, integrating and operations shall not be exposed to serious danger. %TODO : specify level of danger explicitly.
+	\item \textbf{ESA-01} - Throughout this project quarterly reports shall be provided to the SpaceBrains foundation and the \acrfull{esa}.
+\end{itemize}
+
+\section{Identification Key Requirements}\label{sec:baseline_identification_key_requirements}
+The key requirements are requirements that can render the project infeasible, requirements that drive the design, and/or requirements that induce high risk to project success. Within this thesis project, the following key requirements are identified:
+\begin{enumerate}
+    \item \textbf{STKH-SPACEBRAINS-01} - Achieve results towards the REACH research by Q2 2022.
+    \item \textbf{TECH-01} - Technology Readiness Level (TRL) of the used technology shall be at least TRL 4 [-].
+	\item \textbf{TEST-03} - The radiation tests results shall be generated before September 2022.
+\end{enumerate}
+The \textbf{STKH-SPACEBRAINS-01} requirement significantly drives the design space, as physical radiation tests are not deemed feasible within the given timeframe and project constraints. \textbf{TEST-03} implies a strict time constraint that induces significant risk to project success as it limits the amount of time available for development and scheduling. \textbf{TECH-01} significantly drives the design as it limits the design space to concepts that rely only on technologies of TRL 4 and higher. 
+
+\section{Requirements Discovery Tree}\label{sec:baseline_requirements_discovery_tree}
+A requirements' discovery tree is currently omitted due to time constraints.

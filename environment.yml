@@ -1,0 +1,26 @@
+# run: conda env create --file environment.yml
+# include new packages: conda env update --file environment.yml
+name: tutorial-paper
+channels:
+  - conda-forge
+  - conda
+dependencies:
+- anaconda
+- nb_conda
+- conda:
+  - pytest=6.1.2
+  - nbconvert
+  - matplotlib
+  - nb_conda
+  - graphviz
+  - networkx
+- pip
+- pip:
+  # works for regular pip packages
+  - pdflatex
+  - testbook
+  - pyment
+  - pdoc3
+  - black
+  - plantuml
+  - requests

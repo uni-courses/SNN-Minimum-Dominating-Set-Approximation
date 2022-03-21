@@ -1,0 +1,392 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[whitelogo]{new_whitepaper/latex/tudelft-report}
+%\documentclass[whitelogo]{tudelft-report}
+\usepackage{natbib}
+\usepackage{changes}
+
+% Allow Euro sign in .uml file attachments.
+\UseRawInputEncoding
+
+% Compile cover
+\usepackage{pdfpages}
+
+\usepackage{cleveref}
+
+%rotated image
+\usepackage{lscape}
+\usepackage{rotating}
+\usepackage{pdflscape}
+
+\usepackage{url} %To be able to use url in references
+
+\usepackage{cleveref} %cleverref needs to stand below amsmath package.
+\usepackage{appendix}
+\crefname{appsec}{Appendix}{Appendices} % refer to appendix as appendix iso as section
+
+% floating figures
+\usepackage{float}
+
+% side by side images
+\usepackage{subfig}
+
+% Auto scale images
+\makeatletter
+\newbox\image@box%
+\newdimen\image@width%
+\newdimen\image@height%
+\newcommand\IncludeGraphics[2][\@empty]{%
+  \setbox\image@box=\hbox{\includegraphics[#1]{#2}}%
+  %\setbox\image@box=\vbox{\includegraphics[#1]{#2}}%
+  \image@width\wd\image@box%
+  \image@height\ht\image@box%
+  \ifdim \image@width>\linewidth%
+    \setbox\image@box=\hbox{\includegraphics[width=\linewidth]{#2}}%
+    \box\image@box%
+  \else
+    \ifdim \image@height>0.8\textheight%
+       \setbox\image@box=\vbox{\includegraphics[height=0.8\textheight]{#2}}%
+     \box\image@box%    
+     \else%
+       \includegraphics[#1]{#2}%
+     \fi%
+  \fi%
+}
+
+
+\usepackage[utf8]{inputenc}
+% Include glossary list and acrynym list (and include it in the toc)
+%\usepackage[acronym,automake,nomain,nonumberlist,toc]{glossaries}
+%%%\usepackage[acronym,nomain,nonumberlist,toc]{glossaries}
+\usepackage[acronym,toc]{glossaries}
+\usepackage[intoc]{nomencl}
+\makenomenclature
+\makeglossaries
+
+%% Green checkmarks
+\usepackage{xcolor,pifont}
+\newcommand*\colourcheck[1]{%
+  \expandafter\newcommand\csname #1check\endcsname{\textcolor{#1}{\ding{52}}}%
+}
+%% Red Cross
+\newcommand*\colourmark[1]{%
+  \expandafter\newcommand\csname #1mark\endcsname{\textcolor{#1}{\ding{55}}}%
+}
+%% Black Cross
+\newcommand{\xmark}{\ding{55}}%
+
+
+\colourcheck{blue}
+\colourcheck{green}
+\colourcheck{orange}
+\colourcheck{red}
+
+%% Coloured alternating table rows
+%\usepackage[table]{xcolor}    % loads also »colortbl«
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End Create listings (Matlab)  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start Create listings (Python)  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Create listings (Python)
+% set code color pattern (for python)
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+\usepackage{listings}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+breaklines=true, % wrap lines
+postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, % wrap lines
+basicstyle=\ttm,
+otherkeywords={self},             % Add keywords here
+keywordstyle=\ttb\color{deepblue},
+emph={MyClass,__init__},          % Custom highlighting
+emphstyle=\ttb\color{deepred},    % Custom highlighting style
+stringstyle=\color{deepgreen},
+frame=tb,                         % Any extra options here
+showstringspaces=false            % 
+}}
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+% Python for external files
+\newcommand\pythonexternal[2][]{{
+\pythonstyle
+\lstinputlisting[#1]{#2}}}
+
+% Python for inline
+\newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End Create listings (Python)  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+% Include verbatim txt file
+% Source: https://tex.stackexchange.com/questions/85200/include-data-from-a-txt-verbatim
+%\usepackage[dvipsnames]{xcolor}
+\usepackage{fancyvrb}
+
+% redefine \VerbatimInput
+\RecustomVerbatimCommand{\VerbatimInput}{VerbatimInput}%
+{fontsize=\footnotesize,
+ %
+ frame=lines,  % top and bottom rule only
+ framesep=2em, % separation between frame and text
+ %rulecolor=\xcolor{Gray},
+ %
+ label=\fbox{\color{Black}data.txt},
+ labelposition=topline,
+ %
+ commandchars=\|\(\), % escape character and argument delimiters for
+                      % commands within the verbatim
+ commentchar=*        % comment character
+}
+
+
+% Determine whether it is local compilation or overleaf compilation
+\makeatletter
+\begingroup\endlinechar=-1\relax
+       \everyeof{\noexpand}%
+       \edef\x{\endgroup\def\noexpand\homepath{%
+         \@@input|"kpsewhich --var-value=HOME" }}\x
+\makeatother
+\def\overleafhome{/tmp}% change as appropriate
+
+% Include boolean to hide source code 
+% (requested by financier).
+\newif\ifhidesourcecode
+\hidesourcecodetrue % Set the variable value to true.
+%\hidesourcecodefalse % Set the variable value to false.
+
+\begin{document}
+
+
+
+%% Use Roman numerals for the page numbers of the title pages and table of
+%% contents.
+\frontmatter
+
+%% Uncomment following 19 lines for a cover with a picture on the lower half only
+%\title[tudelft-white]{Title}
+%\subtitle[tudelft-cyan]{Optional subtitle}
+%\author[tudelft-white]{J.\ Random Author}
+%\affiliation{Technische Universiteit Delft}
+%\coverimage{cover.jpg}
+%\titleoffsetx{10cm}
+%\titleoffsety{10cm}
+%\afiloffsetx{1cm}
+%\afiloffsety{18cm}
+%\covertext[tudelft-white]{
+%    \textbf{Cover Text} \\
+%    possibly \\
+%    spanning 
+%    multiple 
+%    lines
+%    \vfill
+%    ISBN 000-00-0000-000-0
+%}
+%\makecover
+
+%% Uncomment following 16 lines for a cover with a picture on the lower half only
+\title[tudelft-white]{Leveraging brain adaptation to increase radiation resistance of neuromorphic space hardware}
+
+\subtitle[tudelft-black]{\vspace{1em}AE5810 Thesis Project: baseline report}
+\author[tudelft-white]{\vspace{2em}Akke Toeter}
+\affiliation{Technische Universiteit Delft}
+%TODO :include detection of compilation platform
+\coverimage{new_whitepaper/latex/cover1.jpeg}
+%\coverimage{cover2.jpg}
+%\coverimage{cover3.jpeg}
+
+\covertext[tudelft-white]{
+	\vspace{20em}
+    \textbf{Supervisors} \\
+    TU Delft:\\
+    \phantom{text}  Dr. D.M. Stam\\
+    \phantom{text} Dr. A. Menicucci\\
+    Radboud University: \\
+    \phantom{text} Dr. J.H.P. Kwisthout
+    \vfill
+    %ISBN 000-00-0000-000-0
+}
+\setpagecolor{tudelft-cyan}
+\makecover[split]
+
+
+%% Include an optional title page.
+%TODO :include detection of compilation platform
+\input{new_whitepaper/latex/title}
+
+%\input{preface}
+
+\tableofcontents
+
+%% Use Arabic numerals for the page numbers of the chapters.
+\mainmatter
+
+
+
+
+%\input{chapters/4_summary}
+
+\ifx\homepath\overleafhome
+% Overleaf compilation.
+
+% Include acronym list
+\input{wordlists/acronyms}
+\input{wordlists/glossary}
+\input{wordlists/nomenclature}
+
+% Include chapters.
+\input{chapters/1_intro}
+\input{chapters/2_functional_flow_diagram.tex}
+\input{chapters/3_functional_breakdown_diagram.tex}
+\input{chapters/4_requirements_discovery_tree.tex}
+\input{chapters/5_resource_allocation_budget_breakdown.tex}
+\input{chapters/6_technical_risk_assessment.tex}
+\input{chapters/7_design_option_structuring_tree.tex}
+\input{chapters/8_contingency_management.tex}
+\input{chapters/9_market_analysis.tex}
+\input{chapters/10_sustainable_development_management.tex}
+\input{chapters/11_reporting_and_quality_control.tex}
+\input{chapters/12_conclusion.tex}
+\else
+% Local compilation
+
+% Include acronym list
+\input{new_whitepaper/latex/wordlists/acronyms}
+\input{new_whitepaper/latex/wordlists/glossary}
+\input{new_whitepaper/latex/wordlists/nomenclature}
+% Include chapters.
+\input{new_whitepaper/latex/chapters/1_intro}
+\input{new_whitepaper/latex/chapters/2_functional_flow_diagram.tex}
+\input{new_whitepaper/latex/chapters/3_functional_breakdown_diagram.tex}
+\input{new_whitepaper/latex/chapters/4_requirements_discovery_tree.tex}
+\input{new_whitepaper/latex/chapters/5_resource_allocation_budget_breakdown.tex}
+\input{new_whitepaper/latex/chapters/6_technical_risk_assessment.tex}
+\input{new_whitepaper/latex/chapters/7_design_option_structuring_tree.tex}
+\input{new_whitepaper/latex/chapters/8_contingency_management.tex}
+\input{new_whitepaper/latex/chapters/9_market_analysis.tex}
+\input{new_whitepaper/latex/chapters/10_sustainable_development_management.tex}
+\input{new_whitepaper/latex/chapters/11_reporting_and_quality_control.tex}
+\input{new_whitepaper/latex/chapters/12_conclusion.tex}
+\fi
+
+%% Use letters for the chapter numbers of the appendices.
+\appendix
+
+%\input{appendix-a}
+
+%\bibliography{report}
+
+\newpage
+%\appendix
+%% Uncomment the following line when using the natbib package
+\bibliography{zotero.bib}
+%\bibliography{new_whitepaper/latex/zotero.bib}
+
+%% Uncomment the following line when using the biblatex package
+%\printbibliography
+
+
+
+\newpage
+% Example glossary text:
+%Example glossary text: The \Gls{latex} typesetting markup language is specially suitable for documents that include \gls{maths}. \Glspl{formula} are rendered properly an easily once one gets used to the commands.
+\printglossary[type=\acronymtype]
+
+\printglossary
+\printnomenclature
+
+% Example list of accronyms:
+%Given a set of numbers, there are elementary methods to compute its \acrlong{gcd}, which is abbreviated \acrshort{gcd}. This process is similar to that used for the \acrfull{lcm}. Test.
+
+
+\glsaddall
+
+\newpage
+% print acronyms section
+%\printglossary[type=\acronymtype,title=Acronyms]
+%\printnoidxglossary[type=\acronymtype,title=Acronyms]
+% print glossary section
+%\printglossary[title=Glossary]
+%\printnoidxglossary[title=Glossary]
+% print nomenclature
+%\newpage
+%\input{wordlists/nomenclature.tex}
+
+%\newpage
+\begin{appendices}
+\IfFileExists{new_whitepaper/latex/report.tex}{\input{new_whitepaper/latex/Appendices/AppA.tex} \newpage
+}{\input{Appendices/AppA.tex}} \newpage
+\ifhidesourcecode{}\else{\IfFileExists{latex/report.tex}{\input{latex/Appendices/Auto_generated_py_App7.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App22.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App23.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App8.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App9.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App1.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App4.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App6.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App5.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App0.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App3.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App15.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App11.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App14.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App12.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App2.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App13.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App10.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App24.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App21.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App25.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App18.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App26.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App20.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App19.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App17.tex} \newpage
+\input{latex/Appendices/Auto_generated_py_App16.tex} \newpage
+}{\input{Appendices/Auto_generated_py_App7.tex} \newpage
+\input{Appendices/Auto_generated_py_App22.tex} \newpage
+\input{Appendices/Auto_generated_py_App23.tex} \newpage
+\input{Appendices/Auto_generated_py_App8.tex} \newpage
+\input{Appendices/Auto_generated_py_App9.tex} \newpage
+\input{Appendices/Auto_generated_py_App1.tex} \newpage
+\input{Appendices/Auto_generated_py_App4.tex} \newpage
+\input{Appendices/Auto_generated_py_App6.tex} \newpage
+\input{Appendices/Auto_generated_py_App5.tex} \newpage
+\input{Appendices/Auto_generated_py_App0.tex} \newpage
+\input{Appendices/Auto_generated_py_App3.tex} \newpage
+\input{Appendices/Auto_generated_py_App15.tex} \newpage
+\input{Appendices/Auto_generated_py_App11.tex} \newpage
+\input{Appendices/Auto_generated_py_App14.tex} \newpage
+\input{Appendices/Auto_generated_py_App12.tex} \newpage
+\input{Appendices/Auto_generated_py_App2.tex} \newpage
+\input{Appendices/Auto_generated_py_App13.tex} \newpage
+\input{Appendices/Auto_generated_py_App10.tex} \newpage
+\input{Appendices/Auto_generated_py_App24.tex} \newpage
+\input{Appendices/Auto_generated_py_App21.tex} \newpage
+\input{Appendices/Auto_generated_py_App25.tex} \newpage
+\input{Appendices/Auto_generated_py_App18.tex} \newpage
+\input{Appendices/Auto_generated_py_App26.tex} \newpage
+\input{Appendices/Auto_generated_py_App20.tex} \newpage
+\input{Appendices/Auto_generated_py_App19.tex} \newpage
+\input{Appendices/Auto_generated_py_App17.tex} \newpage
+\input{Appendices/Auto_generated_py_App16.tex} \newpage
+}}\fi\end{appendices}
+\end{document}

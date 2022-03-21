@@ -1,0 +1,97 @@
+% Glossary is a list of terms and their description.
+% Source: https://www.overleaf.com/learn/latex/Glossaries
+% All before begin document
+%\usepackage[toc]{glossaries} % if no accronyms are used.
+%\usepackage[acronym,toc]{glossaries} at acronyms.tex is sufficient.
+%\makeglossaries
+%\mbox{}
+\newglossaryentry{latex}
+{
+        name=latex,
+        description={Is a mark up language specially suited for 
+scientific documents}
+}
+
+\newglossaryentry{maths}
+{
+        name=mathematics,
+        description={Mathematics is what mathematicians do}
+}
+
+\newglossaryentry{formula}
+{
+        name=formula,
+        description={A mathematical expression}
+}
+
+\newglossaryentry{ptypesemiconductor}
+{
+        name=p-type semiconductor,
+        description={A semiconductor that is doped with electron acceptors}
+}
+
+\newglossaryentry{ntypesemiconductor}
+{
+        name=n-type semiconductor,
+        description={A semiconductor that is doped with electron donors}
+}
+
+\newglossaryentry{pnjunction}
+{
+        name=p-n junction,
+        description={A boundary interface of two  a p-type semiconductor and a n-type semiconductor}
+}
+
+\newglossaryentry{holes}
+{
+        name=(electron) holes,
+        description={In the context of doped semiconductors, holes are positions where electron acceptors are located, in other words, they are holes at which the electron can go.}
+}
+
+\newglossaryentry{unipolar-transistors}
+{
+        name=unipolar transistors,
+        description={Unipolar transistors are transistors that use either electrons or electron holes as charge carriers and not the combination of the two.}
+}
+\newglossaryentry{cpu_cache}
+{
+        name=CPU cache,
+        description={A small hardware memory unit that is faster than the main memory and closer to the \acrlong{alu}.}
+}
+\newglossaryentry{instruction_cache}
+{
+        name=instruction cache,
+        description={A cache that is designed to increase the speed with which instructions are fetched.}
+}
+\newglossaryentry{data_cache}
+{
+        name=data cache,
+        description={A cache that is designed to increase the speed with which data is fetched and stored.}
+}
+\newglossaryentry{random-access}
+{
+        name=random-access,
+        description={A memory type that has access times that are independent of its physical location.}
+}
+\newglossaryentry{memory_cell}
+{
+        name=memory cell,
+        description={A fundamental/basic unit in computing that is used to store information.}
+}
+
+\newglossaryentry{primary_memory}
+{
+        name=primary memory,
+        description={A form of memory that is only accessible to the \acrlong{cpu} which reads instructions from it and executes those instructions.}
+}
+
+\newglossaryentry{prompt_charge}
+{
+        name=prompt charge,
+        description={The charge that is collected by means of funnelling.} % TODO: verify whether this lose interpretation of:
+        %A large fraction of the total charge collected by the circuit node occurs in time periods of about 200 ps, and this is referred to as prompt charge. There is also a delayed component that is collected by diffusion. The delayed component can extend to 1 µs or longer,[2] and is important for slower SEE phenomena such as upset in dynamic memories, and latchup.
+        % of:
+        %https://radhome.gsfc.nasa.gov/radhome/papers/seeca4.htm
+        % is accurate.
+}
+%\printglossary

@@ -1,0 +1,12 @@
+# Latex compilation artifacts
+*main.aux
+*main.log
+*main.synctex.gz
+*.aux
+*.bbl
+*.blg
+*.log
+*.synctex.gz
+*.dvi
+*.out
+*.vtc
