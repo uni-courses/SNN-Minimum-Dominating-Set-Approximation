@@ -372,32 +372,32 @@
           \ifKV@cover@back
               \node at (current page.south west)[anchor=south west,inner sep=20pt]{
 	              %%TODO :include detection of compilation platform
-                  \includegraphics{latex/project6/cover/logo_white}
+                  \includegraphics{latex/cover/logo_white}
               };
               \node at (current page.south east)[anchor=south east,inner sep=20pt]{
               	  %%TODO :include detection of compilation platform
-                  \includegraphics{latex/project6/cover/logo_white}
+                  \includegraphics{latex/cover/logo_white}
               };
           \else
               \node at (current page.south west)[anchor=south west,inner sep=20pt]{
                   %%TODO :include detection of compilation platform
-                  \includegraphics{latex/project6/cover/logo_white}
+                  \includegraphics{latex/cover/logo_white}
               };
           \fi
         \else
           \ifKV@cover@back
               \node at (current page.south west)[anchor=south west,inner sep=20pt]{
 	              %%TODO :include detection of compilation platform
-                  \includegraphics{latex/project6/cover/logo_black}
+                  \includegraphics{latex/cover/logo_black}
               };
               \node at (current page.south east)[anchor=south east,inner sep=20pt]{
 	              %%TODO :include detection of compilation platform
-                  \includegraphics{latex/project6/cover/logo_black}
+                  \includegraphics{latex/cover/logo_black}
               };
           \else
               \node at (current page.south west)[anchor=south west,inner sep=20pt]{
                   %%TODO :include detection of compilation platform
-                  \includegraphics{latex/project6/cover/logo_black}
+                  \includegraphics{latex/cover/logo_black}
               };
           \fi
         \fi
@@ -654,7 +654,7 @@
 
 %% Use a custom bibliography style based on apsrev4-1.
 %\bibliographystyle{tudelft-report}
-\bibliographystyle{latex/project6/tudelft-report}
+\bibliographystyle{latex/tudelft-report}
 
 
 %% Hyperlinks are cyan, except in print mode, when they are all black.
