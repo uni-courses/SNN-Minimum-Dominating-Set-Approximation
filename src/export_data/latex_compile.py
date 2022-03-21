@@ -21,12 +21,12 @@ def compile_latex(await_compilation, verbose):
 
     # Ensure compile script is runnable.
     bash_make_compile_script_runnable_command = (
-        f"chmod +x latex/{project_name}/compile_script.sh"
+        f"chmod +x latex/compile_script.sh"
     )
     run_bash_command(
         await_compilation, bash_make_compile_script_runnable_command, verbose
     )
 
     # Run latex compilation script to compile latex project.
-    bash_compilation_command = f"latex/{project_name}/compile_script.sh"
+    bash_compilation_command = f"latex/compile_script.sh"
     run_bash_command(await_compilation, bash_compilation_command, verbose)

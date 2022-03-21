@@ -69,12 +69,12 @@ parser.set_defaults(
 args = parser.parse_args()
 
 # Run main code.
-G = get_graph(args, True)
+G = get_graph(args, False)
 #compute_mtds(G)
 compute_mtds_a_t_0(G)
 
 print(f"Done with main code.")
-exit()
+#exit()
 
 # TODO: move to export_data
 # Specify hardcoded data.
