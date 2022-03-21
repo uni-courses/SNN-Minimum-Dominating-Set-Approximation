@@ -3,7 +3,8 @@ import random
 
 
 def compute_mtds(G):
-    # T-O(1) S-O(1) NE-O(1)
+
+    # No directed graphs supported in this algorithm.
     if G.is_directed():
         raise Exception("Parameter graph should be undirected")
 
