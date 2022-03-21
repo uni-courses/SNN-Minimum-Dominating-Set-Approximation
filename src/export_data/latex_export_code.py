@@ -1,10 +1,12 @@
 # runs a jupyter notebook and converts it to pdf
 import os
 import shutil
+import ntpath
 
 from .helper_dir_file_edit import get_all_files_in_dir_and_child_dirs
 from .helper_dir_file_edit import get_filepaths_in_dir
 from .helper_dir_file_edit import file_contains
+
 
 
 def export_code_to_latex(main_latex_filename, include_export_code):
@@ -25,32 +27,37 @@ def export_code_to_latex(main_latex_filename, include_export_code):
     latex_dir = script_dir + "/../../latex/"
     appendix_dir = f"{latex_dir}Appendices/"
     path_to_main_latex_file = f"{latex_dir}{main_latex_filename}"
-    root_dir = script_dir + "/../../"
+    normalised_root_dir = script_dir + "/../../"
+    normalised_root_dir=os.path.normpath(normalised_root_dir)
     src_dir = script_dir + "/../"
 
     # Verify the latex file supports auto-generated python appendices.
     verify_latex_supports_auto_generated_appendices(path_to_main_latex_file)
-
+    print(f"1={os.getcwd()}")
     # Get paths to files containing project python code.
     python_filepaths = get_filepaths_in_dir("py", src_dir, ["__init__.py"])
+    print(f"2={os.getcwd()}")
     compiled_notebook_pdf_filepaths = get_compiled_notebook_paths(script_dir)
     print(f"Before, python_filepaths={python_filepaths}")
-
+    
+    
     # Get paths to the files containing the latex export code
     if include_export_code:
         python_filepaths.extend(get_filepaths_in_dir("py", script_dir, ["__init__.py"]))
     print(f"After, python_filepaths={python_filepaths}")
+    print(f"3={os.getcwd()}")
 
     # Check which files are already included in the latex appendicess.
     python_files_already_included_in_appendices = get_code_files_already_included_in_appendices(
-        python_filepaths, appendix_dir, ".py", root_dir
+        python_filepaths, appendix_dir, ".py", normalised_root_dir
     )
     notebook_pdf_files_already_included_in_appendices = get_code_files_already_included_in_appendices(
-        compiled_notebook_pdf_filepaths, appendix_dir, ".ipynb", root_dir,
+        compiled_notebook_pdf_filepaths, appendix_dir, ".ipynb", normalised_root_dir,
     )
     print(
         f"python_files_already_included_in_appendices={python_files_already_included_in_appendices}"
     )
+    print(f"4={os.getcwd()}")
     # Get which appendices are still missing.
     missing_python_files_in_appendices = get_code_files_not_yet_included_in_appendices(
         python_filepaths, python_files_already_included_in_appendices, ".py"
@@ -60,16 +67,17 @@ def export_code_to_latex(main_latex_filename, include_export_code):
         notebook_pdf_files_already_included_in_appendices,
         ".pdf",
     )
+    print(f"5={os.getcwd()}")
     print(f"missing_python_files_in_appendices={missing_python_files_in_appendices}")
     # Create the missing appendices.
     created_python_appendix_filenames = create_appendices_with_code(
-        appendix_dir, missing_python_files_in_appendices, ".py", root_dir
+        appendix_dir, missing_python_files_in_appendices, ".py", normalised_root_dir
     )
     created_notebook_appendix_filenames = create_appendices_with_code(
-        appendix_dir, missing_notebook_files_in_appendices, ".ipynb", root_dir,
+        appendix_dir, missing_notebook_files_in_appendices, ".ipynb", normalised_root_dir,
     )
     print(f"created_python_appendix_filenames={created_python_appendix_filenames}")
-
+    print(f"6={os.getcwd()}")
     appendices = get_list_of_appendix_files(
         appendix_dir, compiled_notebook_pdf_filepaths, python_filepaths
     )
@@ -77,20 +85,21 @@ def export_code_to_latex(main_latex_filename, include_export_code):
     main_tex_code, start_index, end_index, appendix_tex_code = get_appendix_tex_code(
         path_to_main_latex_file
     )
-
+    print(f"7={os.getcwd()}")
     # assumes non-included non-code appendices should not be included:
     # overwrite the existing appendix lists with the current appendix list.
     (
         non_code_appendices,
         main_non_code_appendix_inclusion_lines,
     ) = get_order_of_non_code_appendices_in_main(appendices, appendix_tex_code)
-
+    print(f"8={os.getcwd()}")
     python_appendix_filenames = list(
         map(
             lambda x: x.appendix_filename,
             filter_appendices_by_type(appendices, "python"),
         )
     )
+    print(f"9={os.getcwd()}")
     print(f"python_appendix_filenames={python_appendix_filenames}")
     # exit()
     sorted_created_python_appendices = sort_python_appendices(
@@ -99,6 +108,7 @@ def export_code_to_latex(main_latex_filename, include_export_code):
     sorted_python_appendix_filenames = list(
         map(lambda x: x.appendix_filename, sorted_created_python_appendices)
     )
+    print(f"10={os.getcwd()}")
 
     notebook_appendix_filenames = list(
         map(
@@ -112,14 +122,14 @@ def export_code_to_latex(main_latex_filename, include_export_code):
     sorted_notebook_appendix_filenames = list(
         map(lambda x: x.appendix_filename, sorted_created_notebook_appendices)
     )
-
+    print(f"11={os.getcwd()}")
     appendix_latex_code = create_appendices_latex_code(
         main_latex_filename,
         main_non_code_appendix_inclusion_lines,
         sorted_created_notebook_appendices,
         sorted_created_python_appendices,
     )
-
+    print(f"12={os.getcwd()}")
     updated_main_tex_code = substitute_appendix_code(
         end_index, main_tex_code, start_index, appendix_latex_code
     )
@@ -128,8 +138,9 @@ def export_code_to_latex(main_latex_filename, include_export_code):
     # print(line)
     # print(f"updated_main_tex_code={updated_main_tex_code}")
     # print(f"\n\n")
+    print(f"13={os.getcwd()}")
     overwrite_content_to_file(updated_main_tex_code, path_to_main_latex_file)
-
+    print(f"14={os.getcwd()}")
 
 def verify_latex_supports_auto_generated_appendices(path_to_main_latex_file):
     print("hi")
@@ -185,20 +196,20 @@ def create_appendices_latex_code(
 
 
 def append_latex_inclusion_command(
-    appendices_of_all_types, is_from_root_dir, main_appendix_inclusion_lines,
+    appendices_of_all_types, is_from_normalised_root_dir, main_appendix_inclusion_lines,
 ):
     """
 
-    :param appendices_of_all_types: param is_from_root_dir:
+    :param appendices_of_all_types: param is_from_normalised_root_dir:
     :param main_appendix_inclusion_lines: param project_name:
-    :param is_from_root_dir: param project_name:
+    :param is_from_normalised_root_dir: param project_name:
     :param project_name: The name of the project that is being executed/ran.
 
     """
     for appendix_type in appendices_of_all_types:
         for appendix in appendix_type:
             line = update_appendix_tex_code(
-                appendix.appendix_filename, is_from_root_dir
+                appendix.appendix_filename, is_from_normalised_root_dir
             )
             print(f"appendix.appendix_filename={appendix.appendix_filename}")
             main_appendix_inclusion_lines.append(line)
@@ -436,7 +447,7 @@ def get_filename_from_latex_inclusion_command(
 
 
 def get_code_files_already_included_in_appendices(
-    absolute_code_filepaths, appendix_dir, extension, root_dir
+    absolute_code_filepaths, appendix_dir, extension, normalised_root_dir
 ):
     """Returns a list of code filepaths that are already properly included the latex appendix files of this project.
 
@@ -444,7 +455,7 @@ def get_code_files_already_included_in_appendices(
     :param appendix_dir: Absolute path that contains the appendix .tex files.
     :param extension: The file extension that is used/searched in this function. The file extension of the file that is sought in the appendix line. Either ".py" or ".pdf".
     :param project_name: The name of the project that is being executed/ran. The number  indicating which project this code pertains to.
-    :param root_dir: The root directory of this repository.
+    :param normalised_root_dir: The root directory of this repository.
 
     """
     appendix_files = get_all_files_in_dir_and_child_dirs(".tex", appendix_dir)
@@ -453,7 +464,7 @@ def get_code_files_already_included_in_appendices(
         for appendix_filepath in appendix_files:
             appendix_filecontent = read_file(appendix_filepath)
             line_nr = check_if_appendix_contains_file(
-                appendix_filecontent, code_filepath, extension, root_dir
+                appendix_filecontent, code_filepath, extension, normalised_root_dir
             )
             if line_nr > -1:
                 # add filepath to list of files that are already in the appendices
@@ -470,7 +481,7 @@ def get_code_files_already_included_in_appendices(
 
 
 def check_if_appendix_contains_file(
-    appendix_content, code_filepath, extension, root_dir
+    appendix_content, code_filepath, extension, normalised_root_dir
 ):
     """Scans an appendix content to determine whether it contains a substring that
     includes a code file (of either python or compiled notebook=pdf extension).
@@ -479,15 +490,15 @@ def check_if_appendix_contains_file(
     :param code_filepath: Absolute path to a code file (either python files or compiled jupyter notebook pdfs).
     :param extension: The file extension that is used/searched in this function. The file extension of the file that is sought in the appendix line. Either ".py" or ".pdf".
     :param project_name: The name of the project that is being executed/ran. The number  indicating which project this code pertains to.
-    :param root_dir: The root directory of this repository.
+    :param normalised_root_dir: The root directory of this repository.
 
     """
     # convert code_filepath to the inclusion format in latex format
 
-    latex_relative_filepath = f"latex/../../{code_filepath[len(root_dir):]}"
+    code_filepath_relative_from_latex_dir = f"latex/../../{code_filepath[len(normalised_root_dir):]}"
     print(f"code_filepath={code_filepath}")
-    print(f"latex_relative_filepath={latex_relative_filepath}")
-    latex_command = get_latex_inclusion_command(extension, latex_relative_filepath)
+    print(f"code_filepath_relative_from_latex_dir={code_filepath_relative_from_latex_dir}")
+    latex_command = get_latex_inclusion_command(extension, code_filepath_relative_from_latex_dir)
     return get_line_of_latex_command(appendix_content, latex_command)
 
 
@@ -523,24 +534,24 @@ def line_is_commented(line, target_substring):
     return False
 
 
-def get_latex_inclusion_command(extension, latex_relative_filepath_to_codefile):
+def get_latex_inclusion_command(extension, code_filepath_relative_from_latex_dir):
     """Creates and returns a latex command that includes either a python file or a compiled jupiter
     notebook pdf (whereever the command is placed). The command is intended to be placed in the appendix.
 
     :param extension: The file extension that is used/searched in this function. The file extension of the file that is sought in the appendix line. Either ".py" or ".pdf".
-    :param latex_relative_filepath_to_codefile: The latex compilation requires a relative path towards code files
+    :param code_filepath_relative_from_latex_dir: The latex compilation requires a relative path towards code files
     that are included. Therefore, a relative path towards the code is given.
 
     """
     if extension == ".py":
         left = "\pythonexternal{"
         right = "}"
-        latex_command = f"{left}{latex_relative_filepath_to_codefile}{right}"
+        latex_command = f"{left}{code_filepath_relative_from_latex_dir}{right}"
     elif extension == ".ipynb":
 
         left = "\includepdf[pages=-]{"
         right = "}"
-        latex_command = f"{left}{latex_relative_filepath_to_codefile}{right}"
+        latex_command = f"{left}{code_filepath_relative_from_latex_dir}{right}"
     return latex_command
 
 
@@ -579,7 +590,7 @@ def get_code_files_not_yet_included_in_appendices(
     return not_contained
 
 
-def create_appendices_with_code(appendix_dir, code_filepaths, extension, root_dir):
+def create_appendices_with_code(appendix_dir, code_filepaths, extension, normalised_root_dir):
     """Creates the latex appendix files in with relevant codes included.
 
     :param appendix_dir: Absolute path that contains the appendix .tex files.
@@ -587,7 +598,7 @@ def create_appendices_with_code(appendix_dir, code_filepaths, extension, root_di
     (either python files or compiled jupyter notebook pdfs).
     :param extension: The file extension that is used/searched in this function. The file extension of the file that is sought in the appendix line. Either ".py" or ".pdf".
     :param project_name: The name of the project that is being executed/ran. The number  indicating which project this code pertains to.
-    :param root_dir: The root directory of this repository.
+    :param normalised_root_dir: The root directory of this repository.
 
     """
     appendix_filenames = []
@@ -596,22 +607,24 @@ def create_appendices_with_code(appendix_dir, code_filepaths, extension, root_di
     )
     print(f"\n\ncode_filepaths={code_filepaths}")
     for code_filepath in code_filepaths:
-        latex_relative_filepath = f"latex/../src/{code_filepath[len(root_dir):]}"
-        print(f"latex_relative_filepath={latex_relative_filepath}")
-
-        code_path_from_latex_main_path = f"../src/{code_filepath[len(root_dir):]}"
-        print(f"code_path_from_latex_main_path={code_path_from_latex_main_path}")
+        normalised_code_filepath=os.path.normpath(code_filepath)
+        code_filepath_relative_from_root=normalised_code_filepath[len(normalised_root_dir):]
+        code_filepath_relative_from_latex_dir=f"latex/..{code_filepath_relative_from_root}"
+        print(f'normalised_code_filepath={normalised_code_filepath}')
+        print(f'code_filepath_relative_from_root={code_filepath_relative_from_root}')
+        print(f'code_filepath_relative_from_latex_dir={code_filepath_relative_from_latex_dir}')
+        
+        #code_filename=get_filename_from_filepath(code_filepath)
         content = []
-        filename = get_filename_from_dir(code_filepath)
+        filename = get_filename_from_dir(normalised_code_filepath)
 
         content = create_section(appendix_reference_index, filename, content)
         content = add_include_code_in_appendix(
             content,
-            code_filepath,
-            code_path_from_latex_main_path,
+            code_filepath_relative_from_root,
             extension,
-            latex_relative_filepath,
-            root_dir,
+            code_filepath_relative_from_latex_dir,
+            normalised_root_dir,
         )
 
         print(f"content={content}")
@@ -627,40 +640,47 @@ def create_appendices_with_code(appendix_dir, code_filepaths, extension, root_di
         appendix_reference_index = appendix_reference_index + 1
     return appendix_filenames
 
+def get_filename_from_filepath(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
 
 def add_include_code_in_appendix(
     content,
-    code_filepath,
-    code_path_from_latex_main_path,
+    code_filepath_relative_from_root,
     extension,
-    latex_relative_filepath,
-    root_dir,
+    code_filepath_relative_from_latex_dir,
+    normalised_root_dir,
 ):
     """Includes the latex code that includes code in the script.
 
     :param content: The latex content that is being written to an appendix.
     :param code_path_from_latex_main_path: the path to the code as seen from the folder that contains main.tex.
     :param extension: The file extension that is used/searched in this function. The file extension of the file that is sought in the appendix line. Either ".py" or ".pdf".
-    :param latex_relative_filepath_to_codefile: The latex compilation requires a relative path towards code files
+    :param code_filepath_relative_from_latex_dir: The latex compilation requires a relative path towards code files
     that are included. Therefore, a relative path towards the code is given.
-    :param code_filepath: param latex_relative_filepath:
-    :param project_name: The name of the project that is being executed/ran. param root_dir:
-    :param latex_relative_filepath: param root_dir:
-    :param root_dir:
+    :param code_filepath_relative_from_root: param code_filepath_relative_from_latex_dir:
+    :param project_name: The name of the project that is being executed/ran. param normalised_root_dir:
+    :param code_filepath_relative_from_latex_dir: param normalised_root_dir:
+    :param normalised_root_dir:
 
     """
     print(f"before={content}")
+    
+    
     # TODO: append if exists}
     content.append("%TESTCOMMENT")
-    content.append(f"\IfFileExists{{latex/../src/{code_filepath[len(root_dir):]}}}{{")
-    code_path_from_latex_main_path
+    latex_path_to_python_file="src/filename"
+    print(f'code_filepath_relative_from_root={code_filepath_relative_from_root}')
+    line=f"\IfFileExists{{{code_filepath_relative_from_latex_dir}}}{{"
+    print(f'line={line}')
+    content.append(line)
     # append current line
-    content.append(get_latex_inclusion_command(extension, latex_relative_filepath))
+    content.append(get_latex_inclusion_command(extension, code_filepath_relative_from_latex_dir))
     # TODO: append {}
     content.append(f"}}{{")
     # TODO: code_path_from latex line
     content.append(
-        get_latex_inclusion_command(extension, code_path_from_latex_main_path)
+        get_latex_inclusion_command(extension, code_filepath_relative_from_latex_dir)
     )
     # TODO: add closing bracket }
     content.append(f"}}")
@@ -785,16 +805,16 @@ def get_index_of_substring_in_list(lines, target_substring):
                 return i
 
 
-def update_appendix_tex_code(appendix_filename, is_from_root_dir):
+def update_appendix_tex_code(appendix_filename, is_from_normalised_root_dir):
     """Returns the latex command that includes an appendix .tex file in an appendix environment
     as can be used in the main tex file.
 
     :param appendix_filename: Name of the appendix that is included by the generated command.
     :param project_name: The name of the project that is being executed/ran. The number indicating which project this code pertains to.
-    :param is_from_root_dir:
+    :param is_from_normalised_root_dir:
 
     """
-    if is_from_root_dir:
+    if is_from_normalised_root_dir:
         left = f"\input{{latex/"
     else:
         left = "\input{"

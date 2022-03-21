@@ -108,6 +108,7 @@ def get_filepaths_in_dir(extension, path, excluded_files=None):
 
     """
     filepaths = []
+    current_path=os.getcwd()
     os.chdir(path)
     for file in glob.glob(f"*.{extension}"):
         print(file)
@@ -115,4 +116,5 @@ def get_filepaths_in_dir(extension, path, excluded_files=None):
             (not excluded_files is None) and (not file in excluded_files)
         ):
             filepaths.append(f"{path}/{file}")
+    os.chdir(current_path)
     return filepaths

@@ -159,9 +159,11 @@ if args.sd:
 
 # Export plots to LaTex.
 
+import os
+print(os.getcwd())
 
 ## Export code to LaTex.
-if args.ec2l:
+if args.c2l:
     # TODO: verify whether the latex/{project_name}/Appendices folder exists before exporting.
     # TODO: verify whether the latex/{project_name}/Images folder exists before exporting.
     export_code_to_latex(main_latex_filename, False)
@@ -170,6 +172,9 @@ elif args.ec2l:
     # TODO: verify whether the latex/{project_name}/Images folder exists before exporting.
     export_code_to_latex(main_latex_filename, append_export_code_to_latex)
 
+print(f'RUNNING COMPILE')
+import os
+print(os.getcwd())
 
 ## Compile the accompanying LaTex report.
 if args.l:
