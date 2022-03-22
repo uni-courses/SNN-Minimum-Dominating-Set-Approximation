@@ -4,7 +4,13 @@ import shutil
 import ntpath
 from .helper_tex_editing import (
     code_filepath_to_tex_appendix_filename,
+    create_appendices,
     create_appendices_latex_code,
+    create_appendix_file,
+    create_appendix_filecontent,
+    create_appendix_manager_files,
+    export_python_export_code,
+    export_python_project_code,
     substitute_appendix_code,
     tex_appendix_filename_to_inclusion_command,
 )
@@ -19,15 +25,17 @@ from .helper_tex_reading import (
 )
 
 from .helper_dir_file_edit import (
+    convert_filepath_to_filepath_from_root,
     get_all_files_in_dir_and_child_dirs,
     get_filename_from_dir,
     overwrite_content_to_file,
     get_filepaths_in_dir,
     file_contains,
+    remove_all_auto_generated_appendices,
 )
 
 
-def export_code_to_latex(main_latex_filename, include_export_code):
+def export_code_to_latex(hd, include_export_code):
     """This function exports the python files and compiled pdfs of jupiter notebooks into the
     latex of the same project number. First it scans which appendices (without code, without
     notebooks) are already manually included in the main latex code. Next, all appendices
@@ -44,9 +52,9 @@ def export_code_to_latex(main_latex_filename, include_export_code):
     script_dir = get_script_dir()
     latex_dir = script_dir + "/../../latex/"
     appendix_dir = f"{latex_dir}Appendices/"
-    path_to_main_latex_file = f"{latex_dir}{main_latex_filename}"
-    normalised_root_dir = script_dir + "/../../"
-    normalised_root_dir = os.path.normpath(normalised_root_dir)
+    path_to_main_latex_file = f"{latex_dir}{hd.main_latex_filename}"
+    root_dir = script_dir + "/../../"
+    normalised_root_dir = os.path.normpath(root_dir)
     src_dir = script_dir + "/../"
 
     # Verify the latex file supports auto-generated python appendices.
@@ -63,25 +71,19 @@ def export_code_to_latex(main_latex_filename, include_export_code):
         python_export_code_filepaths = get_filepaths_in_dir(
             "py", script_dir, ["__init__.py"]
         )
-    print(f"python_export_code_filepaths={python_export_code_filepaths}")
-    filename = get_filename_from_dir(python_export_code_filepaths[0])
-    from_root = True
-    is_project_code = False
-    is_export_code = True
-    appendix_filename = code_filepath_to_tex_appendix_filename(
-        filename, from_root, is_project_code, is_export_code
-    )
-    print(f"appendix_filename={appendix_filename}")
-    appendix_inclusion_command = tex_appendix_filename_to_inclusion_command(
-        appendix_filename, from_root
-    )
-    print(f"appendix_inclusion_command={appendix_inclusion_command}")
 
-    # TODO: create appendix content
-    #\section{Appendix neumann.py}\label{app:0}
-    #\pythonexternal{latex/../src/neumann.py}
-    # TODO: create appendix file # ensure they are also deleted at the start of every run.
-    # TODO: append appendix_inclusion command to the right appendix manager file
+    remove_all_auto_generated_appendices(hd)
+
+    # Create appendix file # ensure they are also deleted at the start of every run.
+    create_appendix_manager_files(hd)
+
+    # TODO: include arg parsing to determine which code to export.
+    print(f'\n\npython_project_code_filepaths={python_project_code_filepaths}\n\n')
+    print(f'\n\npython_export_code_filepaths={python_export_code_filepaths}\n\n')
+
+    export_python_project_code(hd, normalised_root_dir, python_project_code_filepaths)
+    export_python_export_code(hd, normalised_root_dir, python_export_code_filepaths)
+
     # TODO: loop through all files.
     exit()
 

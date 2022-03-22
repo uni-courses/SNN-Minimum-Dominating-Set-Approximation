@@ -23,11 +23,11 @@ def export_data(args):
     if args.c2l:
         # TODO: verify whether the latex/{project_name}/Appendices folder exists before exporting.
         # TODO: verify whether the latex/{project_name}/Images folder exists before exporting.
-        export_code_to_latex(hd.main_latex_filename, False)
+        export_code_to_latex(hd, False)
     elif args.ec2l:
         # TODO: verify whether the latex/{project_name}/Appendices folder exists before exporting.
         # TODO: verify whether the latex/{project_name}/Images folder exists before exporting.
-        export_code_to_latex(hd.main_latex_filename, hd.append_export_code_to_latex)
+        export_code_to_latex(hd, True)
 
     ## Compile the accompanying LaTex report.
     if args.l:

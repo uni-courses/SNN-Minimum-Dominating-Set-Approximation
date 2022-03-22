@@ -163,3 +163,35 @@ def delete_file_if_exists(filepath):
         os.remove(filepath)
     except OSError:
         pass
+
+
+def convert_filepath_to_filepath_from_root(filepath, normalised_root_path):
+    normalised_filepath = os.path.normpath(filepath)
+    filepath_relative_from_root = normalised_filepath[len(normalised_root_path) :]
+    return filepath_relative_from_root
+
+
+def append_lines_to_file(filepath, lines):
+    with open(filepath, "a") as the_file:
+        for line in lines:
+            the_file.write(f"{line}\n")
+
+
+def append_line_to_file(filepath, line):
+    with open(filepath, "a") as the_file:
+        the_file.write(f"{line}\n")
+        the_file.close()
+
+
+def remove_all_auto_generated_appendices(hd):
+    files_to_remove = []
+    # TODO: move identifier into hardcoded.
+    all_appendix_files = get_all_files_in_dir_and_child_dirs(
+        ".tex", hd.appendix_dir_from_root, excluded_files=None
+    )
+    for file in all_appendix_files:
+        if "Auto_generated" in file:
+            delete_file_if_exists(file)
+            # files_to_remove.append(file)
+            print(f"Deleted:{file}")
+    # print(f'\n\nfiles_to_remove={files_to_remove}')

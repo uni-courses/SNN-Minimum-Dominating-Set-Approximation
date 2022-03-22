@@ -25,12 +25,28 @@ class Hardcoded_data:
         self.plant_uml_java_filename = "plantuml.jar"
 
         # Appendix manager filenames
+        self.export_code_appendices_filename = "export_code_appendices.tex"
+        self.export_code_appendices_filename_from_root = (
+            "export_code_appendices_from_root.tex"
+        )
+        self.project_code_appendices_filename = "project_code_appendices.tex"
+        self.project_code_appendices_filename_from_root = (
+            "project_code_appendices_from_root.tex"
+        )
         self.automatic_appendices_manager_filenames = [
-            "export_code_appendices",
-            "export_code_appendices_from_root",
-            "project_code_appendices",
-            "project_code_appendices_from_root",
+            self.export_code_appendices_filename,
+            self.export_code_appendices_filename_from_root,
+            self.project_code_appendices_filename,
+            self.project_code_appendices_filename_from_root,
         ]
+
+        self.manual_appendices_filename = "manual_appendices.tex"
+        self.manual_appendices_filename_from_root = "manual_appendices_from_root.tex"
+        self.manual_appendices_manager_filenames = [
+            self.manual_appendices_filename,
+            self.manual_appendices_filename_from_root,
+        ]
+        self.appendix_dir_from_root = "latex/Appendices/"
 
         # Folder names.
         self.dynamic_diagram_dir = "Dynamic_diagrams"

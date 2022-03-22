@@ -344,10 +344,12 @@ showstringspaces=false            %
   % Project is being compiled from root directory, so refer to appendices
   % from root directory.
   \input{latex/Appendices/manual_appendices_from_root.tex} \newpage
+  manualfromroot
 }{
   % Project is being compiled from directory that contains main .tex file, so
   % refer to appendices from directory containing main .tex file.
   \input{latex/Appendices/manual_appendices.tex}
+  manualnotfromroot
 }\newpage
 
 % Check if project source code should be hidden or included.
@@ -358,10 +360,12 @@ showstringspaces=false            %
     % Project is being compiled from root directory, so refer to appendices
     % from root directory.
     \input{latex/Appendices/project_code_appendices_from_root.tex} \newpage
+    projectfromroot
   }{
     % Project is being compiled from directory that contains main .tex file, so
     % refer to appendices from directory containing main .tex file.
     \input{latex/Appendices/project_code_appendices.tex}
+    projectnotfromroot
   }
 }\fi
 
@@ -374,10 +378,12 @@ showstringspaces=false            %
     % Project is being compiled from root directory, so refer to appendices
     % from root directory.
     \input{latex/Appendices/export_code_appendices_from_root.tex} \newpage
+    exportfromroot
   }{
     % Project is being compiled from directory that contains main .tex file, so
     % refer to appendices from directory containing main .tex file.
     \input{latex/Appendices/export_code_appendices.tex}
+    exportnotfromroot
   }
 }\fi
 \end{appendices}
