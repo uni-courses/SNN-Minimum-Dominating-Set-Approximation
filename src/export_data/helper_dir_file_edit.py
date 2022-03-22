@@ -115,6 +115,83 @@ def get_filepaths_in_dir(extension, path, excluded_files=None):
         if (excluded_files is None) or (
             (not excluded_files is None) and (not file in excluded_files)
         ):
-            filepaths.append(f"{path}/{file}")
+            # Append normalised filepath e.g. collapses b/src/../d to b/d.
+            filepaths.append(os.path.normpath(f"{path}/{file}"))
     os.chdir(current_path)
     return filepaths
+
+
+def get_filename_from_dir(path):
+    """Returns a filename from an absolute path to a file.
+
+    :param path: path to a file of which the name is queried.
+
+    """
+    return path[path.rfind("/") + 1 :]
+
+
+def overwrite_content_to_file(content, filepath, content_has_newlines=True):
+    """Writes a list of lines of tex code from the content argument to a .tex file
+    using overwriting method. The content has one line per element.
+
+    :param content: The content that is being written to file.
+    :param filepath: Path towards the file that is being read.
+    :param content_has_newlines: Default value = True)
+
+    """
+    with open(filepath, "w") as f:
+        for line in content:
+            if content_has_newlines:
+                f.write(line)
+            else:
+                f.write(line + "\n")
+
+
+def read_file(filepath):
+    """Reads content of a file and returns it as a list of strings, with one string per line.
+
+    :param filepath: path towards the file that is being read.
+
+    """
+    with open(filepath) as f:
+        content = f.readlines()
+    return content
+
+
+def delete_file_if_exists(filepath):
+    try:
+        os.remove(filepath)
+    except OSError:
+        pass
+
+
+def convert_filepath_to_filepath_from_root(filepath, normalised_root_path):
+    normalised_filepath = os.path.normpath(filepath)
+    filepath_relative_from_root = normalised_filepath[len(normalised_root_path) :]
+    return filepath_relative_from_root
+
+
+def append_lines_to_file(filepath, lines):
+    with open(filepath, "a") as the_file:
+        for line in lines:
+            the_file.write(f"{line}\n")
+
+
+def append_line_to_file(filepath, line):
+    with open(filepath, "a") as the_file:
+        the_file.write(f"{line}\n")
+        the_file.close()
+
+
+def remove_all_auto_generated_appendices(hd):
+    files_to_remove = []
+    # TODO: move identifier into hardcoded.
+    all_appendix_files = get_all_files_in_dir_and_child_dirs(
+        ".tex", hd.appendix_dir_from_root, excluded_files=None
+    )
+    for file in all_appendix_files:
+        if "Auto_generated" in file:
+            delete_file_if_exists(file)
+            # files_to_remove.append(file)
+            print(f"Deleted:{file}")
+    # print(f'\n\nfiles_to_remove={files_to_remove}')
