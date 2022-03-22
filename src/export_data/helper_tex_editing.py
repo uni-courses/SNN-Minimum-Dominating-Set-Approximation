@@ -323,9 +323,11 @@ def create_appendix_filecontent(
     latex_object_name, filename, filepath_from_root, from_root
 ):
     # Latex titles should escape underscores.
-    filepath_from_root_without_underscores=filepath_from_root.replace("_","\_")
+    filepath_from_root_without_underscores = filepath_from_root.replace("_", "\_")
     lines = []
-    lines.append(f"\{latex_object_name}{{Appendix {filepath_from_root_without_underscores}}}\label{{app:{filename}}}")
+    lines.append(
+        f"\{latex_object_name}{{Appendix {filepath_from_root_without_underscores}}}\label{{app:{filename}}}"
+    )
     if from_root:
         lines.append(f"\pythonexternal{{latex/..{filepath_from_root}}}")
     else:
@@ -380,10 +382,10 @@ def create_appendix_file(
         appendix_filepath = f"{hd.appendix_dir_from_root}/Auto_generated_project_code_appendix_{filename_without_extension}.tex"
 
         # Append latex_filepath to appendix manager.
-        #append_lines_to_file(
+        # append_lines_to_file(
         #    f"{hd.appendix_dir_from_root}{hd.project_code_appendices_filename}",
         #    [tex_appendix_filepath_to_inclusion_command(appendix_filepath)],
-        #)
+        # )
 
         # Get Appendix .tex content.
         appendix_lines_from_root = create_appendix_filecontent(
@@ -397,10 +399,10 @@ def create_appendix_file(
         appendix_filepath = f"{hd.appendix_dir_from_root}/Auto_generated_export_code_appendix_{filename_without_extension}.tex"
 
         # Append latex_filepath to appendix manager.
-        #append_lines_to_file(
+        # append_lines_to_file(
         #    f"{hd.appendix_dir_from_root}{hd.export_code_appendices_filename}",
         #    [tex_appendix_filepath_to_inclusion_command(appendix_filepath)],
-        #)
+        # )
 
         # Get Appendix .tex content.
         appendix_lines_from_root = create_appendix_filecontent(
@@ -469,11 +471,13 @@ def create_appendices(
     appendix_inclusion_command = tex_appendix_filename_to_inclusion_command(
         appendix_filename, from_root
     )
-    #if from_root:
+    # if from_root:
     #    print(f'tex_appendix_filename_to_inclusion_command={appendix_inclusion_command}')
     #    exit()
 
-    append_appendix_to_appendix_managers(appendix_inclusion_command,from_root,hd,is_export_code, is_project_code)
+    append_appendix_to_appendix_managers(
+        appendix_inclusion_command, from_root, hd, is_export_code, is_project_code
+    )
 
     # Create appendix .tex file content.
     # TODO: move "section" to hardcoded.
@@ -481,26 +485,45 @@ def create_appendices(
         "section", filename, filepath_from_root, from_root
     )
 
-    #Create the appendix .tex file.
+    # Create the appendix .tex file.
     # TODO: move "section" to hardcoded.
-    if from_root: # Appendix only contains files readable from root.
+    if from_root:  # Appendix only contains files readable from root.
         create_appendix_file(
-            hd, filename, filepath_from_root, "section", is_export_code, is_project_code,
+            hd,
+            filename,
+            filepath_from_root,
+            "section",
+            is_export_code,
+            is_project_code,
         )
 
-def append_appendix_to_appendix_managers(appendix_inclusion_command,from_root,hd,is_export_code, is_project_code):
+
+def append_appendix_to_appendix_managers(
+    appendix_inclusion_command, from_root, hd, is_export_code, is_project_code
+):
     # Append the appendix .tex file to the appendix manager.
     if is_project_code:
         if from_root:
-            #print(f'from_root={from_root}Append to:{hd.project_code_appendices_filename_from_root}')
-            append_line_to_file(f"{hd.appendix_dir_from_root}{hd.project_code_appendices_filename_from_root}", appendix_inclusion_command)
+            # print(f'from_root={from_root}Append to:{hd.project_code_appendices_filename_from_root}')
+            append_line_to_file(
+                f"{hd.appendix_dir_from_root}{hd.project_code_appendices_filename_from_root}",
+                appendix_inclusion_command,
+            )
         else:
-            #print(f'from_root={from_root}Append to:{hd.project_code_appendices_filename}')
-            append_line_to_file(f"{hd.appendix_dir_from_root}{hd.project_code_appendices_filename}", appendix_inclusion_command)
+            # print(f'from_root={from_root}Append to:{hd.project_code_appendices_filename}')
+            append_line_to_file(
+                f"{hd.appendix_dir_from_root}{hd.project_code_appendices_filename}",
+                appendix_inclusion_command,
+            )
 
     if is_export_code:
         if from_root:
-            append_line_to_file(f"{hd.appendix_dir_from_root}{hd.export_code_appendices_filename_from_root}", appendix_inclusion_command)
+            append_line_to_file(
+                f"{hd.appendix_dir_from_root}{hd.export_code_appendices_filename_from_root}",
+                appendix_inclusion_command,
+            )
         else:
-            append_line_to_file(f"{hd.appendix_dir_from_root}{hd.export_code_appendices_filename}", appendix_inclusion_command)
-    
+            append_line_to_file(
+                f"{hd.appendix_dir_from_root}{hd.export_code_appendices_filename}",
+                appendix_inclusion_command,
+            )

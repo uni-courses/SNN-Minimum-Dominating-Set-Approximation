@@ -120,6 +120,13 @@ def get_filepaths_in_dir(extension, path, excluded_files=None):
     os.chdir(current_path)
     return filepaths
 
+def sort_filepaths_by_filename(filepaths):
+    #filepaths.sort(key = lambda x: x.split()[1])
+    filepaths.sort(key = lambda x: x[x.rfind("/") + 1 :])
+    for filepath in filepaths:
+        print(f'{filepath}')
+    return filepaths
+    
 
 def get_filename_from_dir(path):
     """Returns a filename from an absolute path to a file.
