@@ -118,3 +118,40 @@ def get_filepaths_in_dir(extension, path, excluded_files=None):
             filepaths.append(f"{path}/{file}")
     os.chdir(current_path)
     return filepaths
+
+
+def get_filename_from_dir(path):
+    """Returns a filename from an absolute path to a file.
+
+    :param path: path to a file of which the name is queried.
+
+    """
+    return path[path.rfind("/") + 1 :]
+
+
+def overwrite_content_to_file(content, filepath, content_has_newlines=True):
+    """Writes a list of lines of tex code from the content argument to a .tex file
+    using overwriting method. The content has one line per element.
+
+    :param content: The content that is being written to file.
+    :param filepath: Path towards the file that is being read.
+    :param content_has_newlines: Default value = True)
+
+    """
+    with open(filepath, "w") as f:
+        for line in content:
+            if content_has_newlines:
+                f.write(line)
+            else:
+                f.write(line + "\n")
+
+
+def read_file(filepath):
+    """Reads content of a file and returns it as a list of strings, with one string per line.
+
+    :param filepath: path towards the file that is being read.
+
+    """
+    with open(filepath) as f:
+        content = f.readlines()
+    return content

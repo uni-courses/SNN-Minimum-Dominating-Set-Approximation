@@ -6,6 +6,7 @@ from .create_static_diagrams import create_static_diagrams
 from .latex_export_code import export_code_to_latex
 from .latex_compile import compile_latex
 
+
 def export_data(args):
 
     hd = Hardcoded_data()
