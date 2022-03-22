@@ -5,7 +5,6 @@ from .helper_dir_file_edit import (
     read_file,
 )
 from .helper_parsing import get_index_of_substring_in_list
-#from .latex_export_code import Appendix, Appendix_with_code
 
 
 def get_latex_inclusion_command(extension, code_filepath_relative_from_latex_dir):

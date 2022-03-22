@@ -115,7 +115,8 @@ def get_filepaths_in_dir(extension, path, excluded_files=None):
         if (excluded_files is None) or (
             (not excluded_files is None) and (not file in excluded_files)
         ):
-            filepaths.append(f"{path}/{file}")
+            # Append normalised filepath e.g. collapses b/src/../d to b/d.
+            filepaths.append(os.path.normpath(f"{path}/{file}"))
     os.chdir(current_path)
     return filepaths
 
@@ -155,3 +156,10 @@ def read_file(filepath):
     with open(filepath) as f:
         content = f.readlines()
     return content
+
+
+def delete_file_if_exists(filepath):
+    try:
+        os.remove(filepath)
+    except OSError:
+        pass

@@ -1,5 +1,6 @@
 import os
 from .helper_dir_file_edit import (
+    delete_file_if_exists,
     get_filename_from_dir,
     overwrite_content_to_file,
 )
@@ -256,3 +257,60 @@ def append_latex_inclusion_command(
             print(f"appendix.appendix_filename={appendix.appendix_filename}")
             main_appendix_inclusion_lines.append(line)
     return main_appendix_inclusion_lines
+
+
+def code_filepath_to_tex_appendix_line(code_filepath, from_root, hd, root_dir):
+    pass
+
+
+def code_filepath_to_tex_appendix_filename(
+    filename, from_root, is_project_code, is_export_code
+):
+    # TODO: Include assert to verify filename ends at .py.
+    # TODO: Include assert to verify filename doesn't end at .py anymore.
+    filename_without_extension = os.path.splitext(filename)[0]
+
+    # Create appendix filename identifier segment
+    if is_project_code and is_export_code:
+        raise Exception(
+            "Error, a file can't be both project code, and export code at same time."
+        )
+    if is_project_code:
+        identifier = "Auto_generated_project_code_app_"
+    elif is_export_code:
+        identifier = "Auto_generated_export_code_app_"
+    else:
+        raise Exception(
+            "Error, don't know what to do with files that are neither project code, nor export code."
+        )
+    print(f"identifier={identifier}")
+    appendix_filename = f"{identifier}{filename_without_extension}"
+    return appendix_filename
+
+
+def tex_appendix_filename_to_inclusion_command(appendix_filename, from_root):
+    # Create full appendix filename.
+    if from_root:
+        # Generate latex inclusion command for latex compilation from root dir.
+        appendix_inclusion_command = (
+            f"\input{{latex/Appendices/{appendix_filename}.tex}} \\newpage"
+        )
+        # \input{latex/Appendices/Auto_generated_py_App8.tex} \newpage
+    else:
+        # \input{Appendices/Auto_generated_py_App8.tex} \newpage
+        appendix_inclusion_command = (
+            f"\input{{Appendices/{appendix_filename}.tex}} \\newpage"
+        )
+    return appendix_inclusion_command
+
+
+def create_empty_appendix_manager_files(hd):
+    # Verify target directory exists.
+
+    # Delete appendix manager files.
+    list(map(lambda x: delete_file_if_exists(x), hd.appendix_manager_filenames))
+
+    # Create new appendix_manager_files
+    list(map(lambda x: open(x, "a"), hd.appendix_manager_filenames))
+
+    # TODO: verify files exist

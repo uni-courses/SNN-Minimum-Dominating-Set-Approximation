@@ -24,6 +24,14 @@ class Hardcoded_data:
         self.diagram_dir = "Diagrams"
         self.plant_uml_java_filename = "plantuml.jar"
 
+        # Appendix manager filenames
+        self.automatic_appendices_manager_filenames = [
+            "export_code_appendices",
+            "export_code_appendices_from_root",
+            "project_code_appendices",
+            "project_code_appendices_from_root",
+        ]
+
         # Folder names.
         self.dynamic_diagram_dir = "Dynamic_diagrams"
         self.static_diagram_dir = "Static_diagrams"
