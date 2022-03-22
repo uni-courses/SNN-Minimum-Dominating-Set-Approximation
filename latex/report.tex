@@ -167,11 +167,17 @@ showstringspaces=false            %
 \makeatother
 \def\overleafhome{/tmp}% change as appropriate
 
-% Include boolean to hide source code 
-% (requested by financier).
-\newif\ifhidesourcecode
-%\hidesourcecodetrue % Set the variable value to true.
-\hidesourcecodefalse % Set the variable value to false.
+% Include boolean to hide project source code.
+% (Note, boolean created on demand/implication, not voluntarily).
+\newif\ifhideprojectsourcecode
+%\hideprojectsourcecodetrue % Set the variable value to true.
+\hideprojectsourcecodefalse % Set the variable value to false.
+
+% Include boolean to hide exporting source code.
+% (Note, boolean created on demand/implication, not voluntarily).
+\newif\ifhideexportsourcecode
+%\hideexportsourcecodetrue % Set the variable value to true.
+\hideexportsourcecodefalse % Set the variable value to false.
 
 \begin{document}
 
@@ -332,45 +338,47 @@ showstringspaces=false            %
 
 %\newpage
 \begin{appendices}
-\IfFileExists{latex/report.tex}{\input{latex/Appendices/AppA.tex} \newpage
-}{\input{Appendices/AppA.tex}} \newpage
-\ifhidesourcecode{}\else{\IfFileExists{latex/report.tex}{\input{latex/Appendices/Auto_generated_py_App3.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App8.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App6.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App2.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App15.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App1.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App13.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App4.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App10.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App17.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App16.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App18.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App11.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App0.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App5.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App14.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App12.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App9.tex} \newpage
-\input{latex/Appendices/Auto_generated_py_App7.tex} \newpage
-}{\input{Appendices/Auto_generated_py_App3.tex} \newpage
-\input{Appendices/Auto_generated_py_App8.tex} \newpage
-\input{Appendices/Auto_generated_py_App6.tex} \newpage
-\input{Appendices/Auto_generated_py_App2.tex} \newpage
-\input{Appendices/Auto_generated_py_App15.tex} \newpage
-\input{Appendices/Auto_generated_py_App1.tex} \newpage
-\input{Appendices/Auto_generated_py_App13.tex} \newpage
-\input{Appendices/Auto_generated_py_App4.tex} \newpage
-\input{Appendices/Auto_generated_py_App10.tex} \newpage
-\input{Appendices/Auto_generated_py_App17.tex} \newpage
-\input{Appendices/Auto_generated_py_App16.tex} \newpage
-\input{Appendices/Auto_generated_py_App18.tex} \newpage
-\input{Appendices/Auto_generated_py_App11.tex} \newpage
-\input{Appendices/Auto_generated_py_App0.tex} \newpage
-\input{Appendices/Auto_generated_py_App5.tex} \newpage
-\input{Appendices/Auto_generated_py_App14.tex} \newpage
-\input{Appendices/Auto_generated_py_App12.tex} \newpage
-\input{Appendices/Auto_generated_py_App9.tex} \newpage
-\input{Appendices/Auto_generated_py_App7.tex} \newpage
-}}\fi\ifhidesourcecode{}\else{\IfFileExists{latex/report.tex}{}{}}\fi\end{appendices}
+
+% Include manual appendices
+\IfFileExists{latex/report.tex}{
+  % Project is being compiled from root directory, so refer to appendices
+  % from root directory.
+  \input{latex/Appendices/manual_appendices_from_root.tex} \newpage
+}{
+  % Project is being compiled from directory that contains main .tex file, so
+  % refer to appendices from directory containing main .tex file.
+  \input{latex/Appendices/manual_appendices.tex}
+}\newpage
+
+% Check if project source code should be hidden or included.
+\ifhideprojectsourcecode{
+  % Don't include project code appendices if they need to be hidden. 
+}\else{
+  \IfFileExists{latex/report.tex}{
+    % Project is being compiled from root directory, so refer to appendices
+    % from root directory.
+    \input{latex/Appendices/project_code_appendices_from_root.tex} \newpage
+  }{
+    % Project is being compiled from directory that contains main .tex file, so
+    % refer to appendices from directory containing main .tex file.
+    \input{latex/Appendices/project_code_appendices.tex}
+  }
+}\fi
+
+% Check if export source code should be hidden or included.
+% TODO: change to export code
+\ifhideexportsourcecode{
+  % Don't export project code appendices if they need to be hidden. 
+}\else{
+  \IfFileExists{latex/report.tex}{
+    % Project is being compiled from root directory, so refer to appendices
+    % from root directory.
+    \input{latex/Appendices/export_code_appendices_from_root.tex} \newpage
+  }{
+    % Project is being compiled from directory that contains main .tex file, so
+    % refer to appendices from directory containing main .tex file.
+    \input{latex/Appendices/export_code_appendices.tex}
+  }
+}\fi
+\end{appendices}
 \end{document}
