@@ -5,10 +5,6 @@ from .create_dynamic_diagrams import create_dynamic_diagrams
 from .create_static_diagrams import create_static_diagrams
 from .latex_export_code import export_code_to_latex
 from .latex_compile import compile_latex
-from .plantuml_generate import generate_all_dynamic_diagrams
-from .plantuml_compile import compile_diagrams_in_dir_relative_to_root
-from .plantuml_to_tex import export_diagrams_to_latex
-
 
 def export_data(args):
 
