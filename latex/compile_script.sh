@@ -52,7 +52,6 @@ verify_texlive_fonts_extra_exists() {
 	fi
 }
 verify_texlive_fonts_extra_exists
-exit 4
 
 # Unused package.
 #yes | sudo apt-get install texlive-science
