@@ -3,23 +3,6 @@ import shutil
 import glob
 
 
-def delete_directory_contents(self, folder):
-    """
-
-    :param folder: Directory that is being deleted.
-
-    """
-    for filename in os.listdir(folder):
-        file_path = os.path.join(folder, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print("Failed to delete %s. Reason: %s" % (file_path, e))
-
-
 def file_contains(filepath, substring):
     with open(filepath) as f:
         if substring in f.read():
@@ -51,17 +34,6 @@ def create_dir_relative_to_root_if_not_exists(dir_relative_to_root):
         os.makedirs(dir_relative_to_root)
 
 
-def delete_dir_relative_to_root_if_not_exists(dir_relative_to_root):
-    """
-
-    :param dir_relative_to_root: A relative directory as seen from the root dir of this project.
-
-    """
-    if os.path.exists(dir_relative_to_root):
-        # Remove directory and its content.
-        shutil.rmtree(dir_relative_to_root)
-
-
 def dir_relative_to_root_exists(dir_relative_to_root):
     """
 
@@ -88,7 +60,7 @@ def get_all_files_in_dir_and_child_dirs(extension, path, excluded_files=None):
 
     """
     filepaths = []
-    for r, d, f in os.walk(path):
+    for r, d,f in os.walk(path):
         for file in f:
             if file.endswith(extension):
                 if (excluded_files is None) or (
@@ -120,13 +92,14 @@ def get_filepaths_in_dir(extension, path, excluded_files=None):
     os.chdir(current_path)
     return filepaths
 
+
 def sort_filepaths_by_filename(filepaths):
-    #filepaths.sort(key = lambda x: x.split()[1])
-    filepaths.sort(key = lambda x: x[x.rfind("/") + 1 :])
+    # filepaths.sort(key = lambda x: x.split()[1])
+    filepaths.sort(key=lambda x: x[x.rfind("/") + 1 :])
     for filepath in filepaths:
-        print(f'{filepath}')
+        print(f"{filepath}")
     return filepaths
-    
+
 
 def get_filename_from_dir(path):
     """Returns a filename from an absolute path to a file.
@@ -191,7 +164,7 @@ def append_line_to_file(filepath, line):
 
 
 def remove_all_auto_generated_appendices(hd):
-    files_to_remove = []
+
     # TODO: move identifier into hardcoded.
     all_appendix_files = get_all_files_in_dir_and_child_dirs(
         ".tex", hd.appendix_dir_from_root, excluded_files=None
@@ -199,6 +172,3 @@ def remove_all_auto_generated_appendices(hd):
     for file in all_appendix_files:
         if "Auto_generated" in file:
             delete_file_if_exists(file)
-            # files_to_remove.append(file)
-            print(f"Deleted:{file}")
-    # print(f'\n\nfiles_to_remove={files_to_remove}')

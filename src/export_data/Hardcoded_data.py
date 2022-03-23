@@ -60,7 +60,6 @@ class Hardcoded_data:
         self.diagram_output_dir_relative_to_root = f"latex/Images/{self.diagram_dir}"
 
         # Path related variables
-        self.relative_src_filepath_from_root = f"src/"
         self.append_export_code_to_latex = True
         self.path_to_dynamic_gantts = f"{self.path_to_export_data_from_root}/{self.diagram_dir}/{self.dynamic_diagram_dir}"
         self.path_to_static_gantts = f"{self.path_to_export_data_from_root}/{self.diagram_dir}/{self.static_diagram_dir}"

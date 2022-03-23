@@ -27,7 +27,9 @@ def generate_all_dynamic_diagrams(output_dir_relative_to_root):
     # Create another example Gantt output file.
     filename_two, lines_two = create_trivial_gantt("another_trivial_gantt.uml")
     output_diagram_text_file(
-        filename_two, lines_two, output_dir_relative_to_root,
+        filename_two,
+        lines_two,
+        output_dir_relative_to_root,
     )
 
 

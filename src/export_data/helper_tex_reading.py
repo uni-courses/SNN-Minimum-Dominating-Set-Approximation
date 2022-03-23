@@ -101,23 +101,6 @@ def get_auto_generated_appendix_filenames_of_specific_extension(
     return appendices_of_extension_type
 
 
-def get_appendix_tex_code(main_latex_filename):
-    """gets the latex appendix code from the main tex file.
-
-    :param main_latex_filename: Name of the main latex document of this project number
-
-    """
-    main_tex_code = read_file(main_latex_filename)
-    # print(f"main_tex_code={main_tex_code}")
-    start = "\\begin{appendices}"
-    end = "\end{appendices}"
-    # TODO: if last 4 characters before \end{appendices} match }}\\fi then don't prepend it,
-    # otherwise, do prepend it
-    start_index = get_index_of_substring_in_list(main_tex_code, start) + 1
-    end_index = get_index_of_substring_in_list(main_tex_code, end)
-    return main_tex_code, start_index, end_index, main_tex_code[start_index:end_index]
-
-
 def verify_latex_supports_auto_generated_appendices(path_to_main_latex_file):
     # TODO: change verification to complete tex block(s) for appendices.
     # TODO: Also verify related boolean and if statement creations.
@@ -161,68 +144,6 @@ def get_appendix_from_filename(appendices, appendix_filename):
     for appendix in appendices:
         if appendix_filename == appendix.appendix_filename:
             return appendix
-
-
-def get_list_of_appendix_files(
-    appendix_dir, absolute_notebook_filepaths, absolute_python_project_code_filepaths
-):
-    """Returns a list of Appendix objects that contain all the appendix files with .tex extension.
-
-    :param appendix_dir: Absolute path that contains the appendix .tex files.
-    :param absolute_notebook_filepaths: List of absolute paths to the compiled notebook pdf files.
-    :param absolute_python_project_code_filepaths: List of absolute paths to the python files.
-
-    """
-    appendices = []
-    appendices_paths = get_all_files_in_dir_and_child_dirs(".tex", appendix_dir)
-    print(f"appendix_dir={appendix_dir}")
-    print(f"appendices_paths={appendices_paths}")
-    # exit()
-    for appendix_filepath in appendices_paths:
-        appendix_type = "no_code"
-        appendix_filecontent = read_file(appendix_filepath)
-        line_nr_python_file_inclusion = get_line_of_latex_command(
-            appendix_filecontent, "\pythonexternal{"
-        )
-        line_nr_notebook_file_inclusion = get_line_of_latex_command(
-            appendix_filecontent, "\includepdf[pages="
-        )
-        if line_nr_python_file_inclusion > -1:
-            appendix_type = "python"
-            # get python filename
-            line = appendix_filecontent[line_nr_python_file_inclusion]
-            filename = get_filename_from_latex_inclusion_command(
-                line, ".py", "\pythonexternal{"
-            )
-            appendices.append(
-                Appendix(
-                    appendix_filepath,
-                    appendix_filecontent,
-                    appendix_type,
-                    filename,
-                    line,
-                )
-            )
-        if line_nr_notebook_file_inclusion > -1:
-            appendix_type = "notebook"
-            line = appendix_filecontent[line_nr_notebook_file_inclusion]
-            filename = get_filename_from_latex_inclusion_command(
-                line, ".pdf", "\includepdf[pages="
-            )
-            appendices.append(
-                Appendix(
-                    appendix_filepath,
-                    appendix_filecontent,
-                    appendix_type,
-                    filename,
-                    line,
-                )
-            )
-        else:
-            appendices.append(
-                Appendix(appendix_filepath, appendix_filecontent, appendix_type)
-            )
-    return appendices
 
 
 def get_filename_from_latex_inclusion_command(
@@ -317,7 +238,7 @@ def get_line_of_latex_command(appendix_content, latex_command):
     for line in appendix_content:
         if latex_command in line:
             if line_is_commented(line, latex_command):
-                commented = True
+                pass
             else:
                 return line_nr
         line_nr = line_nr + 1
@@ -335,31 +256,3 @@ def line_is_commented(line, target_substring):
     if "%" in left_of_command:
         return True
     return False
-
-
-def get_missing_appendices(
-    appendix_dir, compiled_notebook_pdf_filepaths, normalised_root_dir, python_filepaths
-):
-    # Check which files are already included in the latex appendicess.
-    # TODO: update this method to scan the content of the files referred to in
-    # the manual appendices.
-    python_files_already_included_in_appendices = get_code_files_already_included_in_appendices(
-        python_filepaths, appendix_dir, ".py", normalised_root_dir
-    )
-    notebook_pdf_files_already_included_in_appendices = get_code_files_already_included_in_appendices(
-        compiled_notebook_pdf_filepaths, appendix_dir, ".ipynb", normalised_root_dir,
-    )
-    print(
-        f"python_files_already_included_in_appendices={python_files_already_included_in_appendices}"
-    )
-
-    # Get which appendices are still missing.
-    missing_python_files_in_appendices = get_code_files_not_yet_included_in_appendices(
-        python_filepaths, python_files_already_included_in_appendices, ".py"
-    )
-    missing_notebook_files_in_appendices = get_code_files_not_yet_included_in_appendices(
-        compiled_notebook_pdf_filepaths,
-        notebook_pdf_files_already_included_in_appendices,
-        ".pdf",
-    )
-    return missing_python_files_in_appendices, missing_notebook_files_in_appendices

@@ -3,34 +3,22 @@ import os
 import shutil
 import ntpath
 from .helper_tex_editing import (
-    code_filepath_to_tex_appendix_filename,
-    create_appendices,
-    create_appendices_latex_code,
-    create_appendix_file,
-    create_appendix_filecontent,
     create_appendix_manager_files,
     export_python_export_code,
     export_python_project_code,
-    substitute_appendix_code,
-    tex_appendix_filename_to_inclusion_command,
 )
 
 from .helper_tex_reading import (
     get_appendix_from_filename,
-    get_appendix_tex_code,
     get_filename_from_latex_appendix_line,
-    get_list_of_appendix_files,
     line_is_commented,
     verify_latex_supports_auto_generated_appendices,
 )
 
 from .helper_dir_file_edit import (
-    convert_filepath_to_filepath_from_root,
     get_all_files_in_dir_and_child_dirs,
     get_filename_from_dir,
-    overwrite_content_to_file,
     get_filepaths_in_dir,
-    file_contains,
     remove_all_auto_generated_appendices,
     sort_filepaths_by_filename,
 )
@@ -62,9 +50,7 @@ def export_code_to_latex(hd, include_export_code):
     verify_latex_supports_auto_generated_appendices(path_to_main_latex_file)
 
     # Get paths to files containing project python code.
-    python_project_code_filepaths = get_filepaths_in_dir(
-        "py", src_dir, ["__init__.py"]
-    )
+    python_project_code_filepaths = get_filepaths_in_dir("py", src_dir, ["__init__.py"])
 
     compiled_notebook_pdf_filepaths = get_compiled_notebook_paths(script_dir)
     print(f"python_project_code_filepaths={python_project_code_filepaths}")
@@ -81,9 +67,17 @@ def export_code_to_latex(hd, include_export_code):
     create_appendix_manager_files(hd)
 
     # TODO: Sort main files.
-    export_python_project_code(hd, normalised_root_dir, sort_filepaths_by_filename(python_project_code_filepaths))
+    export_python_project_code(
+        hd,
+        normalised_root_dir,
+        sort_filepaths_by_filename(python_project_code_filepaths),
+    )
     if include_export_code:
-        export_python_export_code(hd, normalised_root_dir, sort_filepaths_by_filename(python_export_code_filepaths))
+        export_python_export_code(
+            hd,
+            normalised_root_dir,
+            sort_filepaths_by_filename(python_export_code_filepaths),
+        )
 
 
 def filter_appendices_by_type(appendices, appendix_type):
