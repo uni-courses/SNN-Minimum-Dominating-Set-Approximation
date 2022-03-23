@@ -60,7 +60,7 @@ def get_all_files_in_dir_and_child_dirs(extension, path, excluded_files=None):
 
     """
     filepaths = []
-    for r, d,f in os.walk(path):
+    for r, d, f in os.walk(path):
         for file in f:
             if file.endswith(extension):
                 if (excluded_files is None) or (
@@ -108,23 +108,6 @@ def get_filename_from_dir(path):
 
     """
     return path[path.rfind("/") + 1 :]
-
-
-def overwrite_content_to_file(content, filepath, content_has_newlines=True):
-    """Writes a list of lines of tex code from the content argument to a .tex file
-    using overwriting method. The content has one line per element.
-
-    :param content: The content that is being written to file.
-    :param filepath: Path towards the file that is being read.
-    :param content_has_newlines: Default value = True)
-
-    """
-    with open(filepath, "w") as f:
-        for line in content:
-            if content_has_newlines:
-                f.write(line)
-            else:
-                f.write(line + "\n")
 
 
 def read_file(filepath):

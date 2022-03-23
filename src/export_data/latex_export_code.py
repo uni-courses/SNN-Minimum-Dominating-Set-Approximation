@@ -80,51 +80,6 @@ def export_code_to_latex(hd, include_export_code):
         )
 
 
-def filter_appendices_by_type(appendices, appendix_type):
-    """Returns the list of all appendices of a certain appendix type, from the incoming list of Appendix objects.
-
-    :param appendices: List of Appendix objects
-    :param appendix_type: Can consist of "no_code", "python", or "notebook" and indicates different appendix types
-
-    """
-    return_appendices = []
-    for appendix in appendices:
-        if appendix.appendix_type == appendix_type:
-            return_appendices.append(appendix)
-    return return_appendices
-
-
-def sort_python_appendices(appendices):
-    """First puts __main__.py, followed by main.py followed by a-z code files.
-
-    :param appendices: List of Appendix objects
-
-    """
-    return_appendices = []
-    for appendix in appendices:  # first get appendix containing __main__.py
-        if (appendix.code_filename == "__main__.py") or (
-            appendix.code_filename == "__Main__.py"
-        ):
-            return_appendices.append(appendix)
-            appendices.remove(appendix)
-    for appendix in appendices:  # second get appendix containing main.py
-        if (appendix.code_filename == "main.py") or (
-            appendix.code_filename == "Main.py"
-        ):
-            return_appendices.append(appendix)
-            appendices.remove(appendix)
-    return_appendices
-
-    # Filter remaining appendices in order of a-z
-    filtered_remaining_appendices = [
-        i for i in appendices if i.code_filename is not None
-    ]
-    appendices_sorted_a_z = sort_appendices_on_code_filename(
-        filtered_remaining_appendices
-    )
-    return return_appendices + appendices_sorted_a_z
-
-
 def sort_notebook_appendices_alphabetically(appendices):
     """Sorts notebook appendix objects alphabetic order of their pdf filenames.
 
@@ -154,31 +109,6 @@ def sort_appendices_on_code_filename(appendices):
     for i in sorted_indices:
         sorted_list.append(appendices[i])
     return sorted_list
-
-
-def get_order_of_non_code_appendices_in_main(appendices, appendix_tex_code):
-    """Scans the lines of appendices in the main code, and returns the lines
-    of the appendices that do not contain code, in the order in which they were
-    included in the main latex file.
-
-    :param appendices: List of Appendix objects
-    :param appendix_tex_code: latex code from the main latex file that includes the appendices
-
-    """
-    non_code_appendices = []
-    non_code_appendix_lines = []
-    appendix_tex_code = list(dict.fromkeys(appendix_tex_code))
-    for line in appendix_tex_code:
-        appendix_filename = get_filename_from_latex_appendix_line(appendices, line)
-
-        # Check if line is not commented
-        if not appendix_filename is None:
-            if not line_is_commented(line, appendix_filename):
-                appendix = get_appendix_from_filename(appendices, appendix_filename)
-                if appendix.appendix_type == "no_code":
-                    non_code_appendices.append(appendix)
-                    non_code_appendix_lines.append(line)
-    return non_code_appendices, non_code_appendix_lines
 
 
 def get_compiled_notebook_paths(script_dir):
@@ -228,22 +158,3 @@ class Appendix_with_code:
         self.appendix_content = appendix_content
         self.file_line_nr = file_line_nr
         self.extension = extension
-
-
-class Appendix:
-    """stores in appendix files and type of appendix."""
-
-    def __init__(
-        self,
-        appendix_filepath,
-        appendix_content,
-        appendix_type,
-        code_filename=None,
-        appendix_inclusion_line=None,
-    ):
-        self.appendix_filepath = appendix_filepath
-        self.appendix_filename = get_filename_from_dir(self.appendix_filepath)
-        self.appendix_content = appendix_content
-        self.appendix_type = appendix_type  # TODO: perform validation of input values
-        self.code_filename = code_filename
-        self.appendix_inclusion_line = appendix_inclusion_line

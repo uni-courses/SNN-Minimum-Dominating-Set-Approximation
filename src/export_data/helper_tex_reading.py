@@ -4,7 +4,6 @@ from .helper_dir_file_edit import (
     get_filename_from_dir,
     read_file,
 )
-from .helper_parsing import get_index_of_substring_in_list
 
 
 def get_latex_inclusion_command(extension, code_filepath_relative_from_latex_dir):
@@ -26,53 +25,6 @@ def get_latex_inclusion_command(extension, code_filepath_relative_from_latex_dir
         right = "}"
         latex_command = f"{left}{code_filepath_relative_from_latex_dir}{right}"
     return latex_command
-
-
-def get_code_files_not_yet_included_in_appendices(
-    code_filepaths, contained_codes, extension
-):
-    """Returns a list of filepaths that are not yet properly included in some appendix of this project.
-
-    :param code_filepath: Absolute path to all the code files in  this project (source directory).
-    (either python files or compiled jupyter notebook pdfs).
-    :param contained_codes: list of  Appendix objects that include either python files or compiled jupyter notebook pdfs, which
-    are already included in the appendix tex files. (Does not care whether those appendices are also actually
-    included in the main or not.)
-    :param extension: The file extension that is used/searched in this function. The file extension of the file that is sought in the appendix line. Either ".py" or ".pdf".
-    :param code_filepaths:
-
-    """
-    contained_filepaths = list(
-        map(lambda contained_file: contained_file.code_filepath, contained_codes)
-    )
-    not_contained = []
-    for filepath in code_filepaths:
-        if not filepath in contained_filepaths:
-            not_contained.append(filepath)
-    return not_contained
-
-
-def get_index_of_auto_generated_appendices(appendix_dir, extension):
-    """Returns the maximum index of auto generated appendices of
-    a specific extension type.
-
-    :param extension: The file extension that is used/searched in this function. The file extension of the file that is sought in the appendix line. Either ".py" or ".pdf".
-    :param appendix_dir: Absolute path that contains the appendix .tex files.
-
-    """
-    max_index = -1
-    appendices = get_auto_generated_appendix_filenames_of_specific_extension(
-        appendix_dir, extension
-    )
-    for appendix in appendices:
-        substring = f"Auto_generated_{extension[1:]}_App"
-        # remove left of index
-        remainder = appendix[appendix.rfind(substring) + len(substring) :]
-        # remove right of index
-        index = int(remainder[:-4])
-        if index > max_index:
-            max_index = index
-    return max_index
 
 
 def get_auto_generated_appendix_filenames_of_specific_extension(
@@ -144,58 +96,6 @@ def get_appendix_from_filename(appendices, appendix_filename):
     for appendix in appendices:
         if appendix_filename == appendix.appendix_filename:
             return appendix
-
-
-def get_filename_from_latex_inclusion_command(
-    appendix_line, extension, start_substring
-):
-    """returns the code/notebook filename in a latex command which includes that code in an appendix.
-    The inclusion command includes a python code or jupiter notebook pdf.
-
-    :param appendix_line: Line of latex code (in particular expected to be the latex code from an appendix.).
-    :param extension: The file extension that is used/searched in this function. The file extension of the file that is sought in the appendix line. Either ".py" or ".pdf".
-    :param start_substring: The substring that characterises the latex inclusion command.
-
-    """
-    start_index = appendix_line.index(start_substring)
-    end_index = appendix_line.index(extension)
-    return get_filename_from_dir(
-        appendix_line[start_index : end_index + len(extension)]
-    )
-
-
-def get_code_files_already_included_in_appendices(
-    absolute_code_filepaths, appendix_dir, extension, normalised_root_dir
-):
-    """Returns a list of code filepaths that are already properly included the latex appendix files of this project.
-
-    :param absolute_code_filepaths: List of absolute paths to the code files (either python files or compiled jupyter notebook pdfs).
-    :param appendix_dir: Absolute path that contains the appendix .tex files.
-    :param extension: The file extension that is used/searched in this function. The file extension of the file that is sought in the appendix line. Either ".py" or ".pdf".
-    :param project_name: The name of the project that is being executed/ran. The number  indicating which project this code pertains to.
-    :param normalised_root_dir: The root directory of this repository.
-
-    """
-    appendix_files = get_all_files_in_dir_and_child_dirs(".tex", appendix_dir)
-    contained_codes = []
-    for code_filepath in absolute_code_filepaths:
-        for appendix_filepath in appendix_files:
-            appendix_filecontent = read_file(appendix_filepath)
-            line_nr = check_if_appendix_contains_file(
-                appendix_filecontent, code_filepath, extension, normalised_root_dir
-            )
-            if line_nr > -1:
-                # add filepath to list of files that are already in the appendices
-                contained_codes.append(
-                    Appendix_with_code(
-                        code_filepath,
-                        appendix_filepath,
-                        appendix_filecontent,
-                        line_nr,
-                        ".py",
-                    )
-                )
-    return contained_codes
 
 
 def check_if_appendix_contains_file(
