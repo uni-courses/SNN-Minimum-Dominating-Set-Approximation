@@ -13,6 +13,51 @@ PATH_TO_REPORT_TEX_FILE="$PATH_TO_REPORT_TEX/$REPORT_FILENAME.tex"
 OUTPUT_DIR="output"
 OUTPUT_PATH="$PATH_TO_REPORT_TEX/$OUTPUT_DIR"
 
+## Verify prerequisites
+# Specify function that checks if apt install packages are installed.
+installed() {
+    return $(dpkg-query -W -f '${Status}\n' "${1}" 2>&1|awk '/ok installed/{print 0;exit}{print 1}')
+}
+
+
+# Verify the Dutch language package used by the TU Delft style files is installed.
+verify_texlive_lang_europe_exists() {
+	if ! installed texlive-lang-european; then
+    	## Perform installation of required packages
+		yes | sudo apt install texlive-lang-european
+	else
+	    echo "texlive-lang-european is installed."
+	fi
+}
+verify_texlive_lang_europe_exists
+
+# Install the roboto font used by the TU Delft style files.
+verify_fonts_roboto_exists() {
+	if ! installed fonts-roboto; then
+    	## Perform installation of required packages
+		yes | sudo apt install fonts-roboto
+	else
+	    echo "verify_fonts_roboto_exists is installed."
+	fi
+}
+verify_fonts_roboto_exists
+
+# Verify the Dutch language package used by the TU Delft style files is installed.
+verify_texlive_fonts_extra_exists() {
+	if ! installed texlive-fonts-extra; then
+    	## Perform installation of required packages
+		yes | sudo apt install texlive-fonts-extra
+	else
+	    echo "texlive-fonts-extra is installed."
+	fi
+}
+verify_texlive_fonts_extra_exists
+exit 4
+
+# Unused package.
+#yes | sudo apt-get install texlive-science
+
+
 
 ## Specify the functions that are used in this script.
 #######################################
@@ -196,19 +241,6 @@ assert_file_exists "$OUTPUT_PATH/zotero.bib"
 # file, inside output directory:
 cp "$PATH_TO_REPORT_TEX/tudelft-report.bst" "$OUTPUT_PATH/$PATH_TO_REPORT_TEX/tudelft-report.bst"
 assert_file_exists "$OUTPUT_PATH/$PATH_TO_REPORT_TEX/tudelft-report.bst"
-
-
-## Perform installation of required packages
-# Verify the Dutch language package used by the TU Delft style files is installed.
-yes | sudo apt install texlive-lang-european
-
-# Install the roboto font used by the TU Delft style files.
-yes | sudo apt install fonts-roboto
-yes | sudo apt-get install texlive-fonts-extra
-
-# Unused package.
-#yes | sudo apt-get install texlive-science
-
 
 ## Compiling latex project.
 echo "COMPILING"
