@@ -8,24 +8,6 @@ from .helper_dir_file_edit import (
 )
 
 
-def update_appendix_tex_code(appendix_filename, is_from_normalised_root_dir):
-    """Returns the latex command that includes an appendix .tex file in an appendix environment
-    as can be used in the main tex file.
-
-    :param appendix_filename: Name of the appendix that is included by the generated command.
-    :param project_name: The name of the project that is being executed/ran. The number indicating which project this code pertains to.
-    :param is_from_normalised_root_dir:
-
-    """
-    if is_from_normalised_root_dir:
-        left = f"\input{{latex/"
-    else:
-        left = "\input{"
-    middle = "Appendices/"
-    right = "} \\newpage\n"
-    return f"{left}{middle}{appendix_filename}{right}"
-
-
 def code_filepath_to_tex_appendix_filename(
     filename, from_root, is_project_code, is_export_code
 ):

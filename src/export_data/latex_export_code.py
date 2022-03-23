@@ -35,7 +35,6 @@ def export_code_to_latex(hd, include_export_code):
     """
     script_dir = get_script_dir()
     latex_dir = script_dir + "/../../latex/"
-    appendix_dir = f"{latex_dir}Appendices/"
     path_to_main_latex_file = f"{latex_dir}{hd.main_latex_filename}"
     root_dir = script_dir + "/../../"
     normalised_root_dir = os.path.normpath(root_dir)
@@ -73,21 +72,6 @@ def export_code_to_latex(hd, include_export_code):
             normalised_root_dir,
             sort_filepaths_by_filename(python_export_code_filepaths),
         )
-
-
-def sort_appendices_on_code_filename(appendices):
-    """Returns a list of Appendix objects that are sorted and  based on the property: code_filename.
-    Assumes the incoming appendices only contain python files.
-
-    :param appendices: List of Appendix objects
-
-    """
-    attributes = list(map(lambda x: x.code_filename, appendices))
-    sorted_indices = sorted(range(len(attributes)), key=lambda k: attributes[k])
-    sorted_list = []
-    for i in sorted_indices:
-        sorted_list.append(appendices[i])
-    return sorted_list
 
 
 def get_compiled_notebook_paths(script_dir):
