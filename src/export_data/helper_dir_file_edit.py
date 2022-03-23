@@ -110,17 +110,6 @@ def get_filename_from_dir(path):
     return path[path.rfind("/") + 1 :]
 
 
-def read_file(filepath):
-    """Reads content of a file and returns it as a list of strings, with one string per line.
-
-    :param filepath: path towards the file that is being read.
-
-    """
-    with open(filepath) as f:
-        content = f.readlines()
-    return content
-
-
 def delete_file_if_exists(filepath):
     try:
         os.remove(filepath)

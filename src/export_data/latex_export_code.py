@@ -1,7 +1,6 @@
 # runs a jupyter notebook and converts it to pdf
 import os
-import shutil
-import ntpath
+
 from .helper_tex_editing import (
     create_appendix_manager_files,
     export_python_export_code,
@@ -9,15 +8,11 @@ from .helper_tex_editing import (
 )
 
 from .helper_tex_reading import (
-    get_appendix_from_filename,
-    get_filename_from_latex_appendix_line,
-    line_is_commented,
     verify_latex_supports_auto_generated_appendices,
 )
 
 from .helper_dir_file_edit import (
     get_all_files_in_dir_and_child_dirs,
-    get_filename_from_dir,
     get_filepaths_in_dir,
     remove_all_auto_generated_appendices,
     sort_filepaths_by_filename,
@@ -80,22 +75,6 @@ def export_code_to_latex(hd, include_export_code):
         )
 
 
-def sort_notebook_appendices_alphabetically(appendices):
-    """Sorts notebook appendix objects alphabetic order of their pdf filenames.
-
-    :param appendices: List of Appendix objects
-
-    """
-    return_appendices = []
-    filtered_remaining_appendices = [
-        i for i in appendices if i.code_filename is not None
-    ]
-    appendices_sorted_a_z = sort_appendices_on_code_filename(
-        filtered_remaining_appendices
-    )
-    return return_appendices + appendices_sorted_a_z
-
-
 def sort_appendices_on_code_filename(appendices):
     """Returns a list of Appendix objects that are sorted and  based on the property: code_filename.
     Assumes the incoming appendices only contain python files.
@@ -136,25 +115,3 @@ def get_compiled_notebook_paths(script_dir):
 def get_script_dir():
     """returns the directory of this script regardles of from which level the code is executed"""
     return os.path.dirname(__file__)
-
-
-class Appendix_with_code:
-    """stores in which appendix file and accompanying line number in the appendix in which a code file is
-    already included. Does not take into account whether this appendix is in the main tex file or not
-
-
-    """
-
-    def __init__(
-        self,
-        code_filepath,
-        appendix_filepath,
-        appendix_content,
-        file_line_nr,
-        extension,
-    ):
-        self.code_filepath = code_filepath
-        self.appendix_filepath = appendix_filepath
-        self.appendix_content = appendix_content
-        self.file_line_nr = file_line_nr
-        self.extension = extension
