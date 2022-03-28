@@ -22,7 +22,7 @@ def get_graph(args, show_graph):
     return graph
 
 
-def create_manual_test_graph():
+def create_manual_triangle_free_graph():
     """
     creates manual test graph with 7 undirected nodes.
     """
@@ -30,7 +30,6 @@ def create_manual_test_graph():
     graph = nx.Graph()
     graph.add_nodes_from(
         ["a", "b", "c", "d", "e", "f", "g"],
-        x=0,
         color="w",
         dynamic_degree=0,
         delta_two=0,
@@ -41,7 +40,7 @@ def create_manual_test_graph():
         [
             ("a", "b"),
             ("a", "c"),
-            # ("b", "c"),
+            # ("b", "c"), # Triangle free
             # ("b", "d"),
             ("c", "d"),
             ("d", "e"),
