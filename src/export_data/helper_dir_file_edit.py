@@ -144,3 +144,7 @@ def remove_all_auto_generated_appendices(hd):
     for file in all_appendix_files:
         if "Auto_generated" in file:
             delete_file_if_exists(file)
+
+
+def add_two(x):
+    return x + 2

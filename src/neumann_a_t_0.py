@@ -92,3 +92,7 @@ def store_index_max_neighbour_weight(G):
             f'node={node}G.nodes[node]["neighbor_with_max_weight"]={G.nodes[node]["neighbor_with_max_weight"]}'
         )
     return G
+
+
+def add_two(x):
+    return x + 2
