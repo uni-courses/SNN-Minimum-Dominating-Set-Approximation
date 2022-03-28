@@ -4,7 +4,7 @@
 
 ## Import used functions.
 # Project code imports.
-from .create_planar_triangle_free_graph import get_graph
+from .create_planar_triangle_free_graph import create_triangle_free_graph, get_graph
 from .neumann import compute_mtds
 from .neumann_a_t_0 import compute_mtds_a_t_0
 from .arg_parser import parse_cli_args
@@ -18,10 +18,12 @@ args = parse_cli_args()
 
 
 ## Run main code.
-G = get_graph(args, False)
+# G = get_graph(args, False)
 # compute_mtds(G)
-compute_mtds_a_t_0(G)
+# compute_mtds_a_t_0(G)
 
+# Generate a random triangle free graph
+create_triangle_free_graph(False)
 
 ## Run data export code if any argument is given.
 if not all(arg is None for arg in [args.l, args.dd, args.sd, args.c2l, args.ec2l]):

@@ -21,6 +21,3 @@ class Test_neumann_a_t_0(unittest.TestCase):
         result = add_two(5)
         self.assertEqual(expected_result, result)
 
-
-if __name__ == "__main__":
-    unittest.main()

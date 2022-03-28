@@ -54,6 +54,20 @@ def create_manual_test_graph():
     return graph
 
 
+def create_triangle_free_graph(show_graphs):
+    seed = 42
+    nr_of_nodes = 10
+    probability_of_creating_an_edge = 0.85
+    nr_of_triangles = 1  # Initialise at 1 to initiate while loop.
+    while nr_of_triangles > 0:
+        G = nx.fast_gnp_random_graph(nr_of_nodes, probability_of_creating_an_edge)
+        nr_of_triangles = nx.triangles(G, 0)
+        print(f"nr_of_triangles={nr_of_triangles}")
+        if show_graphs:
+            plot_graph(G)
+    return G
+
+
 # TODO: move to helper
 def plot_graph(G):
     options = {"with_labels": True, "node_color": "white", "edgecolors": "blue"}
