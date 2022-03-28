@@ -117,6 +117,11 @@ def delete_file_if_exists(filepath):
         pass
 
 
+def delete_dir_if_exists(dirpath):
+    if os.path.exists(dirpath) and os.path.isdir(dirpath):
+        shutil.rmtree(dirpath)
+
+
 def convert_filepath_to_filepath_from_root(filepath, normalised_root_path):
     normalised_filepath = os.path.normpath(filepath)
     filepath_relative_from_root = normalised_filepath[len(normalised_root_path) :]

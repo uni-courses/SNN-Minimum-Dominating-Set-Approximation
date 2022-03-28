@@ -1,7 +1,6 @@
 # This script generates PlantUML diagrams and outputs them as .uml files.
 
 import os
-import subprocess
 from os.path import abspath
 
 from .helper_dir_file_edit import create_dir_relative_to_root_if_not_exists
