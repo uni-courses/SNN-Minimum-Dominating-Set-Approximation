@@ -31,5 +31,4 @@ class Test_graph_planarity(unittest.TestCase):
                 (3, 0),
             ]
         )
-        plot_graph(G)
         self.assertTrue(is_planar(G))

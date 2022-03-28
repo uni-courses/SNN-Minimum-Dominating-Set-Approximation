@@ -2,9 +2,12 @@
 # Planar implies that it fits on a 2D plane, without any edges crossing.
 # Triangle free means there are no triangles in the graph.
 
+import random
 import networkx as nx
 
 import matplotlib.pyplot as plt
+
+from src.graph_properties import is_planar, is_triangle_free
 
 
 def get_graph(args, show_graph):
@@ -65,6 +68,58 @@ def create_triangle_free_graph(show_graphs):
         if show_graphs:
             plot_graph(G)
     return G
+
+
+def create_triangle_free_planar_graph(nr_nodes, edge_probability, seed, show_graph):
+    G = nx.Graph()
+    G.add_nodes_from(list(range(nr_nodes)))
+
+    # Loop over all edge spaces:
+    for u in G.nodes():
+        for v in G.nodes():
+            # Don't add an edge to a node itself.
+            if u != v:
+
+                # Add edge to compute implications.
+                G.add_edge(u, v)
+
+                # Check if adding edge yields a triangle free and planar graph.
+                if is_triangle_free(G) and is_planar(G):
+
+                    # Apply probability of creating edge
+                    # TODO: Use 1-edge_probability to get bias against removing edges.
+                    # TODO: Use seed to get certain list of random booleans.
+                    if bool(random.getrandbits(1)):
+                        G.remove_edge(u, v)
+                else:
+                    G.remove_edge(u, v)
+
+    # Verify all nodes are connected to graph.
+    if not nx.is_connected(G):
+        G = add_connections_to_make_graph_connected(G)
+
+    if show_graph:
+        plot_graph(G)
+    return G
+
+
+def add_connections_to_make_graph_connected(G):
+    # Loop over all edge spaces:
+    for u in G.nodes():
+        for v in G.nodes():
+            # Don't add an edge to a node itself.
+            if u != v:
+                if not G.has_edge(u, v):
+
+                    # Add edge to compute implications.
+                    G.add_edge(u, v)
+
+                    # Check if adding edge yields a triangle free and planar graph.
+                    if is_triangle_free(G) and is_planar(G):
+                        if nx.is_connected(G):
+                            return G
+                    else:
+                        G.remove_edge(u, v)
 
 
 # TODO: move to helper

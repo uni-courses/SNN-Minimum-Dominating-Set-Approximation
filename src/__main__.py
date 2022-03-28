@@ -4,7 +4,11 @@
 
 ## Import used functions.
 # Project code imports.
-from .create_planar_triangle_free_graph import create_triangle_free_graph, get_graph
+from .create_planar_triangle_free_graph import (
+    create_triangle_free_graph,
+    create_triangle_free_planar_graph,
+    get_graph,
+)
 from .neumann import compute_mtds
 from .neumann_a_t_0 import compute_mtds_a_t_0
 from .arg_parser import parse_cli_args
@@ -23,7 +27,13 @@ args = parse_cli_args()
 # compute_mtds_a_t_0(G)
 
 # Generate a random triangle free graph
-create_triangle_free_graph(False)
+# create_triangle_free_graph(False)
+
+# Generate a random triangle free planar graph
+nr_nodes = 7
+edge_probability = 0.85
+seed = 42
+G = create_triangle_free_planar_graph(nr_nodes, edge_probability, seed)
 
 ## Run data export code if any argument is given.
 if not all(arg is None for arg in [args.l, args.dd, args.sd, args.c2l, args.ec2l]):

@@ -30,5 +30,4 @@ class Test_graph_triangularity(unittest.TestCase):
                 (3, 0),
             ]
         )
-        plot_graph(G)
         self.assertTrue(is_triangle_free(G))
