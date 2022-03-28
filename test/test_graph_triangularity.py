@@ -8,11 +8,11 @@ from src.create_planar_triangle_free_graph import (
 from ..src.graph_properties import is_triangle_free
 
 
-class Test_graph_properties(unittest.TestCase):
+class Test_graph_triangularity(unittest.TestCase):
 
     # Initialize test object
     def __init__(self, *args, **kwargs):
-        super(Test_graph_properties, self).__init__(*args, **kwargs)
+        super(Test_graph_triangularity, self).__init__(*args, **kwargs)
 
     def test_is_not_triangle_free(self):
         G = nx.complete_graph(5)
