@@ -1,6 +1,11 @@
 import unittest
 import os
 
+import pytest
+
+export_data_test = pytest.mark.skipif("not config.getoption('export_data_tests')")
+
+
 from src.export_data.Hardcoded_data import Hardcoded_data
 from ...src.export_data.plantuml_generate import create_trivial_gantt
 from ...src.export_data.plantuml_generate import output_diagram_text_file
@@ -23,6 +28,7 @@ class Test_main(unittest.TestCase):
     def get_script_dir(self):
         return os.path.dirname(__file__)
 
+    @export_data_test
     def test_if_plantuml_file_is_outputted(self):
         diagram_text_filename = "trivial_gantt.uml"
         diagram_text_filepath_relative_to_root = (

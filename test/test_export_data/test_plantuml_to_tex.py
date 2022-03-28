@@ -1,6 +1,9 @@
 import unittest
 import os
 
+import pytest
+
+export_data_test = pytest.mark.skipif("not config.getoption('export_data_tests')")
 
 from src.export_data.Hardcoded_data import Hardcoded_data
 from src.export_data.plantuml_compile import compile_diagrams_in_dir_relative_to_root
@@ -26,6 +29,7 @@ class Test_main(unittest.TestCase):
     def get_script_dir(self):
         return os.path.dirname(__file__)
 
+    @export_data_test
     def test_if_plantuml_file_is_outputted_compiled_and_moved_to_latex(self):
         diagram_text_filename = "trivial_gantt.uml"
         diagram_image_filename = "trivial_gantt.png"

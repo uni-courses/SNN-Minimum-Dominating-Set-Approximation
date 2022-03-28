@@ -2,6 +2,10 @@ import unittest
 import os
 from ...src.export_data.helper_dir_file_edit import add_two
 
+import pytest
+
+export_data_test = pytest.mark.skipif("not config.getoption('export_data_tests')")
+
 
 class Test_main(unittest.TestCase):
 
@@ -16,6 +20,7 @@ class Test_main(unittest.TestCase):
         return os.path.dirname(__file__)
 
     # tests unit test on add_two function of main class
+    @export_data_test
     def test_add_two(self):
 
         expected_result = 7
