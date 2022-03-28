@@ -1,10 +1,12 @@
 import unittest
 import os
 
+
 from src.export_data.Hardcoded_data import Hardcoded_data
+from src.export_data.plantuml_compile import compile_diagrams_in_dir_relative_to_root
+from src.export_data.plantuml_to_tex import export_diagrams_to_latex
 from ...src.export_data.plantuml_generate import create_trivial_gantt
 from ...src.export_data.plantuml_generate import output_diagram_text_file
-from ...src.export_data.plantuml_compile import compile_diagrams_in_dir_relative_to_root
 from ...src.export_data.helper_dir_file_edit import (
     create_dir_relative_to_root_if_not_exists,
 )
@@ -24,12 +26,10 @@ class Test_main(unittest.TestCase):
     def get_script_dir(self):
         return os.path.dirname(__file__)
 
-    def test_if_plantuml_file_is_outputted(self):
-
+    def test_if_plantuml_file_is_outputted_compiled_and_moved_to_latex(self):
         diagram_text_filename = "trivial_gantt.uml"
         diagram_image_filename = "trivial_gantt.png"
 
-        # Specify the diagram directory for this test.
         diagram_text_filepath_relative_to_root = (
             f"{self.hd.dynamic_diagram_dir}/{diagram_text_filename}"
         )
@@ -51,19 +51,51 @@ class Test_main(unittest.TestCase):
         await_compilation = True
         extension = ".uml"
 
-        relative_input_dir_from_root = self.hd.dynamic_diagram_dir
+        input_dir_relative_to_root = self.hd.dynamic_diagram_dir
         verbose = True
         compile_diagrams_in_dir_relative_to_root(
             await_compilation,
             extension,
             self.hd.jar_path_relative_from_root,
-            relative_input_dir_from_root,
+            input_dir_relative_to_root,
             verbose,
         )
 
         # Assert file exist.
         self.assertTrue(os.path.exists(diagram_image_filepath_relative_to_root))
 
-        # Cleanup after
+        # Move the uml file to latex.
+        export_diagrams_to_latex(
+            input_dir_relative_to_root,
+            ".uml",
+            self.hd.diagram_output_dir_relative_to_root,
+        )
+        # Assert file exist.
+        self.assertTrue(
+            os.path.exists(
+                f"{self.hd.diagram_output_dir_relative_to_root}/{diagram_text_filename}"
+            )
+        )
+
+        # Move the png file to latex.
+        export_diagrams_to_latex(
+            input_dir_relative_to_root,
+            ".png",
+            self.hd.diagram_output_dir_relative_to_root,
+        )
+        # Assert file exist.
+        self.assertTrue(
+            os.path.exists(
+                f"{self.hd.diagram_output_dir_relative_to_root}/{diagram_image_filename}"
+            )
+        )
+
+        # Cleanup latex/projectX/Images/Diagrams/* after test.
+        delete_dir_if_exists(self.hd.diagram_output_dir_relative_to_root)
+        self.assertFalse(
+            dir_relative_to_root_exists(self.hd.diagram_output_dir_relative_to_root)
+        )
+
+        # Cleanup code/projectX/Diagrams/* after test.
         delete_dir_if_exists(self.hd.dynamic_diagram_dir)
         self.assertFalse(dir_relative_to_root_exists(self.hd.dynamic_diagram_dir))

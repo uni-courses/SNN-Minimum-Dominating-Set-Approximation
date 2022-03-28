@@ -4,7 +4,6 @@ import os
 from src.export_data.Hardcoded_data import Hardcoded_data
 from ...src.export_data.plantuml_generate import create_trivial_gantt
 from ...src.export_data.plantuml_generate import output_diagram_text_file
-from ...src.export_data.plantuml_compile import compile_diagrams_in_dir_relative_to_root
 from ...src.export_data.helper_dir_file_edit import (
     create_dir_relative_to_root_if_not_exists,
 )
@@ -25,17 +24,11 @@ class Test_main(unittest.TestCase):
         return os.path.dirname(__file__)
 
     def test_if_plantuml_file_is_outputted(self):
-
         diagram_text_filename = "trivial_gantt.uml"
-        diagram_image_filename = "trivial_gantt.png"
-
-        # Specify the diagram directory for this test.
         diagram_text_filepath_relative_to_root = (
             f"{self.hd.dynamic_diagram_dir}/{diagram_text_filename}"
         )
-        diagram_image_filepath_relative_to_root = (
-            f"{self.hd.dynamic_diagram_dir}/{diagram_image_filename}"
-        )
+
         create_dir_relative_to_root_if_not_exists(self.hd.dynamic_diagram_dir)
         self.assertTrue(dir_relative_to_root_exists(self.hd.dynamic_diagram_dir))
 
@@ -45,24 +38,8 @@ class Test_main(unittest.TestCase):
 
         # Assert file exist.
         self.assertTrue(os.path.exists(diagram_text_filepath_relative_to_root))
+
         # TODO: Assert file content is correct.
-
-        # Compile diagrams to images.
-        await_compilation = True
-        extension = ".uml"
-
-        relative_input_dir_from_root = self.hd.dynamic_diagram_dir
-        verbose = True
-        compile_diagrams_in_dir_relative_to_root(
-            await_compilation,
-            extension,
-            self.hd.jar_path_relative_from_root,
-            relative_input_dir_from_root,
-            verbose,
-        )
-
-        # Assert file exist.
-        self.assertTrue(os.path.exists(diagram_image_filepath_relative_to_root))
 
         # Cleanup after
         delete_dir_if_exists(self.hd.dynamic_diagram_dir)
