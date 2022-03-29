@@ -33,7 +33,7 @@ args = parse_cli_args()
 nr_nodes = 7
 edge_probability = 0.85
 seed = 42
-G = create_triangle_free_planar_graph(nr_nodes, edge_probability, seed)
+G = create_triangle_free_planar_graph(nr_nodes, edge_probability, seed, False)
 
 ## Run data export code if any argument is given.
 if not all(arg is None for arg in [args.l, args.dd, args.sd, args.c2l, args.ec2l]):
