@@ -37,3 +37,5 @@ dependencies:
   - vulture
 # Get PlantUML .jar file.
   - requests
+# Run pip install on .tar.gz file in GitHub repository.
+  - https://github.com/lava-nc/lava/releases/download/v0.3.0/lava-nc-0.3.0.tar.gz
