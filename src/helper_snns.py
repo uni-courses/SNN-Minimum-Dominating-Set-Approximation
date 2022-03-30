@@ -11,13 +11,18 @@ def print_vars(lif):
     print(sp + "vth:  {}".format(str(lif.vth.get())))
 
 
-def create_two_neurons(du_1=None):
+def create_two_neurons(u_1=0, du_1=0, dv_1=0, bias=0):
     # Instantiate Lava processes to build network
     from lava.proc.dense.process import Dense
     from lava.proc.lif.process import LIF
 
     # Initialise neurons and synapses.
-    lif1 = LIF(du=du_1)
+    if dv_1 is None:
+        lif1 = LIF(u=u_1, du=du_1, bias=bias)
+    else:
+        lif1 = LIF(u=u_1, du=du_1, dv=dv_1, bias=bias)
+    print(f"lif1.u.get()={lif1.u.get()}")
+
     dense = Dense()
     lif2 = LIF()
 
