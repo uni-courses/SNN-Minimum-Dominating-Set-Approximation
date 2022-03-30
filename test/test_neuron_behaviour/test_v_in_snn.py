@@ -84,12 +84,12 @@ class Test_neuron_u(unittest.TestCase):
     # u represents the current in a neuron.
     @neuron_behaviour_test
     def test_growing_v(self):
-        """ Tests whether the voltage of lif1 grows as expected, when a 
+        """Tests whether the voltage of lif1 grows as expected, when a
         non-zero bias is used. The current u is kept constant for lif1. If the
-        voltage exceeds the (default) threshold vth=10, then the neuron spikes
+        voltage EXCEEDS(not equals) the (default) threshold vth=10, then the neuron spikes
         and the voltage is reset to 0 (Regardless if it is 15 [V] over or 1 [V]
         over the threshold).
-        #  """
+        #"""
         du_1 = 3
         dv_1 = 4
         bias = 1
@@ -112,7 +112,7 @@ class Test_neuron_u(unittest.TestCase):
             # v[t] = v[t-1] * (1-dv) + u[t] + bias
             # Constant with v[t=0]=0,u=0,bias=0
             expected_voltage = v_previous * (1 - dv_1) + lif1.u.get() + bias
-            if expected_voltage < lif1.vth.get():
+            if expected_voltage <= lif1.vth.get():
                 self.assertEqual(lif1.v.get(), expected_voltage)
             else:
                 # The neuron has spiked, the voltage is reset to 0 [V].
