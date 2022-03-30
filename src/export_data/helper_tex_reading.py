@@ -1,6 +1,4 @@
-from .helper_dir_file_edit import (
-    file_contains,
-)
+from .helper_dir_file_edit import file_contains
 
 
 def verify_latex_supports_auto_generated_appendices(path_to_main_latex_file):

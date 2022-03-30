@@ -7,9 +7,7 @@ from .helper_tex_editing import (
     export_python_project_code,
 )
 
-from .helper_tex_reading import (
-    verify_latex_supports_auto_generated_appendices,
-)
+from .helper_tex_reading import verify_latex_supports_auto_generated_appendices
 
 from .helper_dir_file_edit import (
     get_all_files_in_dir_and_child_dirs,

@@ -5,6 +5,8 @@
 ## Import used functions.
 # Project code imports.
 from src.lava_LIF_neuron import LIF_neuron
+from src.lif1 import lif1
+from src.lif2_spike import lif2
 from .create_planar_triangle_free_graph import (
     create_triangle_free_graph,
     create_triangle_free_planar_graph,
@@ -31,13 +33,15 @@ args = parse_cli_args()
 # create_triangle_free_graph(False)
 
 # Generate a random triangle free planar graph
-#nr_nodes = 7
-#edge_probability = 0.85
-#seed = 42
-#G = create_triangle_free_planar_graph(nr_nodes, edge_probability, seed, False)
+# nr_nodes = 7
+# edge_probability = 0.85
+# seed = 42
+# G = create_triangle_free_planar_graph(nr_nodes, edge_probability, seed, False)
 
 # Run Lava LIF neuron.
-LIF_neuron()
+# LIF_neuron()
+# lif1()
+lif2()  # Spikes
 
 ## Run data export code if any argument is given.
 if not all(arg is None for arg in [args.l, args.dd, args.sd, args.c2l, args.ec2l]):
