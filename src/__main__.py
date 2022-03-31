@@ -4,9 +4,7 @@
 
 ## Import used functions.
 # Project code imports.
-from src.lava_LIF_neuron import LIF_neuron
-from src.lif1 import lif1
-from src.lif2_spike import lif2
+from src.lif3 import lif3
 from .create_planar_triangle_free_graph import (
     create_triangle_free_graph,
     create_triangle_free_planar_graph,
@@ -41,7 +39,7 @@ args = parse_cli_args()
 # Run Lava LIF neuron.
 # LIF_neuron()
 # lif1()
-lif2()  # Spikes
+lif3()  # Spikes
 
 ## Run data export code if any argument is given.
 if not all(arg is None for arg in [args.l, args.dd, args.sd, args.c2l, args.ec2l]):
