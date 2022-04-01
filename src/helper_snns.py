@@ -2,20 +2,28 @@ from gettext import npgettext
 import numpy as np
 
 
-def print_vars(lif, id=None):
-    """Prints all variables of a LIF process and their values."""
+def print_neuron_properties(neurons, ids=None):
+    spacing = 4
+    if not ids is None:
+        [print(f"{str(x) : <{spacing+5}}", end=" ") for x in ids]
+    print(f""), [print(f"u={str(x.u.get()) : <{spacing+3}}", end=" ") for x in neurons]
+    print(f""), [
+        print(f"du={str(x.du.get()) : <{spacing+2}}", end=" ") for x in neurons
+    ]
+    print(f""), [print(f"v={str(x.v.get()) : <{spacing+3}}", end=" ") for x in neurons]
+    print(f""), [
+        print(f"dv={str(x.dv.get()) : <{spacing+2}}", end=" ") for x in neurons
+    ]
+    print(f""), [
+        print(f"bias={str(x.bias.get()) : <{spacing}}", end=" ") for x in neurons
+    ]
+    print(f""), [
+        print(f"vth={str(x.vth.get()) : <{spacing+1}}", end=" ") for x in neurons
+    ]
+    print(f"\n")
 
-    sp = 3 * "  "
-    print(f"Variables of the LIF:{id}")
-    print(sp + "u:    {}".format(str(lif.u.get())))
-    print(sp + "v:    {}".format(str(lif.v.get())))
-    print(sp + "du:   {}".format(str(lif.du.get())))
-    print(sp + "dv:   {}".format(str(lif.dv.get())))
-    print(sp + "bias: {}".format(str(lif.bias.get())))
-    print(sp + "vth:  {}".format(str(lif.vth.get())))
 
-
-def create_two_neurons(u_1=0, du_1=0, dv_1=0, bias_1=0,du_2=0, dv_2=0, bias_2=0):
+def create_two_neurons(u_1=0, du_1=0, dv_1=0, bias_1=0, du_2=0, dv_2=0, bias_2=0):
     # Instantiate Lava processes to build network
     from lava.proc.dense.process import Dense
     from lava.proc.lif.process import LIF
@@ -34,7 +42,7 @@ def create_two_neurons(u_1=0, du_1=0, dv_1=0, bias_1=0,du_2=0, dv_2=0, bias_2=0)
     weight_exp = 2
     num_weight_bits = 7
     sign_mode = 1
-    print(f"weights={weights}")
+
     dense = Dense(
         shape=shape,
         weights=weights,

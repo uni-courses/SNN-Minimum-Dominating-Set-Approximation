@@ -5,7 +5,11 @@ from pprint import pprint
 
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
-from src.helper_snns import create_two_neurons, print_vars
+from src.helper_snns import (
+    create_two_neurons,
+    print_neuron_properties,
+    print_neuron_properties,
+)
 
 
 # Include marker ensuring these tests only run on argument: neuron_behaviour
@@ -37,18 +41,25 @@ class Test_neuron_u(unittest.TestCase):
         # Regarding the value ranges:
         # https://jakevdp.github.io/PythonDataScienceHandbook/02.01-understanding-data-types.html
         du_1 = 3
-        dv_1 = (0)# LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0 to 65535)
+        dv_1 = (
+            0  # LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0 to 65535)
+        )
         bias_1 = 2
 
         du_2 = 2
-        dv_2 = 1 # LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0 to 65535)
+        dv_2 = (
+            1  # LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0 to 65535)
+        )
         bias_2 = 4
 
         # Get neurons that are fully connected.
-        lif1, dense, lif2 = create_two_neurons(du_1=du_1, dv_1=dv_1, bias_1=bias_1,du_2=du_2, dv_2=dv_2, bias_2=bias_2)
+        lif1, dense, lif2 = create_two_neurons(
+            du_1=du_1, dv_1=dv_1, bias_1=bias_1, du_2=du_2, dv_2=dv_2, bias_2=bias_2
+        )
 
         # Simulate SNN and assert values inbetween timesteps.
-        print(f"t=0"), print_vars(lif1)
+        # print(f"t=0"), print_neuron_properties(lif1)
+
         self.assertEqual(lif1.v.get(), 0)  # Default initial value.
         self.assertEqual(lif1.u.get(), 0)  # Default initial value.
         self.assertEqual(lif1.du.get(), 3)  # Custom value.
@@ -71,9 +82,8 @@ class Test_neuron_u(unittest.TestCase):
                 lif1_has_spiked = True
 
             # Print neuron properties for each timestep
-            print(f"t={t}"), print(f"expected_voltage={expected_voltage}"), print_vars(
-                lif1, 1
-            ), print_vars(lif2, 2)
+            print(f"t={t}"), print(f"expected_voltage={expected_voltage}")
+            print_neuron_properties([lif1, lif2], [1, 2])
 
             # Verify the voltage of lif1 is as expected as long as it has not spiked.
             if expected_voltage <= lif1.vth.get() and not lif1_has_spiked:

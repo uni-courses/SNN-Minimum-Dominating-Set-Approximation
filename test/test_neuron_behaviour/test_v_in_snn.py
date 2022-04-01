@@ -4,7 +4,7 @@ import pytest
 
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
-from src.helper_snns import create_two_neurons, print_vars
+from src.helper_snns import create_two_neurons, print_neuron_properties
 
 
 # Include marker ensuring these tests only run on argument: neuron_behaviour
@@ -30,14 +30,14 @@ class Test_neuron_u(unittest.TestCase):
         lif1, dense, lif2 = create_two_neurons(du_1=3)
 
         # Simulate SNN and assert values inbetween timesteps.
-        print(f"t=0"), print_vars(lif1)
+        print(f"t=0"), print_neuron_properties([lif1])
         self.assertEqual(lif1.v.get(), 0)  # Default initial value.
         self.assertEqual(lif1.u.get(), 0)  # Default initial value.
         self.assertEqual(lif1.du.get(), 3)  # Custom value.
         self.assertEqual(lif1.vth.get(), 10)  # Default value.
 
         for i in range(10):
-            print(f"t={i+1}"), print_vars(lif1)
+            print(f"t={i+1}"), print_neuron_properties([lif1])
             lif1.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
             # v[t] = v[t-1] * (1-dv) + u[t] + bias
             # Constant with v[t=0]=0,u=0,bias=0
@@ -59,14 +59,14 @@ class Test_neuron_u(unittest.TestCase):
         lif1, dense, lif2 = create_two_neurons(du_1=3, dv_1=4)
 
         # Simulate SNN and assert values inbetween timesteps.
-        print(f"t=0"), print_vars(lif1)
+        print(f"t=0"), print_neuron_properties([lif1])
         self.assertEqual(lif1.v.get(), 0)  # Default initial value.
         self.assertEqual(lif1.u.get(), 0)  # Default initial value.
         self.assertEqual(lif1.du.get(), 3)  # Custom value.
         self.assertEqual(lif1.vth.get(), 10)  # Default value.
 
         for i in range(10):
-            print(f"t={i+1}"), print_vars(lif1)
+            print(f"t={i+1}"), print_neuron_properties([lif1])
             lif1.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
             # v[t] = v[t-1] * (1-dv) + u[t] + bias
             # Constant with v[t=0]=0,u=0,bias=0
@@ -98,7 +98,7 @@ class Test_neuron_u(unittest.TestCase):
         lif1, dense, lif2 = create_two_neurons(du_1=du_1, dv_1=dv_1, bias_1=bias)
 
         # Simulate SNN and assert values inbetween timesteps.
-        print(f"t=0"), print_vars(lif1)
+        print(f"t=0"), print_neuron_properties([lif1])
         self.assertEqual(lif1.v.get(), 0)  # Default initial value.
         self.assertEqual(lif1.u.get(), 0)  # Default initial value.
         self.assertEqual(lif1.du.get(), 3)  # Custom value.
@@ -108,7 +108,7 @@ class Test_neuron_u(unittest.TestCase):
 
             v_previous = lif1.v.get()
             lif1.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
-            print(f"t={t}"), print_vars(lif1)
+            print(f"t={t}"), print_neuron_properties([lif1])
             # v[t] = v[t-1] * (1-dv) + u[t] + bias
             # Constant with v[t=0]=0,u=0,bias=0
             expected_voltage = v_previous * (1 - dv_1) + lif1.u.get() + bias
