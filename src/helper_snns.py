@@ -15,16 +15,16 @@ def print_vars(lif, id=None):
     print(sp + "vth:  {}".format(str(lif.vth.get())))
 
 
-def create_two_neurons(u_1=0, du_1=0, dv_1=0, bias=0):
+def create_two_neurons(u_1=0, du_1=0, dv_1=0, bias_1=0,du_2=0, dv_2=0, bias_2=0):
     # Instantiate Lava processes to build network
     from lava.proc.dense.process import Dense
     from lava.proc.lif.process import LIF
 
     # Initialise neurons and synapses.
     if dv_1 is None:
-        lif1 = LIF(u=u_1, du=du_1, bias=bias)
+        lif1 = LIF(u=u_1, du=du_1, bias=bias_1)
     else:
-        lif1 = LIF(u=u_1, du=du_1, dv=dv_1, bias=bias)
+        lif1 = LIF(u=u_1, du=du_1, dv=dv_1, bias=bias_1)
     print(f"lif1.u.get()={lif1.u.get()}")
 
     # dense = Dense()
@@ -44,7 +44,7 @@ def create_two_neurons(u_1=0, du_1=0, dv_1=0, bias=0):
     )
     print(f"shape weights={np.shape(weights)}")
     # raise Exception("TERMINATED")
-    lif2 = LIF()
+    lif2 = LIF(du=du_2, dv=dv_2, bias=bias_2)
 
     # Connect processes via their directional input and output ports
     lif1.out_ports.s_out.connect(dense.in_ports.s_in)

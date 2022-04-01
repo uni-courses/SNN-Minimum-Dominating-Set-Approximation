@@ -37,13 +37,15 @@ class Test_neuron_u(unittest.TestCase):
         # Regarding the value ranges:
         # https://jakevdp.github.io/PythonDataScienceHandbook/02.01-understanding-data-types.html
         du_1 = 3
-        dv_1 = (
-            0  # LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0 to 65535)
-        )
-        bias = 2
+        dv_1 = (0)# LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0 to 65535)
+        bias_1 = 2
+
+        du_2 = 2
+        dv_2 = 1 # LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0 to 65535)
+        bias_2 = 4
 
         # Get neurons that are fully connected.
-        lif1, dense, lif2 = create_two_neurons(du_1=du_1, dv_1=dv_1, bias=bias)
+        lif1, dense, lif2 = create_two_neurons(du_1=du_1, dv_1=dv_1, bias_1=bias_1,du_2=du_2, dv_2=dv_2, bias_2=bias_2)
 
         # Simulate SNN and assert values inbetween timesteps.
         print(f"t=0"), print_vars(lif1)
@@ -62,9 +64,9 @@ class Test_neuron_u(unittest.TestCase):
             lif1.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
 
             # Compute expected voltage of neuron 1
-            # v[t] = v[t-1] * (1-dv) + u[t] + bias
-            # Constant with v[t=0]=0,u=0,bias=0
-            expected_voltage = v_previous * (1 - dv_1) + lif1.u.get() + bias
+            # v[t] = v[t-1] * (1-dv) + u[t] + bias_1
+            # Constant with v[t=0]=0,u=0,bias_1=0
+            expected_voltage = v_previous * (1 - dv_1) + lif1.u.get() + bias_1
             if expected_voltage > lif1.vth.get():
                 lif1_has_spiked = True
 
@@ -82,23 +84,24 @@ class Test_neuron_u(unittest.TestCase):
             if t == 5:
                 self.assertFalse(lif1_has_spiked)
                 self.assertEqual(lif2.u.get(), 0)  # Default initial value.
-                self.assertEqual(lif2.du.get(), 0)  # Default initial value.
-
+                self.assertEqual(lif2.du.get(), 2)  # Custom initial value.
+                # v[t] = v[t-1] * (1-dv) + u[t] + bias_2
+                self.assertEqual(lif2.v.get(), 4)
             if t == 6:
                 self.assertTrue(lif1_has_spiked)
                 # Verify the lif2 neuron has not yet received a spike when neuron1 spikes.
                 self.assertEqual(lif2.u.get(), 0)  # Default initial value.
-                self.assertEqual(lif2.du.get(), 0)  # Default initial value.
-                self.assertEqual(lif2.v.get(), 0)  # Default initial value.
+                self.assertEqual(lif2.du.get(), 2)  # Custom initial value.
+                # v[t] = v[t-1] * (1-dv) + u[t] + bias_2
+                # v[t] = 4 * (1-1) + 0 + 4=4
+                self.assertEqual(lif2.v.get(), 4)  # Default initial value.
             elif t == 7:
                 # Verify the spike signal comes in at lif2.
                 self.assertEqual(lif2.u.get(), 3)
-                # v[t] = v[t-1] * (1-dv) + u[t] + bias
-                self.assertEqual(lif2.v.get(), lif2.u.get() + 0)
-                # TODO: set bias for lif neuron 2.
-
+                # v[t] = v[t-1] * (1-dv) + u[t] + bias_2
+                # v[t] = 4 * (1-1) + 3 + 4=7
+                self.assertEqual(lif2.v.get(), lif2.u.get() + bias_2)
             elif t == 8:
-                # u(t=8)=u(t=7)*(1-du), u(t=7)=3 so 3*(1-0)=1*(3)=3
-                # TODO: set du for lif neuron 2.
-                self.assertEqual(lif2.u.get(), 3)
+                # u(t=8)=u(t=7)*(1-du)+a_in, u(t=7)=3 so 3*(1-2)=3*(-1)=-3
+                self.assertEqual(lif2.u.get(), -3)
         lif1.stop()
