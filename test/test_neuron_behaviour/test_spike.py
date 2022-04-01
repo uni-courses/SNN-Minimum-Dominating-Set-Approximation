@@ -52,58 +52,53 @@ class Test_neuron_u(unittest.TestCase):
         self.assertEqual(lif1.du.get(), 3)  # Custom value.
         self.assertEqual(lif1.vth.get(), 10)  # Default value.
 
+        lif1_has_spiked = False
         for t in range(1, 10):
 
+            # Get the voltage of the lif1 neuron at the last timestep.
             v_previous = lif1.v.get()
+
+            # Simulate the snn for 1 timestep
             lif1.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
 
+            # Compute expected voltage of neuron 1
             # v[t] = v[t-1] * (1-dv) + u[t] + bias
             # Constant with v[t=0]=0,u=0,bias=0
             expected_voltage = v_previous * (1 - dv_1) + lif1.u.get() + bias
-            print(f"t={t}"), print(f"expected_voltage={expected_voltage}"), print_vars(
-                lif1
-            )
+            if expected_voltage > lif1.vth.get():
+                lif1_has_spiked = True
 
-            if expected_voltage <= lif1.vth.get():
+            # Print neuron properties for each timestep
+            print(f"t={t}"), print(f"expected_voltage={expected_voltage}"), print_vars(
+                lif1, 1
+            ), print_vars(lif2, 2)
+
+            # Verify the voltage of lif1 is as expected as long as it has not spiked.
+            if expected_voltage <= lif1.vth.get() and not lif1_has_spiked:
                 self.assertEqual(lif1.v.get(), expected_voltage)
 
                 # Verify the current at lif2 is zero.
                 self.assertEqual(lif2.u.get(), 0)
-            elif t == 6:
-                # Assert the neuron spikes, the voltage is reset to 0 [V].
-                # self.assertEqual(lif1.s_out, True)
-                # self.assertEqual(lif1.s_out[0], True)
-                # self.assertEqual(lif1.s_out.shape, True)
+            if t == 5:
+                self.assertFalse(lif1_has_spiked)
+                self.assertEqual(lif2.u.get(), 0)  # Default initial value.
+                self.assertEqual(lif2.du.get(), 0)  # Default initial value.
 
-                pprint(dir(lif1.s_out))
-                # The neuron spikes, assert the voltage is reset to 0 [V].
-                # self.assertEqual(lif1.v.get(), 0)
-
-                # Verify the spike signal comes in at dense().
-
-                # Verify the spike signal comes goes out from dense().
-
-                pprint(dir(dense.in_ports.s_in))
-                pprint(
-                    f"dense.in_ports.s_in.in_connections={dir(dense.in_ports.s_in.in_connections)}"
-                )
-                pprint(
-                    f"dense.in_ports.s_in.in_connections={dir(dense.in_ports.s_in.in_connections.__str__)}"
-                )
-                pprint(
-                    f"dense.in_ports.s_in.in_connections={dense.in_ports.s_in.in_connections.__str__}"
-                )
-                print(f"dense.in_ports.s_in={dense.in_ports}")
-                # self.assertEqual(dense.in_ports.s_in,True)
-                #self.assertEqual(dense.in_ports.s_in, True)
+            if t == 6:
+                self.assertTrue(lif1_has_spiked)
+                # Verify the lif2 neuron has not yet received a spike when neuron1 spikes.
+                self.assertEqual(lif2.u.get(), 0)  # Default initial value.
+                self.assertEqual(lif2.du.get(), 0)  # Default initial value.
+                self.assertEqual(lif2.v.get(), 0)  # Default initial value.
             elif t == 7:
                 # Verify the spike signal comes in at lif2.
-                self.assertEqual(lif2.u.get(), 1)
+                self.assertEqual(lif2.u.get(), 3)
+                # v[t] = v[t-1] * (1-dv) + u[t] + bias
+                self.assertEqual(lif2.v.get(), lif2.u.get() + 0)
+                # TODO: set bias for lif neuron 2.
+
             elif t == 8:
-                # u(t=8)=u(t=7)*(1-du), u(t=7)=1 so 1*(1-3)=1*(-2)=-2
-                self.assertEqual(lif2.u.get(), -2)
-            else:
-                raise Exception(
-                    "Error, the neuron spiked even though it was not expected to spike."
-                )
+                # u(t=8)=u(t=7)*(1-du), u(t=7)=3 so 3*(1-0)=1*(3)=3
+                # TODO: set du for lif neuron 2.
+                self.assertEqual(lif2.u.get(), 3)
         lif1.stop()

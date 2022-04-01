@@ -1,8 +1,12 @@
-def print_vars(lif):
+from gettext import npgettext
+import numpy as np
+
+
+def print_vars(lif, id=None):
     """Prints all variables of a LIF process and their values."""
 
     sp = 3 * "  "
-    print("Variables of the LIF:")
+    print(f"Variables of the LIF:{id}")
     print(sp + "u:    {}".format(str(lif.u.get())))
     print(sp + "v:    {}".format(str(lif.v.get())))
     print(sp + "du:   {}".format(str(lif.du.get())))
@@ -23,7 +27,23 @@ def create_two_neurons(u_1=0, du_1=0, dv_1=0, bias=0):
         lif1 = LIF(u=u_1, du=du_1, dv=dv_1, bias=bias)
     print(f"lif1.u.get()={lif1.u.get()}")
 
-    dense = Dense()
+    # dense = Dense()
+    shape = (1, 1)
+    # weights = np.random.randint(100, size=shape)
+    weights = [[3]]  # Needs to be this shape for a 1-1 neuron connection.
+    weight_exp = 2
+    num_weight_bits = 7
+    sign_mode = 1
+    print(f"weights={weights}")
+    dense = Dense(
+        shape=shape,
+        weights=weights,
+        weight_exp=weight_exp,
+        num_weight_bits=num_weight_bits,
+        sign_mode=sign_mode,
+    )
+    print(f"shape weights={np.shape(weights)}")
+    # raise Exception("TERMINATED")
     lif2 = LIF()
 
     # Connect processes via their directional input and output ports
