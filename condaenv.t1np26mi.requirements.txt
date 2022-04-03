@@ -1,9 +1,0 @@
-pdflatex
-testbook
-pyment
-pdoc3
-black
-plantuml
-vulture
-requests
-https://github.com/lava-nc/lava/releases/download/v0.3.0/lava-nc-0.3.0.tar.gz
