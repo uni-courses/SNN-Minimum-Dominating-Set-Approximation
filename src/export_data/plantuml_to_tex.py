@@ -43,7 +43,8 @@ def export_gantt_to_latex(
     Takes an input filepath and an output directory as input and copies the
     file towards the output directory.
 
-    :param relative_filepath_from_root: param output_dir_relative_to_root:
+    :param relative_filepath_from_root: Relative filepath as seen from root of
+    file that is used in this function.
     :param output_dir_relative_to_root: Relative path as seen from the root dir of this project, to which modified files are outputted.
 
     Returns:

@@ -26,11 +26,16 @@ def compile_diagrams_in_dir_relative_to_root(
     directory.
 
     Args:
-    :param await_compilation: Make python wait untill the PlantUML compilation is completed. param extension: The filetype of the text file that is converted to image.
-    :param jar_path_relative_from_root: The path as seen from root towards the PlantUML .jar file that compiles .uml files to .png files.
-    :param verbose: True, ensures compilation output is printed to terminal, False means compilation is silent.
+    :param await_compilation: Make python wait untill the PlantUML compilation
+    is completed. param extension: The filetype of the text file that is
+    converted to image.
+    :param jar_path_relative_from_root: The path as seen from root towards the
+    PlantUML .jar file that compiles .uml files to .png files.
+    :param verbose: True, ensures compilation output is printed to terminal,
+    False means compilation is silent.
     :param extension: The file extension that is used/searched in this function.
-    :param input_dir_relative_to_root: The directory as seen from root containing files that are modified in this function.
+    :param input_dir_relative_to_root: The directory as seen from root
+    containing files that are modified in this function.
 
     Returns:
         Nothing
@@ -69,11 +74,15 @@ def execute_diagram_compilation_command(
     using the PlantUML .jar file.
 
     Args:
-    :param await_compilation: Make python wait untill the PlantUML compilation is completed. param jar_path_relative_from_root:
-    :param relative_filepath_from_root: Relative filepath as seen from root of file that is used in this function.
-    :param jar_path_relative_from_root: The path as seen from root towards the PlantUML .jar file that compiles .uml files to .png files.
-    :param verbose: True, ensures compilation output is printed to terminal, False means compilation is silent.
-
+    :param await_compilation: Make python wait untill the PlantUML compilation
+    is completed. param extension: The filetype of the text file that is
+    converted to image.
+    :param jar_path_relative_from_root: The path as seen from root towards the
+    PlantUML .jar file that compiles .uml files to .png files.
+    :param verbose: True, ensures compilation output is printed to terminal,
+    False means compilation is silent.
+    :param input_dir_relative_to_root: The directory as seen from root
+    containing files that are modified in this function.
     Returns:
         Nothing
 
@@ -86,12 +95,14 @@ def execute_diagram_compilation_command(
         abs_diagram_filepath,
         abs_jar_path,
     ) = assert_diagram_compilation_requirements(
-        jar_path_relative_from_root, relative_filepath_from_root
+        jar_path_relative_from_root,
+        relative_filepath_from_root,
     )
 
     # Generate command to compile the PlantUML diagram locally.
     print(
-        f"abs_jar_path={abs_jar_path}, abs_diagram_filepath={abs_diagram_filepath}\n\n"
+        f"abs_jar_path={abs_jar_path},"
+        + f" abs_diagram_filepath={abs_diagram_filepath}\n\n"
     )
     bash_diagram_compilation_command = (
         f"java -jar {abs_jar_path} -verbose {abs_diagram_filepath}"
@@ -135,9 +146,12 @@ def assert_diagram_compilation_requirements(
     the diagram file with the .uml content for the diagram exists. Throws an
     error if either of two is missing.
 
-    :param relative_filepath_from_root: Relative filepath as seen from root of file that is used in this function.
-    :param output_dir_from_root: Relative directory as seen from root, to which files are outputted.
-    :param jar_path_relative_from_root: The path as seen from root towards the PlantUML .jar file that compiles .uml files to .png files.
+    :param relative_filepath_from_root: Relative filepath as seen from root of
+    file that is used in this function.
+    :param output_dir_from_root: Relative directory as seen from root, to which
+    files are outputted.
+    :param jar_path_relative_from_root: The path as seen from root towards the
+    PlantUML .jar file that compiles .uml files to .png files.
 
     Returns:
         Nothing
