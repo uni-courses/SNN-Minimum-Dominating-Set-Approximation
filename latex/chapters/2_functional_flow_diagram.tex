@@ -1,92 +1,81 @@
-\chapter{Functional Flow Diagram}\label{chap:baseline_ffd}
-To gain insight in the system that is to be designed, a \acrlong{ffd} is generated. This \acrshort{ffd} presents the high level functions that the system should be able to perform, in chronological order. These functions are presented in the flow diagram of \cref{fig:baseline_ffd}. 
-
-\begin{figure}[H]
-    \centering
-    %\includegraphics[width=0.6\linewidth]{Images/Diagrams/trivial_gantt.png}
-    \includegraphics[width=0.6\linewidth]{latex/Images/Diagrams/trivial_gantt.png}
-    \caption{A functional flow diagram with the high-level functions of the system that is to be designed.}
-    \label{fig:baseline_ffd}
-\end{figure}
-
+\chapter{Ideas on the realisation of the algorithm by Alipour et al
+in spiking neural networks using Lava}\label{chap:ideas_v1}
+List of neurons so far discussed:
 \begin{enumerate}
-    \item Initialise \& start space-related function on neuromorphic architecture without brain adaptation implementation.
-    \item Initialise \& start space-related function on neuromorphic architecture with brain adaptation implementation.
-    \item Endure modelled space radiation on neuromorphic architecture.
-    \item Measure space-related function performance without brain adaptation implementation.
-    \item Measure space-related function performance with brain adaptation implementation.
-    \item Report any performance difference between with- and without brain adaptation.
-    \item Determine significance of difference.
+    \item degree_receiver
+    \item degree_sender
+    \item r (randomly spiking neuron)
+    \item w neuron with a spike rate proportional to r + d
+    \item wta neurons (a circuit connected to all w neurons from the
+    \item neighbourhood of a given vertex)
 \end{enumerate}
 
-From these high level functions, a more detailed functional breakdown diagram is generated.
+\section{degree_receiver}\label{sec:degree_receiver}
+The weight calculation in the first step can be done by creating a neuron for
+every node in the graph. Let this neuron be called degree_sender. Furthermore
+create a neuron for every vertex which is called degree_receiver. The
+degree_sender neurons are connected to degree_receiver neurons, when the
+respective vertices are also connected. We could then calculate the degree of a
+neuron by letting all the degree_senders spike and then counting the spikes in
+the degree_receiver neuron. Given that we want to keep using this information
+however, we need to pass this information on to the next part of the process.
+\section{degree_sender}\label{sec:degree_sender}
+A rate coding for the above situation might be done like this: the
+degree_receiver neurons have a threshold (henceforth called
+degree_threshold) higher than the highest degree (but low enough to be time
+efficient) and the incoming spikes thus make the neuron spike with a frequency
+that relates to the threshold and the degree. whatever comes downstream of
+the degree_receiver neuron thus knows about the relative degrees of the
+vertices.
+\section{r (randomly spiking neuron)}\label{sec:random}
+The random number between 0 and 1 that we add thus needs to be added as a
+randomly spiking neuron that fires with a chance of between 0 and 100 percent
+per timestep. This chance could be set up at the initialisation phase or maybe
+introduced by something inherent to loihi or lava (where does randomness in
+the brain come from anyway.) Given that the nxsdk and the original lava project
+had a built in stochastically spiking neuron, I'm assuming that it will be
+implemented in lava as well and until then we can write our own stochastically
+spiking process. To make the association of the random spiking neuron and the
+randomly sampled value described in the algorithm more clear, we should
+create a new neuron called r (for the random spikes) and w (as the result of d
+and r in the algorithm ) in which the random spikes and the degree_receiver
+spikes come together.
+\section{w neuron with a spike rate proportional to r + d}\label{sec:weight_neuron}
+We need to find a maximum vertex in the neighbourhood of every vertex. This
+can be done using winner take all circuits, but we will have to use a separate
+wta-circuit for every vertex which are driven by the w neurons. This seems
+excessive, but I'm not sure how to reduce that number of circuits for now. The
+wta circuit receives the spikes from the relevant w neurons and using inhibitingsynapses, should select the most spiking neuron. This neuron is spiking (once
+per timestep) towards the w neuron of it's associated vertex and is at the same
+time inhibiting the degree_receiver neuron. This creates the new spikerate of
+the w neuron as in the algorithm.
 
-\section{Detailed Functional Flow Diagram}\label{sec:baseline_detailed_ffd}
-\begin{enumerate}
-    \item Initialise \& start space-related function on neuromorphic architecture without brain adaptation implementation.    
-    \begin{enumerate}
-        \item Boot/initialise neuromorphic architecture
-        \item Load function.
-        \item Load function data.
-    \end{enumerate}
-    \item Initialise \& start space-related function on neuromorphic architecture with brain adaptation implementation.
-    \begin{enumerate}
-        \item Boot/initialise neuromorphic architecture
-        \item Load brain adaptation.
-        \item Load space-related function.
-        \item Load space-related function data.
-    \end{enumerate}
-    \item Render and endure modelled space radiation on neuromorphic architecture.
-    \begin{enumerate}
-        \item Determine simulated space radiation pattern of neuromorphic space architecture.
-        \item Expose neuromorphic architecture to simulated space radiation pattern.
-        \item Complete space-related function.
-        \item Return results of space-related performance.
-    \end{enumerate}
-    \item Measure space-related function performance without brain adaptation implementation.
-    \begin{enumerate}
-        \item Retrieve space-related function output.
-        \item Convert space-related function output to score.
-    \end{enumerate}
-    \item Measure space-related function performance with brain adaptation implementation.
-    \item \begin{enumerate}
-        \item Retrieve space-related function output.
-        \item Convert space-related function output to score.
-    \end{enumerate}
-    \item Report difference between the scores of the architectures with- and without brain adaptation.
-    \item Determine significance of difference.
-\end{enumerate}
+\section{wta neurons (a circuit connected to all w neurons from the}\label{sec:wta_circuits}
 
-\subsection{Description}\label{subsec:description}
-\begin{enumerate}
-    \item Initialise \& start space-related function on neuromorphic architecture without brain adaptation implementation.
-    \begin{itemize}
-        \item To run a function on the neuromorphic architecture, it will have to be booted and initialised. The function that will be ran on the neuromorphic architecture is space related, to increase the level of representativeness of this study, in terms of space applications. The initalisation allows for loading the space related function that is to be executed. Additionally, the space related function may require (training) data on which it is ran. For example, a Martian rover that has a function that identifies rocks in its environment, may be partially simulated by loading a (labelled) dataset of Martian images.
+The runtime of the network is dependent on the precise spike rate
+implementations. If we choose to use spike rates that are meaningful, they
+must be distinguishable for every number represented in the network. This
+means that for example the spikerate representing the degree of the highest
+degree node and the second highest degree node needs to be different, even
+after adding the random value. Thus one possibility to achieve this is to use a
+spike rate close to the degree of the highest node, which would result in a
+almost constantly spiking w neuron for the node with the highest degree. If this
+neuron has a degree of 10, then a node with degree one would only spike at
+time 10. thus we would need to measure this spike rate over a window of at
+least length 10. For finer measurements, we could introduce longer windows
+(not sure yet). However, in this example, the window of a number of spikes
+represents one "communication round" as defined in the distributed algorithms
+literature. Thus letting the algorithm run multiples of 10 amounts to selecting m
+in the original algorithm. Given the precise implementation of these ideas there
+might be some "burn in time" or processes that need to start up, which add a
+constant amount of time to this, but the main idea should be clear. The wta
+circuits are self improving because they after silencing the other neurons they
+adjust the weights of their own input and thus allow the wta to select a different
+winner. (This needs to be the case and should be possible given the correct
+fine tuning of the synapse weights, but I have no proof of it working.)
 
-        To run the function without brain adaptation implementation, allows for the creation of a baseline to which the brain adaptation performance can be compared.
-    \end{itemize}
-    \item Initialise \& start space-related function on neuromorphic architecture with brain adaptation implementation.
-    \begin{itemize}
-        \item The intialisation of the brain adaptation implementation can occur, before, during or after the loading of the space related function. Which of these options is selected depends on the more detailed design process.
-    \end{itemize}
-    \item Endure modelled space radiation on neuromorphic architecture.
-    \begin{itemize}
-        \item The radiation robustness of the neuromorphic architecture can be tested by exposing the neuromorphic architecture to the radiation that it would experience in a space application. To determine what this radiation is, a relevant space mission and space function are selected. The time, position and orientation of the spacecraft in such a mission is then used to derive the radiation pattern to which the radiation may be exposed. This radiation is pattern is then used to determine to which (simulated) radiation the neuromorphic architecture will be exposed.
-    \end{itemize}
-    \item Measure space-related function performance without brain adaptation implementation.
-    \begin{itemize}
-        \item The performance of the space related function without brain adaptation implementaiton on the neuromorphic architecture is measured before, during and/or after radiation exposure. Which of these measuring moments are used, is still to be determined by the detailed design process. This measurement then serves as a comparison baseline to put the impact of the brain adaptation implementation into context.
-    \end{itemize}
-    \item Measure space-related function performance with brain adaptation implementation.
-    \item \begin{itemize}
-        \item Once a baseline for comparison is established, the space related function can be ran again on the neuromorphic hardware, whilst being exposed to radiation. In this second setting, the brain adaptation implementation is used in an attempt to increase the radiation robustness of the neuromorphic architecture. The performance of the space related function is then measured before, during and/or after radiation exposure. Which of these measuring moments are used, is still to be determined by the detailed design process. 
-    \end{itemize}
-    \item Report any performance difference between with- and without brain adaptation.
-    \item \begin{itemize}
-        \item If any performance difference is observed between the space related function with- and without brain adaptation implementation, it will be computed and stored.
-    \end{itemize}
-    \item Determine significance of difference.
-    \item \begin{itemize}
-        \item An analysis is performed to determine the level of significance  of any observed difference.
-    \end{itemize}
-\end{enumerate}
+
+\section{neighbourhood of a given vertex)}\label{sec:neighbourhood}
+At the end, we can attach measuring neurons that never spike to check on the
+wta winner neurons at a certain timestep (might need to be a multiple of 10
+given the above example)
