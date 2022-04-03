@@ -24,14 +24,36 @@ however, we need to pass this information on to the next part of the process.
 A rate coding for the above situation might be done like this: the
 degree\_receiver neurons have a threshold (henceforth called
 degree\_threshold) higher than the highest degree (but low enough to be time
-efficient) and the incoming spikes thus make the neuron spike with a frequency
-that relates to the threshold and the degree. whatever comes downstream of
-the degree\_receiver neuron thus knows about the relative degrees of the
+efficient) and \textit{the incoming spikes thus make the neuron spike with a frequency
+that relates to the threshold and the degree.}
+\subsection{question}
+How do/does the incoming spike/spikes make the neuron spike with a certain frequency? From what I understood, a LIF-neuron spikes once if a certain voltage threshold is exceeded. According to:
+\begin{equation}
+    \begin{split}
+    u[t] = u[t-1] * (1-du) + a_{in} \\
+    v[t] = v[t-1] * (1-dv) + u[t] + bias \\
+    s_out = v[t] > vth \\
+    v[t] = v[t] - s_{out}*vth \\
+    \end{split}
+\end{equation}
+It is not quite clear to me how an incoming spike(train) in a specified timeframe leads to a certain spiking frequency. I hope this is possible, and a code example would be awesome!
+\subsection{end question}
+whatever comes downstream of the degree\_receiver neuron thus knows about the relative degrees of the
 vertices.
+
+
 \section{r (randomly spiking neuron)}\label{sec:random}
 The random number between 0 and 1 that we add thus needs to be added as a
 randomly spiking neuron that fires with a chance of between 0 and 100 percent
-per timestep. This chance could be set up at the initialisation phase or maybe
+per timestep. 
+\subsection{Question}
+This assumes:
+\begin{enumerate}
+    \item The random number is the amount of spikes in a certain window/divided by the number of steps in the window right?
+    \item Does the rest of the algorithm still work if the values are multiplied by the timewindow length?
+    \item Does the algorithm work if a single random value is selected, instead of a new random value per round?
+\end{enumerate}
+This chance could be set up at the initialisation phase or maybe
 introduced by something inherent to loihi or lava (where does randomness in
 the brain come from anyway.) Given that the nxsdk and the original lava project
 had a built in stochastically spiking neuron, I'm assuming that it will be
@@ -41,12 +63,14 @@ randomly sampled value described in the algorithm more clear, we should
 create a new neuron called r (for the random spikes) and w (as the result of d
 and r in the algorithm ) in which the random spikes and the degree\_receiver
 spikes come together.
+
+
 \section{w neuron with a spike rate proportional to r + d}\label{sec:weight_neuron}
 We need to find a maximum vertex in the neighbourhood of every vertex. This
 can be done using winner take all circuits, but we will have to use a separate
 wta-circuit for every vertex which are driven by the w neurons. This seems
 excessive, but I'm not sure how to reduce that number of circuits for now. The
-wta circuit receives the spikes from the relevant w neurons and using inhibitingsynapses, should select the most spiking neuron. This neuron is spiking (once
+wta circuit receives the spikes from the relevant w neurons and using inhibiting synapses, should select the most spiking neuron. This neuron is spiking (once
 per timestep) towards the w neuron of it's associated vertex and is at the same
 time inhibiting the degree\_receiver neuron. This creates the new spikerate of
 the w neuron as in the algorithm.
@@ -72,7 +96,17 @@ might be some "burn in time" or processes that need to start up, which add a
 constant amount of time to this, but the main idea should be clear. The wta
 circuits are self improving because they after silencing the other neurons they
 adjust the weights of their own input and thus allow the wta to select a different
-winner. (This needs to be the case and should be possible given the correct
+winner.
+\subsection{Question}
+\begin{enumerate}
+    \item How do the neurons adjust their synaptic input weights (in Lava)? 
+    \item Is there an example code of this behaviour (for LIF neurons)?
+    \item How do the neurons adjust to the right weight values that are relevant for the next round?
+\end{enumerate}
+
+
+\subsection{End Question}
+(This needs to be the case and should be possible given the correct
 fine tuning of the synapse weights, but I have no proof of it working.)
 
 
