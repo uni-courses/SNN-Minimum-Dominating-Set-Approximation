@@ -30,7 +30,7 @@ class Test_neuron_u(unittest.TestCase):
         lif1, dense, lif2 = create_two_neurons(du_1=3)
 
         # Simulate SNN and assert values inbetween timesteps.
-        print(f"t=0"), print_neuron_properties([lif1])
+        print("t=0"), print_neuron_properties([lif1])
         self.assertEqual(lif1.v.get(), 0)  # Default initial value.
         self.assertEqual(lif1.u.get(), 0)  # Default initial value.
         self.assertEqual(lif1.du.get(), 3)  # Custom value.
@@ -59,7 +59,7 @@ class Test_neuron_u(unittest.TestCase):
         lif1, dense, lif2 = create_two_neurons(du_1=3, dv_1=4)
 
         # Simulate SNN and assert values inbetween timesteps.
-        print(f"t=0"), print_neuron_properties([lif1])
+        print("t=0"), print_neuron_properties([lif1])
         self.assertEqual(lif1.v.get(), 0)  # Default initial value.
         self.assertEqual(lif1.u.get(), 0)  # Default initial value.
         self.assertEqual(lif1.du.get(), 3)  # Custom value.
@@ -86,19 +86,23 @@ class Test_neuron_u(unittest.TestCase):
     def test_growing_v(self):
         """Tests whether the voltage of lif1 grows as expected, when a
         non-zero bias is used. The current u is kept constant for lif1. If the
-        voltage EXCEEDS(not equals) the (default) threshold vth=10, then the neuron spikes
-        and the voltage is reset to 0 (Regardless if it is 15 [V] over or 1 [V]
-        over the threshold).
-        #"""
+        voltage EXCEEDS(not equals) the (default) threshold vth=10, then the
+        neuron spikes and the voltage is reset to 0 (Regardless if it is 15 [V]
+        over or 1 [V] over the threshold).
+        """
         du_1 = 3
         dv_1 = 4
         bias = 1
 
         # Get neurons that are fully connected.
-        lif1, dense, lif2 = create_two_neurons(du_1=du_1, dv_1=dv_1, bias_1=bias)
+        lif1, dense, lif2 = create_two_neurons(
+            du_1=du_1,
+            dv_1=dv_1,
+            bias_1=bias,
+        )
 
         # Simulate SNN and assert values inbetween timesteps.
-        print(f"t=0"), print_neuron_properties([lif1])
+        print("t=0"), print_neuron_properties([lif1])
         self.assertEqual(lif1.v.get(), 0)  # Default initial value.
         self.assertEqual(lif1.u.get(), 0)  # Default initial value.
         self.assertEqual(lif1.du.get(), 3)  # Custom value.

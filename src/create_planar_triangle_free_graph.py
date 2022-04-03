@@ -62,7 +62,9 @@ def create_triangle_free_graph(show_graphs):
     probability_of_creating_an_edge = 0.85
     nr_of_triangles = 1  # Initialise at 1 to initiate while loop.
     while nr_of_triangles > 0:
-        G = nx.fast_gnp_random_graph(nr_of_nodes, probability_of_creating_an_edge)
+        G = nx.fast_gnp_random_graph(
+            nr_of_nodes, probability_of_creating_an_edge
+        )
         nr_of_triangles = nx.triangles(G, 0)
         print(f"nr_of_triangles={nr_of_triangles}")
         if show_graphs:
@@ -70,7 +72,9 @@ def create_triangle_free_graph(show_graphs):
     return G
 
 
-def create_triangle_free_planar_graph(nr_nodes, edge_probability, seed, show_graph):
+def create_triangle_free_planar_graph(
+    nr_nodes, edge_probability, seed, show_graph
+):
     G = nx.Graph()
     G.add_nodes_from(list(range(nr_nodes)))
 
@@ -124,7 +128,11 @@ def add_connections_to_make_graph_connected(G):
 
 # TODO: move to helper
 def plot_graph(G):
-    options = {"with_labels": True, "node_color": "white", "edgecolors": "blue"}
+    options = {
+        "with_labels": True,
+        "node_color": "white",
+        "edgecolors": "blue",
+    }
     nx.draw_networkx(G, **options)
     plt.show()
     plt.clf()

@@ -19,7 +19,9 @@ def compute_mtds_a_t_0(G, m=2):
         print(f'degree={G.nodes[node]["degree"]}')
     # 1.c Each vertex v_i computes weight: w_i=d_i+r_i
     for node in G.nodes:
-        G.nodes[node]["weight"] = G.nodes[node]["degree"] + G.nodes[node]["rand_val"]
+        G.nodes[node]["weight"] = (
+            G.nodes[node]["degree"] + G.nodes[node]["rand_val"]
+        )
         print(f'weight={G.nodes[node]["weight"]}')
 
     # 1.d Each vertex v_i sends w_i to each of its neighbours.
@@ -45,7 +47,9 @@ def compute_mtds_a_t_0(G, m=2):
         # 4.a Each node v_i computes how many marks it has received, as (x_i)_k.
         # 4.b Each node v_i computes (w_i)_k=(x_i)_k+ r_i
         for node in G.nodes:
-            G.nodes[node]["weight"] = G.nodes[node]["mark"] + G.nodes[node]["rand_val"]
+            G.nodes[node]["weight"] = (
+                G.nodes[node]["mark"] + G.nodes[node]["rand_val"]
+            )
             print(f'weight={G.nodes[node]["weight"]}')
 
         # 5. Reset marked vertices: for each vertex v_i, (x_i)_k=0
@@ -59,7 +63,9 @@ def compute_mtds_a_t_0(G, m=2):
         store_index_max_neighbour_weight(G)
         # 6.d Each vertex v_i adds a mark to that neighbour vertex v_j_(w_max).
         for node in G.nodes:
-            neighbor_with_max_weight = G.nodes[node]["neighbor_with_max_weight"]
+            neighbor_with_max_weight = G.nodes[node][
+                "neighbor_with_max_weight"
+            ]
             G.nodes[neighbor_with_max_weight]["mark"] = (
                 G.nodes[neighbor_with_max_weight]["mark"] + 1
             )

@@ -28,7 +28,9 @@ def parse_cli_args():
     ## Include argument parsing for data exporting code.
     # Compile LaTex
     parser.add_argument(
-        "--l", action="store_true", help="Boolean indicating if code compiles LaTex"
+        "--l",
+        action="store_true",
+        help="Boolean indicating if code compiles LaTex",
     )
 
     # Generate, compile and export Dynamic PlantUML diagrams to LaTex.

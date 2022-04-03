@@ -4,7 +4,9 @@ from ...src.export_data.helper_dir_file_edit import add_two
 
 import pytest
 
-export_data_test = pytest.mark.skipif("not config.getoption('export_data_tests')")
+export_data_test = pytest.mark.skipif(
+    "not config.getoption('export_data_tests')",
+)
 
 
 class Test_main(unittest.TestCase):
@@ -15,7 +17,8 @@ class Test_main(unittest.TestCase):
         self.script_dir = self.get_script_dir()
         self.project_name = "Whitepaper"
 
-    # returns the directory of this script regardles of from which level the code is executed
+    # returns the directory of this script regardles of from which level the
+    # code is executed
     def get_script_dir(self):
         return os.path.dirname(__file__)
 

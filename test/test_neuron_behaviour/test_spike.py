@@ -1,18 +1,15 @@
 import unittest
 import pytest
 
-from pprint import pprint
-
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 from src.helper_snns import (
     create_two_neurons,
     print_neuron_properties,
-    print_neuron_properties,
 )
 
 
-# Include marker ensuring these tests only run on argument: neuron_behaviour
+# Include marker ensuring these tests only run on argument: neuron_behaviour.
 neuron_behaviour_test = pytest.mark.skipif(
     "not config.getoption('neuron_behaviour_tests')"
 )
@@ -42,23 +39,30 @@ class Test_neuron_u(unittest.TestCase):
         # https://jakevdp.github.io/PythonDataScienceHandbook/02.01-understanding-data-types.html
         du_1 = 3
         dv_1 = (
-            0  # LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0 to 65535)
+            0  # LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0
+            # to 65535)
         )
         bias_1 = 2
 
         du_2 = 2
         dv_2 = (
-            1  # LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0 to 65535)
+            1  # LavaPyType(int, np.uint16, precision=12)=Unsigned integer (0
+            # to 65535)
         )
         bias_2 = 4
 
         # Get neurons that are fully connected.
         lif1, dense, lif2 = create_two_neurons(
-            du_1=du_1, dv_1=dv_1, bias_1=bias_1, du_2=du_2, dv_2=dv_2, bias_2=bias_2
+            du_1=du_1,
+            dv_1=dv_1,
+            bias_1=bias_1,
+            du_2=du_2,
+            dv_2=dv_2,
+            bias_2=bias_2,
         )
 
         # Simulate SNN and assert values inbetween timesteps.
-        # print(f"t=0"), print_neuron_properties(lif1)
+        # print("t=0"), print_neuron_properties(lif1)
 
         self.assertEqual(lif1.v.get(), 0)  # Default initial value.
         self.assertEqual(lif1.u.get(), 0)  # Default initial value.
@@ -85,7 +89,8 @@ class Test_neuron_u(unittest.TestCase):
             print(f"t={t}"), print(f"expected_voltage={expected_voltage}")
             print_neuron_properties([lif1, lif2], [1, 2])
 
-            # Verify the voltage of lif1 is as expected as long as it has not spiked.
+            # Verify the voltage of lif1 is as expected as long as it has not
+            # spiked.
             if expected_voltage <= lif1.vth.get() and not lif1_has_spiked:
                 self.assertEqual(lif1.v.get(), expected_voltage)
 
@@ -99,7 +104,8 @@ class Test_neuron_u(unittest.TestCase):
                 self.assertEqual(lif2.v.get(), 4)
             if t == 6:
                 self.assertTrue(lif1_has_spiked)
-                # Verify the lif2 neuron has not yet received a spike when neuron1 spikes.
+                # Verify the lif2 neuron has not yet received a spike when
+                # neuron1 spikes.
                 self.assertEqual(lif2.u.get(), 0)  # Default initial value.
                 self.assertEqual(lif2.du.get(), 2)  # Custom initial value.
                 # v[t] = v[t-1] * (1-dv) + u[t] + bias_2

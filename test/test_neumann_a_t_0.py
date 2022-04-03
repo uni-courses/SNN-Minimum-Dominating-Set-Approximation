@@ -10,7 +10,8 @@ class Test_neumann_a_t_0(unittest.TestCase):
         super(Test_neumann_a_t_0, self).__init__(*args, **kwargs)
         self.script_dir = self.get_script_dir()
 
-    # returns the directory of this script regardles of from which level the code is executed
+    # returns the directory of this script regardles of from which level the
+    # code is executed.
     def get_script_dir(self):
         return os.path.dirname(__file__)
 
