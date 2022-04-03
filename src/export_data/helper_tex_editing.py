@@ -31,11 +31,13 @@ def verify_input_code_type(is_export_code, is_project_code):
     # Create appendix filename identifier segment
     if is_project_code and is_export_code:
         raise Exception(
-            "Error, a file can't be both project code, and export code at same time."
+            "Error, a file can't be both project code, and export code at"
+            + " same time."
         )
     if not is_project_code and not is_export_code:
         raise Exception(
-            "Error, don't know what to do with files that are neither project code, nor export code."
+            "Error, don't know what to do with files that are neither project"
+            + " code, nor export code."
         )
 
 
