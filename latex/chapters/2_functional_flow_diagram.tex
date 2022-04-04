@@ -12,17 +12,17 @@ List of neurons so far discussed:
 
 \section{degree\_receiver}\label{sec:degree_receiver}
 The weight calculation in the first step can be done by creating a neuron for
-every node in the graph. Let this neuron be called $degree_sender$. Furthermore
-create a neuron for every vertex which is called $degree_receiver$. The
-$degree_sender$ neurons are connected to $degree_receiver$ neurons, when the
+every node in the graph. Let this neuron be called $degree\_sender$. Furthermore
+create a neuron for every vertex which is called $degree\_receiver$. The
+$degree\_sender$ neurons are connected to $degree\_receiver$ neurons, when the
 respective vertices are also connected. We could then calculate the degree of a
-neuron by letting all the $degree_sender$s spike and then counting the spikes in
-the $degree_receiver$ neuron. Given that we want to keep using this information
+neuron by letting all the $degree\_sender$s spike and then counting the spikes in
+the $degree\_receiver$ neuron. Given that we want to keep using this information
 however, we need to pass this information on to the next part of the process.
 
 \section{degree\_sender}\label{sec:degree_sender}
 A rate coding for the above situation might be done like this: the
-$degree_receiver$ neurons have a threshold (henceforth called
+$degree\_receiver$ neurons have a threshold (henceforth called
 degree\_threshold) higher than the highest degree (but low enough to be time
 efficient) and \textit{the incoming spikes thus make the neuron spike with a frequency
 that relates to the threshold and the degree.}
@@ -38,7 +38,7 @@ How do/does the incoming spike/spikes make the neuron spike with a certain frequ
 \end{equation}
 It is not quite clear to me how an incoming spike(train) in a specified timeframe leads to a certain spiking frequency. I hope this is possible, and a code example would be awesome!
 \subsection{end question}
-whatever comes downstream of the $degree_receiver$ neuron thus knows about the relative degrees of the
+whatever comes downstream of the $degree\_receiver$ neuron thus knows about the relative degrees of the
 vertices.
 
 
@@ -61,7 +61,7 @@ implemented in lava as well and until then we can write our own stochastically
 spiking process. To make the association of the random spiking neuron and the
 randomly sampled value described in the algorithm more clear, we should
 create a new neuron called r (for the random spikes) and w (as the result of d
-and r in the algorithm ) in which the random spikes and the $degree_receiver$
+and r in the algorithm ) in which the random spikes and the $degree\_receiver$
 spikes come together.
 
 
@@ -72,7 +72,7 @@ wta-circuit for every vertex which are driven by the w neurons. This seems
 excessive, but I'm not sure how to reduce that number of circuits for now. The
 wta circuit receives the spikes from the relevant w neurons and using inhibiting synapses, should select the most spiking neuron. This neuron is spiking (once
 per timestep) towards the w neuron of it's associated vertex and is at the same
-time inhibiting the $degree_receiver$ neuron. This creates the new spikerate of
+time inhibiting the $degree\_receiver$ neuron. This creates the new spikerate of
 the w neuron as in the algorithm.
 
 \section{wta neurons (a circuit connected to all w neurons from the}\label{sec:wta_circuits}
