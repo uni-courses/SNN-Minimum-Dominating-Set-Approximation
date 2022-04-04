@@ -96,9 +96,7 @@ class Test_neuron_u(unittest.TestCase):
 
         # Get neurons that are fully connected.
         lif1, dense, lif2 = create_two_neurons(
-            du_1=du_1,
-            dv_1=dv_1,
-            bias_1=bias,
+            du_1=du_1, dv_1=dv_1, bias_1=bias,
         )
 
         # Simulate SNN and assert values inbetween timesteps.

@@ -19,11 +19,6 @@ class Test_graph_triangularity(unittest.TestCase):
         G = nx.Graph()
         G.add_nodes_from([0, 1, 2, 3])
         G.add_edges_from(
-            [
-                (0, 1),
-                (1, 2),
-                (2, 3),
-                (3, 0),
-            ]
+            [(0, 1), (1, 2), (2, 3), (3, 0),]
         )
         self.assertTrue(is_triangle_free(G))

@@ -95,8 +95,7 @@ def execute_diagram_compilation_command(
         abs_diagram_filepath,
         abs_jar_path,
     ) = assert_diagram_compilation_requirements(
-        jar_path_relative_from_root,
-        relative_filepath_from_root,
+        jar_path_relative_from_root, relative_filepath_from_root,
     )
 
     # Generate command to compile the PlantUML diagram locally.
@@ -138,8 +137,7 @@ def execute_diagram_compilation_command(
 
 
 def assert_diagram_compilation_requirements(
-    jar_path_relative_from_root,
-    relative_filepath_from_root,
+    jar_path_relative_from_root, relative_filepath_from_root,
 ):
     """
     Asserts that the PlantUML .jar file used for compilation exists, and that

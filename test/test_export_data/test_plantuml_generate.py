@@ -39,9 +39,7 @@ class Test_main(unittest.TestCase):
 
         create_dir_relative_to_root_if_not_exists(self.hd.dynamic_diagram_dir)
         self.assertTrue(
-            dir_relative_to_root_exists(
-                self.hd.dynamic_diagram_dir,
-            )
+            dir_relative_to_root_exists(self.hd.dynamic_diagram_dir,)
         )
 
         # Generate a PlantUML diagram.
@@ -50,9 +48,7 @@ class Test_main(unittest.TestCase):
 
         # Assert file exist.
         self.assertTrue(
-            os.path.exists(
-                diagram_text_filepath_relative_to_root,
-            )
+            os.path.exists(diagram_text_filepath_relative_to_root,)
         )
 
         # TODO: Assert file content is correct.
@@ -60,7 +56,5 @@ class Test_main(unittest.TestCase):
         # Cleanup after
         delete_dir_if_exists(self.hd.dynamic_diagram_dir)
         self.assertFalse(
-            dir_relative_to_root_exists(
-                self.hd.dynamic_diagram_dir,
-            )
+            dir_relative_to_root_exists(self.hd.dynamic_diagram_dir,)
         )

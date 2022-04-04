@@ -23,9 +23,7 @@ def compile_latex(await_compilation, verbose):
         "chmod +x latex/compile_script.sh",
     )
     run_bash_command(
-        await_compilation,
-        bash_make_compile_script_runnable_command,
-        verbose,
+        await_compilation, bash_make_compile_script_runnable_command, verbose,
     )
 
     # Run latex compilation script to compile latex project.
