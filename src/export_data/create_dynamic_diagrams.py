@@ -5,7 +5,6 @@ from .plantuml_to_tex import export_diagrams_to_latex
 
 
 def create_dynamic_diagrams(args, hd):
-    ## PlantUML
     # Generate PlantUML diagrams dynamically (using code).
     if args.dd:
         generate_all_dynamic_diagrams(

@@ -1,7 +1,6 @@
 # This script generates PlantUML diagrams and outputs them as .uml files.
 
 import os
-import subprocess
 from os.path import abspath
 
 from .helper_dir_file_edit import create_dir_relative_to_root_if_not_exists
@@ -22,7 +21,9 @@ def generate_all_dynamic_diagrams(output_dir_relative_to_root):
     """
     # Create a example Gantt output file.
     filename_one, lines_one = create_trivial_gantt("trivial_gantt.uml")
-    output_diagram_text_file(filename_one, lines_one, output_dir_relative_to_root)
+    output_diagram_text_file(
+        filename_one, lines_one, output_dir_relative_to_root
+    )
 
     # Create another example Gantt output file.
     filename_two, lines_two = create_trivial_gantt("another_trivial_gantt.uml")

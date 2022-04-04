@@ -31,11 +31,13 @@ def verify_input_code_type(is_export_code, is_project_code):
     # Create appendix filename identifier segment
     if is_project_code and is_export_code:
         raise Exception(
-            "Error, a file can't be both project code, and export code at same time."
+            "Error, a file can't be both project code, and export code at"
+            + " same time."
         )
     if not is_project_code and not is_export_code:
         raise Exception(
-            "Error, don't know what to do with files that are neither project code, nor export code."
+            "Error, don't know what to do with files that are neither project"
+            + " code, nor export code."
         )
 
 
@@ -59,7 +61,9 @@ def create_appendix_filecontent(
     latex_object_name, filename, filepath_from_root, from_root
 ):
     # Latex titles should escape underscores.
-    filepath_from_root_without_underscores = filepath_from_root.replace("_", "\_")
+    filepath_from_root_without_underscores = filepath_from_root.replace(
+        "_", "\_"
+    )
     lines = []
     lines.append(
         f"\{latex_object_name}{{Appendix {filepath_from_root_without_underscores}}}\label{{app:{filename}}}"
@@ -150,7 +154,9 @@ def create_appendix_file(
     # TODO: verify files exist
 
 
-def export_python_project_code(hd, normalised_root_dir, python_project_code_filepaths):
+def export_python_project_code(
+    hd, normalised_root_dir, python_project_code_filepaths
+):
     is_project_code = True
     is_export_code = False
     from_root = False
@@ -164,11 +170,18 @@ def export_python_project_code(hd, normalised_root_dir, python_project_code_file
             is_project_code,
         )
         create_appendices(
-            hd, filepath, normalised_root_dir, True, is_export_code, is_project_code
+            hd,
+            filepath,
+            normalised_root_dir,
+            True,
+            is_export_code,
+            is_project_code,
         )
 
 
-def export_python_export_code(hd, normalised_root_dir, python_export_code_filepaths):
+def export_python_export_code(
+    hd, normalised_root_dir, python_export_code_filepaths
+):
     is_project_code = False
     is_export_code = True
     from_root = False
@@ -182,12 +195,22 @@ def export_python_export_code(hd, normalised_root_dir, python_export_code_filepa
             is_project_code,
         )
         create_appendices(
-            hd, filepath, normalised_root_dir, True, is_export_code, is_project_code
+            hd,
+            filepath,
+            normalised_root_dir,
+            True,
+            is_export_code,
+            is_project_code,
         )
 
 
 def create_appendices(
-    hd, filepath, normalised_root_dir, from_root, is_export_code, is_project_code
+    hd,
+    filepath,
+    normalised_root_dir,
+    from_root,
+    is_export_code,
+    is_project_code,
 ):
     # Get the filepath of a python file from the root dir of this project.
     filepath_from_root = convert_filepath_to_filepath_from_root(
@@ -212,7 +235,11 @@ def create_appendices(
     #    exit()
 
     append_appendix_to_appendix_managers(
-        appendix_inclusion_command, from_root, hd, is_export_code, is_project_code
+        appendix_inclusion_command,
+        from_root,
+        hd,
+        is_export_code,
+        is_project_code,
     )
 
     # Create the appendix .tex file.
