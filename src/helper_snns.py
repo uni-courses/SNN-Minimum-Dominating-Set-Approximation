@@ -76,8 +76,8 @@ def create_spike_once_neuron():
     """Creates neuron that spikes once and then never again. Uses a recurrent
     synapse with weight -1 such that it silences itself.
     """
-    spike_once = LIF(du=0, dv=0, bias=1, vth=1)
-    dense = create_weighted_synapse(spike_once, spike_once, -1)
+    spike_once = LIF(du=0, dv=0, bias=2, vth=1)
+    dense = create_weighted_synapse(spike_once, spike_once, -2)
 
     # Connect neuron to itself.
     spike_once = connect_synapse(spike_once, spike_once, dense)
