@@ -6,12 +6,9 @@ channels:
   - conda
 dependencies:
 - anaconda
-- nb_conda
 - conda:
 # Run python tests.
-  - pytest=6.1.2
-# Convert notebooks to pdf.
-  - nbconvert
+  - pytest
   - matplotlib
 # Support notebooks.
   - nb_conda
@@ -21,12 +18,12 @@ dependencies:
   - networkx
 - pip
 - pip:
-# Compile pdf from python.
-  - pdflatex
-# Write unit tests on Jupyter notebooks.
-  - testbook
+# Run pip install on .tar.gz file in GitHub repository.
+  - https://github.com/lava-nc/lava/releases/download/v0.3.0/lava-nc-0.3.0.tar.gz
 # Auto generate docstrings
   - pyment
+# Auto generate docstrings
+  - flake8
 # Auto generate documentation.
   - pdoc3
 # Code formatting compliance
@@ -37,5 +34,3 @@ dependencies:
   - vulture
 # Get PlantUML .jar file.
   - requests
-# Run pip install on .tar.gz file in GitHub repository.
-  - https://github.com/lava-nc/lava/releases/download/v0.3.0/lava-nc-0.3.0.tar.gz
