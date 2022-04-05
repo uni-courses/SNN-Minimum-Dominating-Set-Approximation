@@ -9,13 +9,19 @@ def compute_mtds(input_graph, m=0):
     if isinstance(input_graph, nx.Graph):
         graph = nx.Graph()
         graph.add_nodes_from(
-            list(input_graph.nodes), marks=0, random_number=0, weight=0,
+            list(input_graph.nodes),
+            marks=0,
+            random_number=0,
+            weight=0,
         )
         graph.add_edges_from(list(input_graph.edges))
     if isinstance(input_graph, tuple):
         graph = nx.Graph()
         graph.add_nodes_from(
-            input_graph[0], marks=0, random_number=0, weight=0,
+            input_graph[0],
+            marks=0,
+            random_number=0,
+            weight=0,
         )
         graph.add_edges_from(input_graph[1])
 

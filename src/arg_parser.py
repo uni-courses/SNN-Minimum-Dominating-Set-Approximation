@@ -21,7 +21,8 @@ def parse_cli_args():
 
     # Specify default argument values for the parser.
     parser.set_defaults(
-        infile=None, graph_from_file=False,
+        infile=None,
+        graph_from_file=False,
     )
 
     ## Include argument parsing for data exporting code.

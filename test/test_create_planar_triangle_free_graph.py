@@ -11,16 +11,20 @@ class Test_create_planar_triangle_free_graph(unittest.TestCase):
 
     # Initialize test object
     def __init__(self, *args, **kwargs):
-        super(Test_create_planar_triangle_free_graph, self,).__init__(
-            *args, **kwargs
-        )
+        super(
+            Test_create_planar_triangle_free_graph,
+            self,
+        ).__init__(*args, **kwargs)
 
     def test_random_graph_size_3(self):
         nr_nodes = 3
         edge_probability = 0.85
         seed = 42
         G = create_triangle_free_planar_graph(
-            nr_nodes, edge_probability, seed, False,
+            nr_nodes,
+            edge_probability,
+            seed,
+            False,
         )
         self.assertTrue(is_triangle_free(G))
         self.assertTrue(is_planar(G))
