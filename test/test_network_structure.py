@@ -59,3 +59,32 @@ class Test_weight_receiver_synapse_paths(unittest.TestCase):
                 self.assertEqual(
                     set([(1, 0), (0, 1)]), G.nodes[node]["wr_paths"]
                 )
+
+    def test_weight_receiver_synapse_paths_fully_connected_4_nodes(self):
+        """
+        For a complete graph of size 4, should find:
+        """
+        G = nx.complete_graph(4)
+        G = get_weight_receiver_synapse_paths(G)
+        for node in G.nodes:
+            if node == 0:
+                # Assert complete set.
+                self.assertEqual(
+                    set([(1, 2), (1, 3),(2,1),(2,3),(3,1),(3,2)]), G.nodes[node]["wr_paths"]
+                )
+            if node == 1:
+                # Assert complete set.
+                self.assertEqual(
+                    set([(0, 2), (0, 3),(2,0),(2,3),(3,0),(3,2)]), G.nodes[node]["wr_paths"]
+                )
+            if node == 2:
+                # Assert complete set.
+                self.assertEqual(
+                    set([(0, 1), (0, 3),(1,0),(1,3),(3,0),(3,1)]), G.nodes[node]["wr_paths"]
+                )
+
+            if node == 3:
+                # Assert complete set.
+                self.assertEqual(
+                    set([(0, 1), (0, 2),(1,0),(1,2),(2,0),(2,1)]), G.nodes[node]["wr_paths"]
+                )
