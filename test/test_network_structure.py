@@ -44,23 +44,18 @@ class Test_weight_receiver_synapse_paths(unittest.TestCase):
         G = nx.complete_graph(3)
         G = get_weight_receiver_synapse_paths(G)
         for node in G.nodes:
-            for neighbour in nx.all_neighbors(G, node):
-                # Check node 0
-                if node["id"] == 0 and neighbour["id"] == 1:
-                    self.assertEqual(neighbour["wr_paths"], set((1, 2)))
-                if node["id"] == 0 and neighbour["id"] == 2:
-                    self.assertEqual(neighbour["wr_paths"], set((2, 1)))
-                    # TODO: Verify the order is correct.
-                    # TODO: verify it fails if set contains more tuples.
-
-                # Check node 1
-                if node["id"] == 1 and neighbour["id"] == 0:
-                    self.assertEqual(neighbour["wr_paths"], set((0, 2)))
-                if node["id"] == 1 and neighbour["id"] == 2:
-                    self.assertEqual(neighbour["wr_paths"], set((2, 0)))
-
-                # Check node 2
-                if node["id"] == 2 and neighbour["id"] == 0:
-                    self.assertEqual(neighbour["wr_paths"], set((0, 1)))
-                if node["id"] == 2 and neighbour["id"] == 1:
-                    self.assertEqual(neighbour["wr_paths"], set((1, 0)))
+            if node == 0:
+                # Assert complete set.
+                self.assertEqual(
+                    set([(1, 2), (2, 1)]), G.nodes[node]["wr_paths"]
+                )
+            if node == 1:
+                # Assert complete set.
+                self.assertEqual(
+                    set([(0, 2), (2, 0)]), G.nodes[node]["wr_paths"]
+                )
+            if node == 2:
+                # Assert complete set.
+                self.assertEqual(
+                    set([(1, 0), (0, 1)]), G.nodes[node]["wr_paths"]
+                )

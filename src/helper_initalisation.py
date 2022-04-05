@@ -6,23 +6,25 @@ import networkx as nx
 def get_weight_receiver_synapse_paths(G):
     # Set weight receiver synapse path attribute (as a list) for each node in
     # graph G.
-    nx.set_node_attributes(G, set(), "wr_paths")
+    #nx.set_node_attributes(G, set(), "wr_paths")
 
     for node in G.nodes:
+        G.nodes[node]["wr_paths"]=set()
+    for node in G.nodes:
         for neighbour in nx.all_neighbors(G, node):
+            print(
+                f'G.nodes[node]["wr_paths"]={G.nodes[node]["wr_paths"]}'
+            )
             for target in nx.all_neighbors(G, node):
-                if target != neighbour:
+                if neighbour != node and target != node and target != neighbour:
                     print(
-                        f"node:{node}, from neighbour{neighbour}, attributes={G.nodes[neighbour]} to target={target}"
+                        f"node:{node}, from neighbour{neighbour}, attributes={G.nodes[node]} to target={target}"
                     )
                     print(
-                        f'G.nodes[neighbour]["wr_paths"]={G.nodes[neighbour]["wr_paths"]}'
+                        f'Before G.nodes[node]["wr_paths"]={G.nodes[node]["wr_paths"]}'
                     )
-                    # if G.nodes[neighbour]["wr_paths"] is None:
-                    #    G.nodes[neighbour]["wr_paths"]= set((neighbour,target))
-                    # else:
-                    # G.nodes[neighbour]["wr_paths"]= G.nodes[neighbour]["wr_paths"].add([neighbour,target])
-                    G.nodes[neighbour]["wr_paths"] = G.nodes[neighbour][
-                        "wr_paths"
-                    ].add("a")
+                    G.nodes[node]["wr_paths"].add((neighbour, target))
+                    print(
+                        f'After G.nodes[node]["wr_paths"]={G.nodes[node]["wr_paths"]}\n'
+                    )
     return G
