@@ -36,9 +36,7 @@ def export_diagrams_to_latex(
         )
 
 
-def export_gantt_to_latex(
-    relative_filepath_from_root, output_dir_relative_to_root
-):
+def export_gantt_to_latex(relative_filepath_from_root, output_dir_relative_to_root):
     """
     Takes an input filepath and an output directory as input and copies the
     file towards the output directory.
@@ -56,14 +54,10 @@ def export_gantt_to_latex(
     """
     if os.path.isfile(relative_filepath_from_root):
         if os.path.isdir(output_dir_relative_to_root):
-            shutil.copy(
-                relative_filepath_from_root, output_dir_relative_to_root
-            )
+            shutil.copy(relative_filepath_from_root, output_dir_relative_to_root)
         else:
             raise Exception(
                 f"The output directory:{output_dir_relative_to_root} does not exist."
             )
     else:
-        raise Exception(
-            f"The input file:{relative_filepath_from_root} does not exist."
-        )
+        raise Exception(f"The input file:{relative_filepath_from_root} does not exist.")

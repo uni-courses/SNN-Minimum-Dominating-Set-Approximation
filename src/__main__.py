@@ -36,7 +36,5 @@ args = parse_cli_args()
 # G = create_triangle_free_planar_graph(nr_nodes, edge_probability, seed, False)
 
 ## Run data export code if any argument is given.
-if not all(
-    arg is None for arg in [args.l, args.dd, args.sd, args.c2l, args.ec2l]
-):
+if not all(arg is None for arg in [args.l, args.dd, args.sd, args.c2l, args.ec2l]):
     export_data(args)

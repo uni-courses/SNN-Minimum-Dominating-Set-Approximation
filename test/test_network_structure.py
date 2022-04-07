@@ -17,9 +17,7 @@ class Test_weight_receiver_synapse_paths(unittest.TestCase):
 
     # Initialize test object
     def __init__(self, *args, **kwargs):
-        super(Test_weight_receiver_synapse_paths, self).__init__(
-            *args, **kwargs
-        )
+        super(Test_weight_receiver_synapse_paths, self).__init__(*args, **kwargs)
 
     def test_weight_receiver_synapse_paths(self):
         """
@@ -46,19 +44,13 @@ class Test_weight_receiver_synapse_paths(unittest.TestCase):
         for node in G.nodes:
             if node == 0:
                 # Assert complete set.
-                self.assertEqual(
-                    set([(1, 2), (2, 1)]), G.nodes[node]["wr_paths"]
-                )
+                self.assertEqual(set([(1, 2), (2, 1)]), G.nodes[node]["wr_paths"])
             if node == 1:
                 # Assert complete set.
-                self.assertEqual(
-                    set([(0, 2), (2, 0)]), G.nodes[node]["wr_paths"]
-                )
+                self.assertEqual(set([(0, 2), (2, 0)]), G.nodes[node]["wr_paths"])
             if node == 2:
                 # Assert complete set.
-                self.assertEqual(
-                    set([(1, 0), (0, 1)]), G.nodes[node]["wr_paths"]
-                )
+                self.assertEqual(set([(1, 0), (0, 1)]), G.nodes[node]["wr_paths"])
 
     def test_weight_receiver_synapse_paths_fully_connected_4_nodes(self):
         """
@@ -66,18 +58,10 @@ class Test_weight_receiver_synapse_paths(unittest.TestCase):
         """
         G = nx.complete_graph(4)
         G = get_weight_receiver_synapse_paths(G)
-        expected_set_node_0 = set(
-            [(1, 2), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2)]
-        )
-        expected_set_node_1 = set(
-            [(0, 2), (0, 3), (2, 0), (2, 3), (3, 0), (3, 2)]
-        )
-        expected_set_node_2 = set(
-            [(0, 1), (0, 3), (1, 0), (1, 3), (3, 0), (3, 1)]
-        )
-        expected_set_node_3 = set(
-            [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
-        )
+        expected_set_node_0 = set([(1, 2), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2)])
+        expected_set_node_1 = set([(0, 2), (0, 3), (2, 0), (2, 3), (3, 0), (3, 2)])
+        expected_set_node_2 = set([(0, 1), (0, 3), (1, 0), (1, 3), (3, 0), (3, 1)])
+        expected_set_node_3 = set([(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         for node in G.nodes:
             if node == 0:
                 # Assert complete set.
@@ -105,23 +89,15 @@ class Test_weight_receiver_synapse_paths(unittest.TestCase):
                     G.nodes[node]["wr_paths"],
                 )
 
-    def test_random_edge_dropout_4_nodes():
+    def test_random_edge_dropout_4_nodes(self):
         """
         For a complete graph of size 4, should find with random dropout:
         """
 
-        expected_set_node_0 = set(
-            [(1, 2), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2)]
-        )
-        expected_set_node_1 = set(
-            [(0, 2), (0, 3), (2, 0), (2, 3), (3, 0), (3, 2)]
-        )
-        expected_set_node_2 = set(
-            [(0, 1), (0, 3), (1, 0), (1, 3), (3, 0), (3, 1)]
-        )
-        expected_set_node_3 = set(
-            [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
-        )
+        expected_set_node_0 = set([(1, 2), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2)])
+        expected_set_node_1 = set([(0, 2), (0, 3), (2, 0), (2, 3), (3, 0), (3, 2)])
+        expected_set_node_2 = set([(0, 1), (0, 3), (1, 0), (1, 3), (3, 0), (3, 1)])
+        expected_set_node_3 = set([(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
 
         G = nx.complete_graph(4)
         # TODO:  For all possible edge sets:

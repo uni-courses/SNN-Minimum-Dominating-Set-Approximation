@@ -13,11 +13,7 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
     for node in G.nodes:
         for neighbour in nx.all_neighbors(G, node):
             for target in nx.all_neighbors(G, node):
-                if (
-                    neighbour != node
-                    and target != node
-                    and target != neighbour
-                ):
+                if neighbour != node and target != node and target != neighbour:
                     G.nodes[node]["wr_paths"].add((neighbour, target))
     return G
 
@@ -32,10 +28,6 @@ def get_weight_receiver_synapse_paths(G):
     for node in G.nodes:
         for neighbour in nx.all_neighbors(G, node):
             for target in nx.all_neighbors(G, node):
-                if (
-                    neighbour != node
-                    and target != node
-                    and target != neighbour
-                ):
+                if neighbour != node and target != node and target != neighbour:
                     G.nodes[node]["wr_paths"].add((neighbour, target))
     return G

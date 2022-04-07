@@ -61,9 +61,7 @@ def create_appendix_filecontent(
     latex_object_name, filename, filepath_from_root, from_root
 ):
     # Latex titles should escape underscores.
-    filepath_from_root_without_underscores = filepath_from_root.replace(
-        "_", "\_"
-    )
+    filepath_from_root_without_underscores = filepath_from_root.replace("_", "\_")
     lines = []
     lines.append(
         f"\{latex_object_name}{{Appendix {filepath_from_root_without_underscores}}}\label{{app:{filename}}}"
@@ -154,9 +152,7 @@ def create_appendix_file(
     # TODO: verify files exist
 
 
-def export_python_project_code(
-    hd, normalised_root_dir, python_project_code_filepaths
-):
+def export_python_project_code(hd, normalised_root_dir, python_project_code_filepaths):
     is_project_code = True
     is_export_code = False
     from_root = False
@@ -179,9 +175,7 @@ def export_python_project_code(
         )
 
 
-def export_python_export_code(
-    hd, normalised_root_dir, python_export_code_filepaths
-):
+def export_python_export_code(hd, normalised_root_dir, python_export_code_filepaths):
     is_project_code = False
     is_export_code = True
     from_root = False

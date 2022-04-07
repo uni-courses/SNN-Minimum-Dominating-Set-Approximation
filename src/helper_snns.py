@@ -11,32 +11,24 @@ def print_neuron_properties(neurons, ids=None):
     if not ids is None:
         [print(f"{str(x) : <{spacing+5}}", end=" ") for x in ids]
 
-    print(f""), [
-        print(f"u={str(x.u.get()) : <{spacing+3}}", end=" ") for x in neurons
-    ]
+    print(f""), [print(f"u={str(x.u.get()) : <{spacing+3}}", end=" ") for x in neurons]
     print(f""), [
         print(f"du={str(x.du.get()) : <{spacing+2}}", end=" ") for x in neurons
     ]
-    print(f""), [
-        print(f"v={str(x.v.get()) : <{spacing+3}}", end=" ") for x in neurons
-    ]
+    print(f""), [print(f"v={str(x.v.get()) : <{spacing+3}}", end=" ") for x in neurons]
     print(f""), [
         print(f"dv={str(x.dv.get()) : <{spacing+2}}", end=" ") for x in neurons
     ]
     print(f""), [
-        print(f"bias={str(x.bias.get()) : <{spacing}}", end=" ")
-        for x in neurons
+        print(f"bias={str(x.bias.get()) : <{spacing}}", end=" ") for x in neurons
     ]
     print(f""), [
-        print(f"vth={str(x.vth.get()) : <{spacing+1}}", end=" ")
-        for x in neurons
+        print(f"vth={str(x.vth.get()) : <{spacing+1}}", end=" ") for x in neurons
     ]
     print(f"\n")
 
 
-def create_two_neurons(
-    u_1=0, du_1=0, dv_1=0, bias_1=0, du_2=0, dv_2=0, bias_2=0
-):
+def create_two_neurons(u_1=0, du_1=0, dv_1=0, bias_1=0, du_2=0, dv_2=0, bias_2=0):
 
     # Initialise neurons and synapses.
     if dv_1 is None:

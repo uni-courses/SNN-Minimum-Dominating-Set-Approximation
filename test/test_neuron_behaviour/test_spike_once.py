@@ -49,17 +49,13 @@ class Test_spike_once(unittest.TestCase):
             previous_v = spike_once.v.get()
 
             # Run the simulation for 1 timestep.
-            spike_once.run(
-                condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg()
-            )
+            spike_once.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
             # Print the values coming into the timestep.
             print(f"t={t}"), print_neuron_properties([spike_once])
 
             # Compute expected values.
             expected_u = (
-                previous_u * (1 - du)
-                + spike_once.u.get()
-                + self.a_in_spike_once(t)
+                previous_u * (1 - du) + spike_once.u.get() + self.a_in_spike_once(t)
             )
             expected_v = previous_v * (1 - dv) + spike_once.u.get() + bias
 
@@ -77,21 +73,13 @@ class Test_spike_once(unittest.TestCase):
     def redirect_tests(self, bias, du, dv, spike_once, t, vth):
         if t == 1:
 
-            self.asserts_for_spike_once_at_t_is_1(
-                bias, du, dv, spike_once, vth
-            )
+            self.asserts_for_spike_once_at_t_is_1(bias, du, dv, spike_once, vth)
         elif t == 2:
-            self.asserts_for_spike_once_at_t_is_2(
-                bias, du, dv, spike_once, vth
-            )
+            self.asserts_for_spike_once_at_t_is_2(bias, du, dv, spike_once, vth)
         elif t == 3:
-            self.asserts_for_spike_once_at_t_is_3(
-                bias, du, dv, spike_once, vth
-            )
+            self.asserts_for_spike_once_at_t_is_3(bias, du, dv, spike_once, vth)
         elif t == 4:
-            self.asserts_for_spike_once_at_t_is_4(
-                bias, du, dv, spike_once, vth
-            )
+            self.asserts_for_spike_once_at_t_is_4(bias, du, dv, spike_once, vth)
         elif t > 4:
             self.asserts_for_spike_once_at_t_is_larger_than_4(
                 bias, du, dv, spike_once, vth
