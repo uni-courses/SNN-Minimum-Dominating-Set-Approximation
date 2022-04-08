@@ -96,6 +96,7 @@ def create_graph_of_network_degree_computation(G):
                         f"degree_receiver_{neighbour_y}",
                         weight=-1,
                     )
+                    print(f'node={node},x={neighbour_x},y={neighbour_y}')
         #    Create a neuron Selector_A with threshold 1 (that keeps spiking and raising
         #    u of neighbour neurons untill the first one spikes. Stops spiking upon
         #    receiving the first spike.)
@@ -149,7 +150,6 @@ def plot_graph(G):
     edge_labels = nx.get_edge_attributes(G, "weight")
     nx.draw_networkx_edge_labels(G, graphviz_layout(G), edge_labels)
     # plt.savefig('this.png')
-    plt.show()
 
     plt.show()
     plt.clf()
