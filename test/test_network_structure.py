@@ -1,8 +1,6 @@
 import unittest
 import networkx as nx
-from src.helper_initalisation import get_weight_receiver_synapse_paths
-
-from ..src.graph_properties import is_planar
+from src.helper_network_structure import get_weight_receiver_synapse_paths
 
 
 class Test_weight_receiver_synapse_paths(unittest.TestCase):
@@ -91,7 +89,11 @@ class Test_weight_receiver_synapse_paths(unittest.TestCase):
 
     def test_random_edge_dropout_4_nodes(self):
         """
-        For a complete graph of size 4, should find with random dropout:
+        TODO: Write a test that gets all possible edge sets in the graph, and
+        then drops out each edge set w.r.t. the fully connected graph. Only
+        proceed with the connected graphs. Then verify that those dropped
+        edges do not occur in the network proposed by:
+        get_weight_receiver_synapse_paths().
         """
 
         expected_set_node_0 = set([(1, 2), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2)])
