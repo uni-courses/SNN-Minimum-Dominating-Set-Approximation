@@ -40,7 +40,6 @@ args = parse_cli_args()
 
 # Create graph for network structure with WTA.
 G = nx.complete_graph(4)
-
 create_graph_of_network_degree_computation(G)
 
 
