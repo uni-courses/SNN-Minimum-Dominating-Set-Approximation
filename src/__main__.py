@@ -4,6 +4,7 @@
 
 ## Import used functions.
 import networkx as nx
+
 # Project code imports.
 from src.helper_network_structure import create_graph_of_network_degree_computation
 from .create_planar_triangle_free_graph import (
@@ -39,6 +40,7 @@ args = parse_cli_args()
 
 # Create graph for network structure with WTA.
 G = nx.complete_graph(4)
+
 create_graph_of_network_degree_computation(G)
 
 
