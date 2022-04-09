@@ -103,44 +103,44 @@ class Test_weight_receiver_synapse_paths(unittest.TestCase):
 
         G = nx.complete_graph(4)
         # TODO:  For all possible edge sets:
-        #for edge_set in None:
-            # Create fully connected graph
-            #G = nx.complete_graph(4)
+        # for edge_set in None:
+        # Create fully connected graph
+        # G = nx.complete_graph(4)
 
-            # TODO: remove edge set from fully connected graph
+        # TODO: remove edge set from fully connected graph
 
-            # TODO: if graph is still a connected graph:
+        # TODO: if graph is still a connected graph:
 
-            # TODO: Remove edge set that is removed from graph from expected results.
+        # TODO: Remove edge set that is removed from graph from expected results.
 
-            # Get synapse paths
-            #G = get_weight_receiver_synapse_paths(G)
+        # Get synapse paths
+        # G = get_weight_receiver_synapse_paths(G)
 
-            # TODO: Verify synapse paths are as expected.
+        # TODO: Verify synapse paths are as expected.
 
-            #for node in G.nodes:
-            #    if node == 0:
-            #        # Assert complete set.
-            #        self.assertEqual(
-            #            expected_set_node_0,
-            #            G.nodes[node]["wr_paths"],
-            #        )
-            #    if node == 1:
-            #        # Assert complete set.
-            #        self.assertEqual(
-            #            expected_set_node_1,
-            #            G.nodes[node]["wr_paths"],
-            #        )
-            #    if node == 2:
-            #        # Assert complete set.
-            #        self.assertEqual(
-            #            expected_set_node_2,
-            #            G.nodes[node]["wr_paths"],
-            #        )
+        # for node in G.nodes:
+        #    if node == 0:
+        #        # Assert complete set.
+        #        self.assertEqual(
+        #            expected_set_node_0,
+        #            G.nodes[node]["wr_paths"],
+        #        )
+        #    if node == 1:
+        #        # Assert complete set.
+        #        self.assertEqual(
+        #            expected_set_node_1,
+        #            G.nodes[node]["wr_paths"],
+        #        )
+        #    if node == 2:
+        #        # Assert complete set.
+        #        self.assertEqual(
+        #            expected_set_node_2,
+        #            G.nodes[node]["wr_paths"],
+        #        )
 
-            #    if node == 3:
-            #        # Assert complete set.
-            #        self.assertEqual(
-            #            expected_set_node_3,
-            #            G.nodes[node]["wr_paths"],
-            #        )
+        #    if node == 3:
+        #        # Assert complete set.
+        #        self.assertEqual(
+        #            expected_set_node_3,
+        #            G.nodes[node]["wr_paths"],
+        #        )

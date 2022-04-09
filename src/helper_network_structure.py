@@ -23,8 +23,8 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
 
 def create_graph_of_network_degree_computation(G):
     """
-        TODO: verify that for node A, the neuron B (winner neuron)
-        keeps spiking at t=101. If this is verified, connect to the next round.
+    TODO: verify that for node A, the neuron B (winner neuron)
+    keeps spiking at t=101. If this is verified, connect to the next round.
     """
     print(f"Incoming G")
     plot_graph(G)
@@ -32,7 +32,7 @@ def create_graph_of_network_degree_computation(G):
     print(f"Outputted get_degree")
     plot_graph(get_degree)
     WTA_circuits = convert_get_degree_into_wta(G, get_degree)
-    #for node in G.nodes:
+    # for node in G.nodes:
     #    print(f"WTA_circuit[{node}]:")
     #    plot_graph(WTA_circuits[node])
     # TODO: Then verify that for node A, the neuron B (winner neuron)
@@ -55,9 +55,12 @@ def get_degree_graph(G):
     # First create all the nodes in the get_degree graph.
     for node in G.nodes:
         # One neuron per node named: spike_once_0-n
-        get_degree.add_node(f"spike_once_{node}", id=node, du=0, dv=0, bias=0)
+        get_degree.add_node(f"spike_once_{node}", id=node, du=0, dv=0, bias=2, vth=1)
         # One neuron per node named: degree_receiver.
-        get_degree.add_node(f"degree_receiver_{node}", id=node, du=0, dv=0, bias=0)
+        # TODO: verify values
+        get_degree.add_node(
+            f"degree_receiver_{node}", id=node, du=0, dv=0, bias=0, vth=0
+        )
 
     # Then create all edges between the nodes.
     for node in G.nodes:
@@ -66,9 +69,18 @@ def get_degree_graph(G):
             print(f"node={node}, neighbour={neighbour}")
             # One synapse from spike_once_0-n to each degree receiver that
             # represents neighbour node.
+            # get_degree.add_edges_from(
+            #    [(f"spike_once_{node}", f"degree_receiver_{neighbour}")]
+            # )
+
             get_degree.add_edges_from(
-                [(f"spike_once_{node}", f"degree_receiver_{neighbour}")]
+                [(f"spike_once_{node}", f"degree_receiver_{neighbour}")], weight=-1
             )
+            ###get_degree.add_edge(
+            ###        f"spike_once_{node}",
+            ###        f"degree_receiver_{neighbour}",
+            ###        weight=1,
+            ###    )
     return get_degree
 
 
