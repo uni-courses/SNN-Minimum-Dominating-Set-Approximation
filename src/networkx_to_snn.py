@@ -37,6 +37,7 @@ def build_snn(G, converted_nodes, neurons, lhs_node):
             converted_nodes, rhs_neuron, neurons, rhs_node = create_neuron_from_node(
                 G, converted_nodes, neurons, neighbour
             )
+            print(f"neurons={neurons}")
 
             # 3. Get the edge between lhs and rhs nodes. They are neighbours
             # so they have an edge by definition.
@@ -48,25 +49,37 @@ def build_snn(G, converted_nodes, neurons, lhs_node):
             # 4. Create synapse between incoming node and neighbour.
             dense = create_weighted_synapse(G.edges[edge]["weight"])
             # 5. Connect neurons using created synapse.
-            neurons = connect_synapse(lhs_neuron, rhs_neuron, dense)
+            lhs_neuron = connect_synapse(lhs_neuron, rhs_neuron, dense)
 
             # 6. recursively call that function on the neighbour neurons until no
             # new neurons are discovered.
             converted_nodes, discarded_neuron, neurons, discarded_node = build_snn(
                 G, converted_nodes, neurons, rhs_node
             )
+    else:
+        lhs_neuron = get_neuron_belonging_to_node_from_list(
+            neurons, lhs_node, converted_nodes
+        )
 
     return converted_nodes, lhs_neuron, neurons, lhs_node
+
+
+def get_neuron_belonging_to_node_from_list(neurons, node, nodes):
+    index = nodes.index(node)
+    return neurons[index]
 
 
 def get_edge_if_exists(G, lhs_node, rhs_node):
     """Returns the edge object if the graph G has an edge between the two
     nodes. Returns None otherwise."""
     if G.has_edge(lhs_node, rhs_node):
-        return G.get_edge(lhs_node, rhs_node)
+        for edge in G.edges:
+            if edge == (lhs_node, rhs_node):
+                print_edge_properties(G, edge)
+                return edge
+        raise Exception("Would expect an edge between a node and its neighbour.")
     else:
         raise Exception("Would expect an edge between a node and its neighbour.")
-        return None
 
 
 def create_neuron_from_node(G, converted_nodes, neurons, node):

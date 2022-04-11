@@ -46,20 +46,10 @@ class Test_networkx_to_snn(unittest.TestCase):
 
         # TODO: Assert error is thrown for the case where some neuron is underspecified.
 
-        
-        
-
-        # TODO: Assert the current u(t=2) of each
-        # degree_receiver neuron has the same value as the number of the
-        # degrees that the node has that is represented by the respective
-        # degree_receiver node.
-
         # TODO: Simulate network for 5 more timesteps,
 
-        # TODO: assert the current does not increase after the initial spikes
 
-
-def test_spike_once_neurons_in_get_degree(get_degree, t):
+def spike_once_neurons_in_get_degree(get_degree, t):
     """Tests whether the neurons are all present.
     Verifies the neuron initial properties at t=0.
     Verifies the neuron properties over time.
@@ -81,7 +71,8 @@ def test_spike_once_neurons_in_get_degree(get_degree, t):
     # TODO: Assert the neuron properties for the spike_once neurons are
     # correct at t>0
 
-def test_degree_receiver_neurons_in_get_degree(get_degree, t):
+
+def degree_receiver_neurons_in_get_degree(get_degree, t):
     """Tests whether the degree_receiver neurons are all present.
     Verifies the neuron initial properties at t=0.
     Verifies the neuron properties over time.
@@ -100,12 +91,18 @@ def test_degree_receiver_neurons_in_get_degree(get_degree, t):
     # at t=0.
 
     # TODO: Assert the degree_receiver neurons receive a spike at t=2
+    # TODO: Assert the current u(t=2) of each.
+    # degree_receiver neuron has the same value as the number of the
+    # degrees that the node has that is represented by the respective
+    # degree_receiver node.
 
     # TODO: Assert the neuron properties for the degree_receiver neurons are
-    # correct at t>2
+    # correct at t>2.
+    # TODO: assert the current u(t) of the degree_receiver neurons does not
+    # increase after the initial spikes.
 
 
-def test_networkx_to_snn_weight_calculation(self):
+def networkx_to_snn_weight_calculation(self):
     """
     TODO: create new test that verifies the incoming random spikes of
     neurons are added to the u(t) of the degree_receiver neurons.
