@@ -14,7 +14,7 @@ def convert_networkx_graph_to_snn_with_one_neuron(
     # 0. Verify the graph is connected (no lose nodes exist).
     # 1. Start with first incoming node.
     first_node = list(G.nodes)[0]
-    print(f"G.nodes[0]={list(G.nodes)[0]}")
+    #print(f"G.nodes[0]={list(G.nodes)[0]}")
     converted_nodes, lhs_neuron, neurons, lhs_node = build_snn(G, [], [], first_node)
 
     # 5. Create a verification that checks that all neurons in the incoming
@@ -25,7 +25,7 @@ def convert_networkx_graph_to_snn_with_one_neuron(
 
 
 def build_snn(G, converted_nodes, neurons, lhs_node):
-    print_node_properties(G, lhs_node)
+    #print_node_properties(G, lhs_node)
     assert_all_neuron_properties_are_specified(G, lhs_node)
     if not node_is_converted(G, converted_nodes, neurons, lhs_node):
         converted_nodes, lhs_neuron, neurons, lhs_node = create_neuron_from_node(
@@ -37,7 +37,6 @@ def build_snn(G, converted_nodes, neurons, lhs_node):
             converted_nodes, rhs_neuron, neurons, rhs_node = create_neuron_from_node(
                 G, converted_nodes, neurons, neighbour
             )
-            print(f"neurons={neurons}")
 
             # 3. Get the edge between lhs and rhs nodes. They are neighbours
             # so they have an edge by definition.
@@ -75,7 +74,7 @@ def get_edge_if_exists(G, lhs_node, rhs_node):
     if G.has_edge(lhs_node, rhs_node):
         for edge in G.edges:
             if edge == (lhs_node, rhs_node):
-                print_edge_properties(G, edge)
+                #print_edge_properties(G, edge)
                 return edge
         raise Exception("Would expect an edge between a node and its neighbour.")
     else:
@@ -103,7 +102,7 @@ def convert_networkx_graph_to_snn(G, full_spec, bias=0, du=0, dv=0, weight=1, vt
     """
     neurons = []
     for node in G.nodes:
-        print_node_properties(G, node)
+        #print_node_properties(G, node)
         assert_all_neuron_properties_are_specified(G, node)
         bias, du, dv, vth = get_neuron_properties(G, node)
         neuron = LIF(bias=bias, du=du, dv=dv, vth=vth)
@@ -121,7 +120,7 @@ def convert_networkx_graph_to_snn(G, full_spec, bias=0, du=0, dv=0, weight=1, vt
     # 6. Create a verification that checks that all synapses in the incoming
     # graph are created.
     for edge in G.edges:
-        print_edge_properties(G, edge)
+        #print_edge_properties(G, edge)
         assert_all_synapse_properties_are_specified(G, edge)
         # TODO: change this from the graph node to the neuron.
         lhs_node = G.nodes[edge[0]]
