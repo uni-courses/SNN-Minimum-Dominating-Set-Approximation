@@ -69,14 +69,14 @@ def create_spike_once_neuron():
     synapse with weight -1 such that it silences itself.
     """
     spike_once = LIF(du=0, dv=0, bias=2, vth=1)
-    dense = create_weighted_synapse(spike_once, spike_once, -2)
+    dense = create_weighted_synapse(-2)
 
     # Connect neuron to itself.
     spike_once = connect_synapse(spike_once, spike_once, dense)
     return spike_once
 
 
-def create_weighted_synapse(neuron_a, neuron_b, w):
+def create_weighted_synapse(w):
     """
     Creates a weighted synapse between neuron a and neuron b.
     """

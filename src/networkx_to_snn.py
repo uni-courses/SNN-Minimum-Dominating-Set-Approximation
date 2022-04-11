@@ -7,6 +7,82 @@ from lava.proc.lif.process import LIF
 from src.helper_snns import connect_synapse, create_weighted_synapse
 
 
+def convert_networkx_graph_to_snn_with_one_neuron(
+    G, full_spec, bias=0, du=0, dv=0, weight=1, vth=1
+):
+    # TODO: rewrite function to:
+    # 0. Verify the graph is connected (no lose nodes exist).
+    # 1. Start with first incoming node.
+    first_node = list(G.nodes)[0]
+    print(f"G.nodes[0]={list(G.nodes)[0]}")
+    converted_nodes, lhs_neuron, neurons, lhs_node = build_snn(G, [], [], first_node)
+
+    # 5. Create a verification that checks that all neurons in the incoming
+    # graph are created.
+    # 6. Create a verification that checks that all synapses in the incoming
+    # graph are created.
+    return converted_nodes, lhs_neuron, neurons, lhs_node
+
+
+def build_snn(G, converted_nodes, neurons, lhs_node):
+    print_node_properties(G, lhs_node)
+    assert_all_neuron_properties_are_specified(G, lhs_node)
+    if not node_is_converted(G, converted_nodes, neurons, lhs_node):
+        converted_nodes, lhs_neuron, neurons, lhs_node = create_neuron_from_node(
+            G, converted_nodes, neurons, lhs_node
+        )
+        # 1. Then get all edges of that neuron.
+        for neighbour in nx.all_neighbors(G, lhs_node):
+            # 2. Create all the neighbour neurons.
+            converted_nodes, rhs_neuron, neurons, rhs_node = create_neuron_from_node(
+                G, converted_nodes, neurons, neighbour
+            )
+
+            # 3. Get the edge between lhs and rhs nodes. They are neighbours
+            # so they have an edge by definition.
+            edge = get_edge_if_exists(G, lhs_node, rhs_node)
+
+            # 3. Assert the synapses are fully specified.
+            assert_all_synapse_properties_are_specified(G, edge)
+
+            # 4. Create synapse between incoming node and neighbour.
+            dense = create_weighted_synapse(G.edges[edge]["weight"])
+            # 5. Connect neurons using created synapse.
+            neurons = connect_synapse(lhs_neuron, rhs_neuron, dense)
+
+            # 6. recursively call that function on the neighbour neurons until no
+            # new neurons are discovered.
+            converted_nodes, discarded_neuron, neurons, discarded_node = build_snn(
+                G, converted_nodes, neurons, rhs_node
+            )
+
+    return converted_nodes, lhs_neuron, neurons, lhs_node
+
+
+def get_edge_if_exists(G, lhs_node, rhs_node):
+    """Returns the edge object if the graph G has an edge between the two
+    nodes. Returns None otherwise."""
+    if G.has_edge(lhs_node, rhs_node):
+        return G.get_edge(lhs_node, rhs_node)
+    else:
+        raise Exception("Would expect an edge between a node and its neighbour.")
+        return None
+
+
+def create_neuron_from_node(G, converted_nodes, neurons, node):
+    bias, du, dv, vth = get_neuron_properties(G, node)
+    neuron = LIF(bias=bias, du=du, dv=dv, vth=vth)
+    neurons.append(neuron)
+    converted_nodes.append(node)
+    return converted_nodes, neuron, neurons, node
+
+
+def node_is_converted(G, converted_nodes, neurons, node):
+    """Verifies that the incoming node is not converted into
+    a neuron yet."""
+    return node in converted_nodes
+
+
 def convert_networkx_graph_to_snn(G, full_spec, bias=0, du=0, dv=0, weight=1, vth=1):
     """Converts an incoming graph into a spiking neural network for lava-nc.
     Input arguments are the default values if they are not specified.
@@ -33,14 +109,14 @@ def convert_networkx_graph_to_snn(G, full_spec, bias=0, du=0, dv=0, weight=1, vt
     # graph are created.
     for edge in G.edges:
         print_edge_properties(G, edge)
-        assert_all_synapse_properties_are_specified
+        assert_all_synapse_properties_are_specified(G, edge)
         # TODO: change this from the graph node to the neuron.
-        lhs_neuron = G.nodes[edge[0]]
-        rhs_neuron = G.nodes[edge[1]]
+        lhs_node = G.nodes[edge[0]]
+        rhs_node = G.nodes[edge[1]]
         # Create synapse
-        dense = create_weighted_synapse(lhs_neuron, rhs_neuron, G.edges[edge]["weight"])
+        dense = create_weighted_synapse(lhs_node, rhs_node, G.edges[edge]["weight"])
         # Connect neurons using created synapse.
-        neurons = connect_synapse(lhs_neuron, rhs_neuron, dense)
+        neurons = connect_synapse(lhs_node, rhs_node, dense)
     raise Exception("Stop")
 
 
