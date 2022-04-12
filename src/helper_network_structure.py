@@ -4,6 +4,7 @@ import numpy as np
 import networkx as nx
 import pylab as plt
 from networkx.drawing.nx_agraph import graphviz_layout
+from src.create_planar_triangle_free_graph import plot_basic_graph
 
 
 def get_weight_receiver_synapse_paths_fully_connected(G):
@@ -88,7 +89,7 @@ def get_degree_graph(G):
     return get_degree
 
 
-def get_degree_graph_with_rand_nodes(G):
+def get_degree_graph_with_rand_nodes(G, rand_range):
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -126,6 +127,22 @@ def get_degree_graph_with_rand_nodes(G):
             pos=(float(1.0), float(node)),
         )
 
+        # One neuron per node named: rand
+        if rand_range < len(G):
+            raise Exception(
+                "The range of random numbers does not allow for randomness collision prevention."
+            )
+
+        get_degree.add_node(
+            f"rand_{node}",
+            id=node,
+            du=0,
+            dv=0,
+            bias=2,
+            vth=1,
+            pos=(float(0.75), float(node) + 0.5),
+        )
+
     # Then create all edges between the nodes.
     for node in G.nodes:
         # For each neighbour of node, named degree_receiver:
@@ -134,6 +151,12 @@ def get_degree_graph_with_rand_nodes(G):
             get_degree.add_edges_from(
                 [(f"spike_once_{node}", f"degree_receiver_{neighbour}")], weight=+1
             )
+
+        # TODO: include random weight, instead of node weight.
+        get_degree.add_edges_from(
+            [(f"rand_{node}", f"degree_receiver_{node}")], weight=node
+        )
+
     return get_degree
 
 

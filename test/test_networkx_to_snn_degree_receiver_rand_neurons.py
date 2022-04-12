@@ -33,13 +33,16 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.vth = 1
         # Generate a fully connected graph with n=4.
         self.G = nx.complete_graph(4)
+        self.rand_range = len(self.G)
+        # TODO: Include passing self.random_values for testing purposes as optional argument.
         # print(f"Incoming G")
         # plot_unstructured_graph(self.G)
 
         # Convert the fully connected graph into a networkx graph that
         # stores the snn properties to create an snn that computes the degree
         # in the number of spikes into the degree_receiver neurons.
-        self.get_degree = get_degree_graph_with_rand_nodes(self.G)
+        # TODO: Include passing self.random_values for testing purposes as optional argument.
+        self.get_degree = get_degree_graph_with_rand_nodes(self.G, self.rand_range)
         (
             self.converted_nodes,
             self.lhs_neuron,
