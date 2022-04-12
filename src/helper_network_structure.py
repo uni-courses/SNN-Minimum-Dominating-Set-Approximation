@@ -27,14 +27,14 @@ def create_graph_of_network_degree_computation(G):
     keeps spiking at t=101. If this is verified, connect to the next round.
     """
     print(f"Incoming G")
-    plot_graph(G)
+    plot_basic_graph(G)
     get_degree = get_degree_graph(G)
     print(f"Outputted get_degree")
-    plot_graph(get_degree)
+    plot_unstructured_graph(get_degree)
     WTA_circuits = convert_get_degree_into_wta(G, get_degree)
     # for node in G.nodes:
     #    print(f"WTA_circuit[{node}]:")
-    #    plot_graph(WTA_circuits[node])
+    #    plot_unstructured_graph(WTA_circuits[node])
     # TODO: Then verify that for node A, the neuron B (winner neuron)
     # keeps spiking at t=101. If this is verified, connect to the next round.
 
@@ -54,33 +54,86 @@ def get_degree_graph(G):
     get_degree = nx.DiGraph()
     # First create all the nodes in the get_degree graph.
     for node in G.nodes:
+
         # One neuron per node named: spike_once_0-n
-        get_degree.add_node(f"spike_once_{node}", id=node, du=0, dv=0, bias=2, vth=1)
-        # One neuron per node named: degree_receiver.
-        # TODO: verify values
         get_degree.add_node(
-            f"degree_receiver_{node}", id=node, du=0, dv=1, bias=0, vth=1
+            f"spike_once_{node}",
+            id=node,
+            du=0,
+            dv=0,
+            bias=2,
+            vth=1,
+            pos=(float(0), float(node)),
+        )
+
+        # One neuron per node named: degree_receiver_0-n.
+        get_degree.add_node(
+            f"degree_receiver_{node}",
+            id=node,
+            du=0,
+            dv=1,
+            bias=0,
+            vth=1,
+            pos=(float(1.0), float(node)),
         )
 
     # Then create all edges between the nodes.
     for node in G.nodes:
         # For each neighbour of node, named degree_receiver:
         for neighbour in nx.all_neighbors(G, node):
-            # print(f"node={node}, neighbour={neighbour}")
-            # One synapse from spike_once_0-n to each degree receiver that
-            # represents neighbour node.
-            # get_degree.add_edges_from(
-            #    [(f"spike_once_{node}", f"degree_receiver_{neighbour}")]
-            # )
 
             get_degree.add_edges_from(
                 [(f"spike_once_{node}", f"degree_receiver_{neighbour}")], weight=+1
             )
-            ###get_degree.add_edge(
-            ###        f"spike_once_{node}",
-            ###        f"degree_receiver_{neighbour}",
-            ###        weight=1,
-            ###    )
+    return get_degree
+
+
+def get_degree_graph_with_rand_nodes(G):
+    """Returns a networkx graph that represents the snn that computes the
+    spiking degree in the degree_receiver neurons.
+    One node in the graph represents one neuron.
+    A directional edge in the graph represents a synapse between two
+    neurons.
+
+    One spike once neuron is created per node in graph G.
+    One degree_receiver neuron is created per node in graph G.
+    A synapse is created from each spike_once neuron that represents node A
+    to each of the degree_receiver that represents a neighbour of node A.
+    """
+    get_degree = nx.DiGraph()
+    # First create all the nodes in the get_degree graph.
+    for node in G.nodes:
+
+        # One neuron per node named: spike_once_0-n
+        get_degree.add_node(
+            f"spike_once_{node}",
+            id=node,
+            du=0,
+            dv=0,
+            bias=2,
+            vth=1,
+            pos=(float(0), float(node)),
+        )
+
+        # One neuron per node named: degree_receiver_0-n.
+        get_degree.add_node(
+            f"degree_receiver_{node}",
+            id=node,
+            du=0,
+            dv=1,
+            bias=0,
+            vth=1,
+            pos=(float(1.0), float(node)),
+        )
+
+    # Then create all edges between the nodes.
+    for node in G.nodes:
+        # For each neighbour of node, named degree_receiver:
+        for neighbour in nx.all_neighbors(G, node):
+
+            get_degree.add_edges_from(
+                [(f"spike_once_{node}", f"degree_receiver_{neighbour}")], weight=+1
+            )
     return get_degree
 
 
@@ -161,7 +214,7 @@ def add_selector_node_to_wta_circuit(G, WTA_circuit, represented_node):
         )
 
     print(f"WTA_circuit,represented_node={represented_node}")
-    plot_graph(WTA_circuit)
+    plot_unstructured_graph(WTA_circuit)
 
 
 def get_weight_receiver_synapse_paths(G):
@@ -179,7 +232,7 @@ def get_weight_receiver_synapse_paths(G):
     return G
 
 
-def plot_graph(G):
+def plot_unstructured_graph(G):
     # nx.draw(G, pos=graphviz_layout(G),with_labels = True)
     #
     # edge_labels = nx.get_edge_attributes(G,'weight')
@@ -196,6 +249,18 @@ def plot_graph(G):
     edge_labels = nx.get_edge_attributes(G, "weight")
     nx.draw_networkx_edge_labels(G, graphviz_layout(G), edge_labels)
     # plt.savefig('this.png')
+
+    plt.show()
+    plt.clf()
+
+
+def plot_coordinated_graph(G):
+    nx.draw(G, nx.get_node_attributes(G, "pos"), with_labels=True, node_size=1)
+    node_labels = nx.get_node_attributes(G, "")
+    pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
+    nx.draw_networkx_labels(G, pos, labels=node_labels)
+    edge_labels = nx.get_edge_attributes(G, "weight")
+    nx.draw_networkx_edge_labels(G, pos, edge_labels)
 
     plt.show()
     plt.clf()

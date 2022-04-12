@@ -4,7 +4,7 @@ from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 
 
-from src.helper_network_structure import get_degree_graph, plot_graph
+from src.helper_network_structure import get_degree_graph
 from src.helper_snns import create_spike_once_neuron, print_neuron_properties
 from src.networkx_to_snn import (
     convert_networkx_graph_to_snn_with_one_neuron,
@@ -31,7 +31,7 @@ class Test_networkx_to_snn(unittest.TestCase):
         # Generate a fully connected graph with n=4.
         self.G = nx.complete_graph(4)
         # print(f"Incoming G")
-        # plot_graph(G) # TODO: There can be only one function plot_graph.
+        # plot_unstructured_graph(G)
 
         # Convert the fully connected graph into a networkx graph that
         # stores the snn properties to create an snn that computes the degree

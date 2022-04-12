@@ -21,7 +21,7 @@ def get_graph(args, show_graph):
     else:
         graph = create_manual_test_graph()
     if show_graph:
-        plot_graph(graph)
+        plot_basic_graph(graph)
     return graph
 
 
@@ -66,7 +66,7 @@ def create_triangle_free_graph(show_graphs):
         nr_of_triangles = nx.triangles(G, 0)
         print(f"nr_of_triangles={nr_of_triangles}")
         if show_graphs:
-            plot_graph(G)
+            plot_basic_graph(G)
     return G
 
 
@@ -99,7 +99,7 @@ def create_triangle_free_planar_graph(nr_nodes, edge_probability, seed, show_gra
         G = add_connections_to_make_graph_connected(G)
 
     if show_graph:
-        plot_graph(G)
+        plot_basic_graph(G)
     return G
 
 
@@ -123,7 +123,7 @@ def add_connections_to_make_graph_connected(G):
 
 
 # TODO: move to helper
-def plot_graph(G):
+def plot_basic_graph(G):
     options = {
         "with_labels": True,
         "node_color": "white",

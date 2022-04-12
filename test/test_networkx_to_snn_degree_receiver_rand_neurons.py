@@ -4,7 +4,10 @@ from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 
 
-from src.helper_network_structure import get_degree_graph, plot_coordinated_graph
+from src.helper_network_structure import (
+    get_degree_graph_with_rand_nodes,
+    plot_coordinated_graph,
+)
 from src.helper_snns import print_neuron_properties
 from src.networkx_to_snn import (
     convert_networkx_graph_to_snn_with_one_neuron,
@@ -13,7 +16,7 @@ from src.networkx_to_snn import (
 from test.helper_tests import a_in_spike_once, neurons_contain_n_degree_receiver_neurons
 
 
-class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
+class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
     """
     Tests whether the networks that are fed into networkx_to_snn are generating
     the correct snn networks.
@@ -21,7 +24,9 @@ class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
 
     # Initialize test object
     def __init__(self, *args, **kwargs):
-        super(Test_networkx_to_snn_degree_receiver, self).__init__(*args, **kwargs)
+        super(Test_networkx_to_snn_degree_receiver_rand_neurons, self).__init__(
+            *args, **kwargs
+        )
         self.du = 0
         self.dv = 1
         self.bias = 0
@@ -34,7 +39,7 @@ class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
         # Convert the fully connected graph into a networkx graph that
         # stores the snn properties to create an snn that computes the degree
         # in the number of spikes into the degree_receiver neurons.
-        self.get_degree = get_degree_graph(self.G)
+        self.get_degree = get_degree_graph_with_rand_nodes(self.G)
         (
             self.converted_nodes,
             self.lhs_neuron,
