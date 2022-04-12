@@ -8,6 +8,7 @@ from src.helper_network_structure import get_degree_graph, plot_graph
 from src.helper_snns import create_spike_once_neuron, print_neuron_properties
 from src.networkx_to_snn import (
     convert_networkx_graph_to_snn_with_one_neuron,
+    get_node_belonging_to_neuron_from_list,
 )
 from test.helper_tests import neurons_contain_n_spike_once_neurons
 from test.test_neuron_behaviour.test_spike_once import a_in_spike_once
@@ -50,6 +51,7 @@ class Test_networkx_to_snn(unittest.TestCase):
             self.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
         )
 
+
     def test_spike_once_neurons_in_get_degree(
         self,
     ):
@@ -66,11 +68,21 @@ class Test_networkx_to_snn(unittest.TestCase):
         spike_once_neurons = self.all_spike_once_neurons_are_present_in_snn(
             self.converted_nodes, self.G, self.get_degree, self.neurons
         )
+        # TODO: Create dictionary of spike_once_neurons to be able to identify them.
+
         # TODO: include assert on recurrent synapse with weight -2 on spike_once_neuron.
 
         # TODO: Assert the spike_once_neurons spike at t=1
         # Simulate SNN and assert values inbetween timesteps.
-        for spike_once in spike_once_neurons:
+        #for spike_once in spike_once_neurons:
+        # Only run the tests on the first node.
+        spike_once= spike_once_neurons[0]
+        #spike_once= spike_once_neurons[3]
+        print(f'self.converted_nodes={self.converted_nodes}')
+        print(f'self.neurons={self.neurons}')
+        if True:
+        #for spike_once in [spike_once_neurons[0],spike_once_neurons[1]]:
+            print(f"spike_once={spike_once}")
             for t in range(1, 100):
 
                 previous_u = spike_once.u.get()
@@ -79,7 +91,7 @@ class Test_networkx_to_snn(unittest.TestCase):
                 # Run the simulation for 1 timestep.
                 spike_once.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
                 # Print the values coming into the timestep.
-                print(f"t={t}"), print_neuron_properties([spike_once])
+                #print(f"t={t}"), print_neuron_properties([spike_once])
 
                 # Compute expected values.
                 expected_u = (
@@ -89,7 +101,7 @@ class Test_networkx_to_snn(unittest.TestCase):
 
                 # Assert neuron values.
                 self.redirect_tests(
-                    self.bias, self.du, self.dv, spike_once, t, self.vth
+                    self.bias, self.du, self.dv, spike_once, t, self.vth,spike_once_neurons
                 )
 
             spike_once.stop()
@@ -143,35 +155,6 @@ class Test_networkx_to_snn(unittest.TestCase):
         #  group for remainder of tests.
         return spike_once_neurons
 
-    def degree_receiver_neurons_in_get_degree(self, get_degree, t):
-        """Tests whether the degree_receiver neurons are all present.
-        Verifies the neuron initial properties at t=0.
-        Verifies the neuron properties over time.
-        Assumes a spike occurs at t=1 and comes in at t=2 in the degree_receiver
-        neurons.
-        """
-        pass
-        # TODO: Assert all degree_receiver neurons are present in the snn.
-
-        # TODO: Assert the initial properties for the degree_receiver neurons are
-        # correct at t=0.
-        # TODO: Assert the current u(t) for the degree_receiver neurons is zero
-        # at t=0.
-
-        # TODO: Assert the current u(t) for the degree_receiver neurons is zero
-        # at t=0.
-
-        # TODO: Assert the degree_receiver neurons receive a spike at t=2
-        # TODO: Assert the current u(t=2) of each.
-        # degree_receiver neuron has the same value as the number of the
-        # degrees that the node has that is represented by the respective
-        # degree_receiver node.
-
-        # TODO: Assert the neuron properties for the degree_receiver neurons are
-        # correct at t>2.
-        # TODO: assert the current u(t) of the degree_receiver neurons does not
-        # increase after the initial spikes.
-
     def networkx_to_snn_weight_calculation(self):
         """
         TODO: create new test that verifies the incoming random spikes of
@@ -187,20 +170,23 @@ class Test_networkx_to_snn(unittest.TestCase):
         # TODO: Write function that creates the synapses between the
         # random spiking neurons and the degree_receiver neurons.
 
-    def redirect_tests(self, bias, du, dv, spike_once, t, vth):
-        if t == 1:
-
-            self.asserts_for_spike_once_at_t_is_1(bias, du, dv, spike_once, vth)
-        elif t == 2:
-            self.asserts_for_spike_once_at_t_is_2(bias, du, dv, spike_once, vth)
-        elif t == 3:
-            self.asserts_for_spike_once_at_t_is_3(bias, du, dv, spike_once, vth)
-        elif t == 4:
-            self.asserts_for_spike_once_at_t_is_4(bias, du, dv, spike_once, vth)
-        elif t > 4:
-            self.asserts_for_spike_once_at_t_is_larger_than_4(
-                bias, du, dv, spike_once, vth
-            )
+    def redirect_tests(self, bias, du, dv, spike_once, t, vth,spike_once_neurons):
+        for some_neuron in spike_once_neurons:
+            some_neuron_name=get_node_belonging_to_neuron_from_list(some_neuron,self.neurons, self.converted_nodes)
+            print(f't={t},some_neuron={some_neuron_name}')
+            print_neuron_properties([some_neuron])
+            if t == 1:
+                self.asserts_for_spike_once_at_t_is_1(bias, du, dv, some_neuron, vth)
+            elif t == 2:
+                self.asserts_for_spike_once_at_t_is_2(bias, du, dv,some_neuron, vth)
+            elif t == 3:
+                self.asserts_for_spike_once_at_t_is_3(bias, du, dv, some_neuron, vth)
+            elif t == 4:
+                self.asserts_for_spike_once_at_t_is_4(bias, du, dv, some_neuron, vth)
+            elif t > 4:
+                self.asserts_for_spike_once_at_t_is_larger_than_4(
+                    bias, du, dv, some_neuron, vth
+                )
 
     def asserts_for_spike_once_at_t_is_0(self, bias, du, dv, spike_once, vth):
         """Assert the values of the spike_once neuron on t=0."""
