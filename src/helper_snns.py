@@ -102,3 +102,17 @@ def connect_synapse(neuron_a, neuron_b, dense):
     neuron_a.out_ports.s_out.connect(dense.in_ports.s_in)
     dense.out_ports.a_out.connect(neuron_b.in_ports.a_in)
     return neuron_a
+
+
+def connect_synapse_left_to_right(lhs_neuron, rhs_neuron, dense):
+    """Connects a synapse named dense from lhs_neuron to rhs_neuron."""
+    lhs_neuron.out_ports.s_out.connect(dense.in_ports.s_in)
+    dense.out_ports.a_out.connect(rhs_neuron.in_ports.a_in)
+    return lhs_neuron
+
+
+def connect_synapse_right_to_left(lhs_neuron, rhs_neuron, dense):
+    """Connects a synapse named dense from lhs_neuron to rhs_neuron."""
+    rhs_neuron.out_ports.s_out.connect(dense.in_ports.s_in)
+    dense.out_ports.a_out.connect(lhs_neuron.in_ports.a_in)
+    return lhs_neuron

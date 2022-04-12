@@ -4,7 +4,12 @@ import networkx as nx
 # Instantiate Lava processes to build network
 from lava.proc.dense.process import Dense
 from lava.proc.lif.process import LIF
-from src.helper_snns import connect_synapse, create_weighted_synapse
+from src.helper_snns import (
+    connect_synapse,
+    connect_synapse_left_to_right,
+    connect_synapse_right_to_left,
+    create_weighted_synapse,
+)
 
 
 def convert_networkx_graph_to_snn_with_one_neuron(
@@ -45,6 +50,8 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
         )
 
     # For all edges of node, if synapse does not yet  exists:
+    print(f"{lhs_node} neighbours={list(nx.all_neighbors(G, lhs_node))}")
+    print(f"visited_nodes={visited_nodes}")
     for neighbour in nx.all_neighbors(G, lhs_node):
         if neighbour not in visited_nodes:
 
@@ -56,24 +63,16 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
                     neurons,
                     rhs_node,
                 ) = create_neuron_from_node(G, converted_nodes, neurons, neighbour)
-            # 3. Get the edge between lhs and rhs nodes. They are neighbours
-            # so they have an edge by definition.
-            edge = get_edge_if_exists(G, lhs_node, neighbour)
 
-            if not edge is None:
-                # 3. Assert the synapses are fully specified.
-                assert_all_synapse_properties_are_specified(G, edge)
-
-                # 4. Create synapse between incoming node and neighbour.
-                dense = create_weighted_synapse(G.edges[edge]["weight"])
-
-                # 5. Connect neurons using created synapse.
-                # TODO: write function that checks if synapse is created or not.
-                lhs_neuron = connect_synapse(lhs_neuron, rhs_neuron, dense)
+            # 5. Add synapse
+            lhs_neuron = add_synapse_between_nodes(
+                G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rhs_node
+            )
 
             # 6. recursively call that function on the neighbour neurons until no
             # new neurons are discovered.
             if neighbour not in visited_nodes:
+                print(f"call_on_neighbour")
                 (
                     converted_nodes,
                     discarded_neuron,
@@ -82,10 +81,10 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
                 ) = retry_build_snn(
                     G, converted_nodes, neurons, neighbour, visited_nodes
                 )
-    else:
-        lhs_neuron = get_neuron_belonging_to_node_from_list(
-            neurons, lhs_node, converted_nodes
-        )
+        else:
+            lhs_neuron = get_neuron_belonging_to_node_from_list(
+                neurons, lhs_node, converted_nodes
+            )
 
     return converted_nodes, lhs_neuron, neurons, lhs_node
 
@@ -122,7 +121,6 @@ def create_neuron_from_node(G, converted_nodes, neurons, node):
 
     # If spike_once_neuron, create recurrent synapse
     if node[0:11] == "spike_once_":
-        print("synapse")
         dense = create_weighted_synapse(-2)
 
         # Connect neuron to itself.
@@ -170,6 +168,9 @@ def convert_networkx_graph_to_snn(G, full_spec, bias=0, du=0, dv=0, weight=1, vt
         # TODO: change this from the graph node to the neuron.
         lhs_node = G.nodes[edge[0]]
         rhs_node = G.nodes[edge[1]]
+        print(
+            f'connecting: lhs_node={lhs_node} to:rhs_node={rhs_node} with weight:{G.edges[edge]["weight"]}'
+        )
         # Create synapse
         dense = create_weighted_synapse(lhs_node, rhs_node, G.edges[edge]["weight"])
         # Connect neurons using created synapse.
@@ -250,3 +251,55 @@ def get_synapse_properties(G, edge):
     # is not yet supported by lava-nc.
     # delay=G.edges[edge]['delay']
     return weight
+
+
+def add_synapse_between_nodes(G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rhs_node):
+    lhs_neuron = add_synapse_left_to_right(
+        G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rhs_node
+    )
+    # lhs_neuron=add_synapse_right_to_left(G,lhs_neuron,lhs_node,neighbour,rhs_neuron,rhs_node)
+    return lhs_neuron
+
+
+def add_synapse_left_to_right(G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rhs_node):
+    # 3. Get the edge between lhs and rhs nodes. They are neighbours
+    # so they have an edge by definition.However it is a directed graph.
+    edge = get_edge_if_exists(G, lhs_node, neighbour)
+    print(f"edge={edge}")
+
+    if not edge is None:
+        # 3. Assert the synapses are fully specified.
+        assert_all_synapse_properties_are_specified(G, edge)
+
+        # 4. Create synapse between incoming node and neighbour.
+        dense = create_weighted_synapse(G.edges[edge]["weight"])
+
+        # 5. Connect neurons using created synapse.
+        # TODO: write function that checks if synapse is created or not.
+        lhs_neuron = connect_synapse_left_to_right(lhs_neuron, rhs_neuron, dense)
+        print(
+            f'connecting: lhs_node={lhs_node} to:rhs_node={rhs_node} with weight:{G.edges[edge]["weight"]}\n'
+        )
+    return lhs_neuron
+
+
+def add_synapse_right_to_left(G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rhs_node):
+    # 3. Get the edge between lhs and rhs nodes. They are neighbours
+    # so they have an edge by definition.However it is a directed graph.
+    edge = get_edge_if_exists(G, neighbour, lhs_node)
+    print(f"edge={edge}")
+
+    if not edge is None:
+        # 3. Assert the synapses are fully specified.
+        assert_all_synapse_properties_are_specified(G, edge)
+
+        # 4. Create synapse between incoming node and neighbour.
+        dense = create_weighted_synapse(G.edges[edge]["weight"])
+
+        # 5. Connect neurons using created synapse.
+        # TODO: write function that checks if synapse is created or not.
+        lhs_neuron = connect_synapse_right_to_left(rhs_neuron, lhs_neuron, dense)
+        print(
+            f'connecting:rhs_node={rhs_node} to:  lhs_node={lhs_node} with weight:{G.edges[edge]["weight"]}\n'
+        )
+    return lhs_neuron

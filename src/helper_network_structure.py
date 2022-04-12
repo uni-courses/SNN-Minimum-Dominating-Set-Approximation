@@ -59,7 +59,7 @@ def get_degree_graph(G):
         # One neuron per node named: degree_receiver.
         # TODO: verify values
         get_degree.add_node(
-            f"degree_receiver_{node}", id=node, du=0, dv=0, bias=0, vth=0
+            f"degree_receiver_{node}", id=node, du=1, dv=1, bias=0, vth=1
         )
 
     # Then create all edges between the nodes.
@@ -74,7 +74,7 @@ def get_degree_graph(G):
             # )
 
             get_degree.add_edges_from(
-                [(f"spike_once_{node}", f"degree_receiver_{neighbour}")], weight=-1
+                [(f"spike_once_{node}", f"degree_receiver_{neighbour}")], weight=+1
             )
             ###get_degree.add_edge(
             ###        f"spike_once_{node}",

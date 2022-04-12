@@ -10,6 +10,7 @@ from src.helper_snns import (
     create_spike_once_neuron,
     print_neuron_properties,
 )
+from test.helper_tests import a_in_spike_once
 
 
 # Include marker ensuring these tests only run on argument: neuron_behaviour
@@ -182,10 +183,3 @@ class Test_spike_once(unittest.TestCase):
         self.assertEqual(spike_once.dv.get(), dv)  # Custom value.
         self.assertEqual(spike_once.bias.get(), bias)  # Custom value.
         self.assertEqual(spike_once.vth.get(), vth)  # Default value.
-
-
-def a_in_spike_once(t):
-    if t == 2:
-        return 1
-    else:
-        return 0
