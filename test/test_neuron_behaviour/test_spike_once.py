@@ -54,21 +54,13 @@ class Test_spike_once(unittest.TestCase):
             print(f"t={t}"), print_neuron_properties([spike_once])
 
             # Compute expected values.
-            expected_u = (
-                previous_u * (1 - du) + spike_once.u.get() + self.a_in_spike_once(t)
-            )
+            expected_u = previous_u * (1 - du) + spike_once.u.get() + a_in_spike_once(t)
             expected_v = previous_v * (1 - dv) + spike_once.u.get() + bias
 
             # Assert neuron values.
             self.redirect_tests(bias, du, dv, spike_once, t, vth)
 
         spike_once.stop()
-
-    def a_in_spike_once(self, t):
-        if t == 2:
-            return 1
-        else:
-            return 0
 
     def redirect_tests(self, bias, du, dv, spike_once, t, vth):
         if t == 1:
@@ -190,3 +182,10 @@ class Test_spike_once(unittest.TestCase):
         self.assertEqual(spike_once.dv.get(), dv)  # Custom value.
         self.assertEqual(spike_once.bias.get(), bias)  # Custom value.
         self.assertEqual(spike_once.vth.get(), vth)  # Default value.
+
+
+def a_in_spike_once(t):
+    if t == 2:
+        return 1
+    else:
+        return 0

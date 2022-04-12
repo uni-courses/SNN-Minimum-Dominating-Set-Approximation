@@ -14,8 +14,11 @@ def convert_networkx_graph_to_snn_with_one_neuron(
     # 0. Verify the graph is connected (no lose nodes exist).
     # 1. Start with first incoming node.
     first_node = list(G.nodes)[0]
-    #print(f"G.nodes[0]={list(G.nodes)[0]}")
-    converted_nodes, lhs_neuron, neurons, lhs_node = build_snn(G, [], [], first_node)
+    # print(f"G.nodes[0]={list(G.nodes)[0]}")
+    # converted_nodes, lhs_neuron, neurons, lhs_node = build_snn(G, [], [], first_node)
+    converted_nodes, lhs_neuron, neurons, lhs_node = retry_build_snn(
+        G, [], [], first_node, []
+    )
 
     # 5. Create a verification that checks that all neurons in the incoming
     # graph are created.
@@ -24,37 +27,61 @@ def convert_networkx_graph_to_snn_with_one_neuron(
     return converted_nodes, lhs_neuron, neurons, lhs_node
 
 
-def build_snn(G, converted_nodes, neurons, lhs_node):
-    #print_node_properties(G, lhs_node)
+def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
+    # Verify prerequisites
+    # print_node_properties(G, lhs_node)
     assert_all_neuron_properties_are_specified(G, lhs_node)
+    # TODO: assert graph G is connected.
+
+    visited_nodes.append(lhs_node)
+    # Incoming node, if it is not yet converted, then convert to neuron.
     if not node_is_converted(G, converted_nodes, neurons, lhs_node):
         converted_nodes, lhs_neuron, neurons, lhs_node = create_neuron_from_node(
             G, converted_nodes, neurons, lhs_node
         )
-        # 1. Then get all edges of that neuron.
-        for neighbour in nx.all_neighbors(G, lhs_node):
-            # 2. Create all the neighbour neurons.
-            converted_nodes, rhs_neuron, neurons, rhs_node = create_neuron_from_node(
-                G, converted_nodes, neurons, neighbour
-            )
+    else:
+        lhs_neuron = get_neuron_belonging_to_node_from_list(
+            neurons, lhs_node, converted_nodes
+        )
 
+    # For all edges of node, if synapse does not yet  exists:
+    for neighbour in nx.all_neighbors(G, lhs_node):
+        if neighbour not in visited_nodes:
+
+            # Ensure target neuron is created.
+            if not node_is_converted(G, converted_nodes, neurons, neighbour):
+                (
+                    converted_nodes,
+                    rhs_neuron,
+                    neurons,
+                    rhs_node,
+                ) = create_neuron_from_node(G, converted_nodes, neurons, neighbour)
             # 3. Get the edge between lhs and rhs nodes. They are neighbours
             # so they have an edge by definition.
-            edge = get_edge_if_exists(G, lhs_node, rhs_node)
+            edge = get_edge_if_exists(G, lhs_node, neighbour)
 
-            # 3. Assert the synapses are fully specified.
-            assert_all_synapse_properties_are_specified(G, edge)
+            if not edge is None:
+                # 3. Assert the synapses are fully specified.
+                assert_all_synapse_properties_are_specified(G, edge)
 
-            # 4. Create synapse between incoming node and neighbour.
-            dense = create_weighted_synapse(G.edges[edge]["weight"])
-            # 5. Connect neurons using created synapse.
-            lhs_neuron = connect_synapse(lhs_neuron, rhs_neuron, dense)
+                # 4. Create synapse between incoming node and neighbour.
+                dense = create_weighted_synapse(G.edges[edge]["weight"])
+
+                # 5. Connect neurons using created synapse.
+                # TODO: write function that checks if synapse is created or not.
+                lhs_neuron = connect_synapse(lhs_neuron, rhs_neuron, dense)
 
             # 6. recursively call that function on the neighbour neurons until no
             # new neurons are discovered.
-            converted_nodes, discarded_neuron, neurons, discarded_node = build_snn(
-                G, converted_nodes, neurons, rhs_node
-            )
+            if neighbour not in visited_nodes:
+                (
+                    converted_nodes,
+                    discarded_neuron,
+                    neurons,
+                    discarded_node,
+                ) = retry_build_snn(
+                    G, converted_nodes, neurons, neighbour, visited_nodes
+                )
     else:
         lhs_neuron = get_neuron_belonging_to_node_from_list(
             neurons, lhs_node, converted_nodes
@@ -74,16 +101,32 @@ def get_edge_if_exists(G, lhs_node, rhs_node):
     if G.has_edge(lhs_node, rhs_node):
         for edge in G.edges:
             if edge == (lhs_node, rhs_node):
-                #print_edge_properties(G, edge)
+                # print_edge_properties(G, edge)
                 return edge
-        raise Exception("Would expect an edge between a node and its neighbour.")
-    else:
-        raise Exception("Would expect an edge between a node and its neighbour.")
+        # Verify at least an edge the other way round exists.
+        if not G.has_edge(rhs_node, lhs_node):
+            raise Exception(
+                "Would expect an edge between a node and its neighbour in the other direction."
+            )
+    # Verify at least an edge the other way round exists.
+    if not G.has_edge(rhs_node, lhs_node):
+        raise Exception(
+            "Would expect an edge between a node and its neighbour in the other direction."
+        )
 
 
 def create_neuron_from_node(G, converted_nodes, neurons, node):
     bias, du, dv, vth = get_neuron_properties(G, node)
+
     neuron = LIF(bias=bias, du=du, dv=dv, vth=vth)
+
+    # If spike_once_neuron, create recurrent synapse
+    if node[0:11] == "spike_once_":
+        print("synapse")
+        dense = create_weighted_synapse(-2)
+
+        # Connect neuron to itself.
+        neuron = connect_synapse(neuron, neuron, dense)
     neurons.append(neuron)
     converted_nodes.append(node)
     return converted_nodes, neuron, neurons, node
@@ -102,10 +145,12 @@ def convert_networkx_graph_to_snn(G, full_spec, bias=0, du=0, dv=0, weight=1, vt
     """
     neurons = []
     for node in G.nodes:
-        #print_node_properties(G, node)
+        print_node_properties(G, node)
         assert_all_neuron_properties_are_specified(G, node)
         bias, du, dv, vth = get_neuron_properties(G, node)
         neuron = LIF(bias=bias, du=du, dv=dv, vth=vth)
+
+        # TODO: Add recurrent synapse if it is spike_once neuron.
         neurons.append(neuron)
 
     # TODO: rewrite function to:
@@ -120,7 +165,7 @@ def convert_networkx_graph_to_snn(G, full_spec, bias=0, du=0, dv=0, weight=1, vt
     # 6. Create a verification that checks that all synapses in the incoming
     # graph are created.
     for edge in G.edges:
-        #print_edge_properties(G, edge)
+        # print_edge_properties(G, edge)
         assert_all_synapse_properties_are_specified(G, edge)
         # TODO: change this from the graph node to the neuron.
         lhs_node = G.nodes[edge[0]]

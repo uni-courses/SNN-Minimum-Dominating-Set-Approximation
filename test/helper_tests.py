@@ -8,3 +8,51 @@ def compute_expected_voltage(bias, dv, lif_neuron, previous_v):
     """Returns the expected voltage at timestep t."""
     expected_v = previous_v * (1 - dv) + lif_neuron.u.get() + bias
     return expected_v
+
+
+def neurons_contain_n_spike_once_neurons(bias, du, dv, neurons, n, vth):
+    """Verifies at least n neurons exist with the spike_once properties."""
+    spike_once_neurons = []
+    for neuron in neurons:
+
+        # Check if neuron has the correct properties.
+        bool_spike_once_neuron = is_spike_once_neuron(bias, du, dv, neuron, vth)
+
+        if bool_spike_once_neuron:
+            # TODO: Verify a spike_once neuron has a recurrent synaptic
+            # connection to itself with weight -2.
+            spike_once_neurons.append(neuron)
+
+    if len(spike_once_neurons) == n:
+        return True, spike_once_neurons
+    else:
+        print(f"len(spike_once_neurons)={len(spike_once_neurons)}")
+        return False, spike_once_neurons
+
+
+def is_spike_once_neuron(bias, du, dv, neuron, vth):
+    """Assert the values of the spike_once neuron on t=0."""
+    if neuron.u.get() == 0:  # Default initial value.
+        if neuron.du.get() == du:  # Custom value.
+            if neuron.v.get() == 0:  # Default initial value.
+                if neuron.dv.get() == dv:  # Default initial value.
+                    if neuron.bias.get() == bias:  # Custom value.
+                        if neuron.vth.get() == vth:  # Default value.
+                            return True
+                        else:
+                            print(
+                                f"neuron.vth.get()={neuron.vth.get()}, whereas vth={vth}"
+                            )
+                    else:
+                        print(
+                            f"neuron.bias.get()={neuron.bias.get()}, whereas bias={bias}"
+                        )
+                else:
+                    print(f"neuron.dv.get()={neuron.dv.get()}, whereas dv={dv}")
+            else:
+                print(f"neuron.v.get()={neuron.v.get()}, whereas v={v}")
+        else:
+            print(f"neuron.du.get()={neuron.du.get()}, whereas du={du}")
+    else:
+        print(f"neuron.u.get()={neuron.u.get()}, whereas u={0}")
+    return False

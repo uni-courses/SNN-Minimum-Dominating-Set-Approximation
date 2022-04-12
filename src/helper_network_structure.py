@@ -66,7 +66,7 @@ def get_degree_graph(G):
     for node in G.nodes:
         # For each neighbour of node, named degree_receiver:
         for neighbour in nx.all_neighbors(G, node):
-            #print(f"node={node}, neighbour={neighbour}")
+            # print(f"node={node}, neighbour={neighbour}")
             # One synapse from spike_once_0-n to each degree receiver that
             # represents neighbour node.
             # get_degree.add_edges_from(
