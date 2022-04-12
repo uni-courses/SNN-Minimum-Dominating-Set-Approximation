@@ -50,8 +50,8 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
         )
 
     # For all edges of node, if synapse does not yet  exists:
-    #print(f"{lhs_node} neighbours={list(nx.all_neighbors(G, lhs_node))}")
-    #print(f"visited_nodes={visited_nodes}")
+    # print(f"{lhs_node} neighbours={list(nx.all_neighbors(G, lhs_node))}")
+    # print(f"visited_nodes={visited_nodes}")
     for neighbour in nx.all_neighbors(G, lhs_node):
         if neighbour not in visited_nodes:
 
@@ -97,7 +97,8 @@ def get_neuron_belonging_to_node_from_list(neurons, node, nodes):
     index = nodes.index(node)
     return neurons[index]
 
-def get_node_belonging_to_neuron_from_list(neuron,neurons, nodes):
+
+def get_node_belonging_to_neuron_from_list(neuron, neurons, nodes):
     index = neurons.index(neuron)
     return nodes[index]
 
@@ -142,8 +143,6 @@ def node_is_converted(G, converted_nodes, neurons, node):
     """Verifies that the incoming node is not converted into
     a neuron yet."""
     return node in converted_nodes
-
-
 
 
 def print_node_properties(G, node):
@@ -225,7 +224,9 @@ def add_synapse_between_nodes(G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rh
     lhs_neuron = add_synapse_left_to_right(
         G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rhs_node
     )
-    lhs_neuron=add_synapse_right_to_left(G,lhs_neuron,lhs_node,neighbour,rhs_neuron,rhs_node)
+    lhs_neuron = add_synapse_right_to_left(
+        G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rhs_node
+    )
     return lhs_neuron
 
 

@@ -8,6 +8,7 @@ from src.helper_network_structure import get_degree_graph, plot_graph
 from src.helper_snns import print_neuron_properties
 from src.networkx_to_snn import (
     convert_networkx_graph_to_snn_with_one_neuron,
+    get_node_belonging_to_neuron_from_list,
 )
 from test.helper_tests import a_in_spike_once, neurons_contain_n_degree_receiver_neurons
 
@@ -21,7 +22,7 @@ class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
     # Initialize test object
     def __init__(self, *args, **kwargs):
         super(Test_networkx_to_snn_degree_receiver, self).__init__(*args, **kwargs)
-        self.du = 1
+        self.du = 0
         self.dv = 1
         self.bias = 0
         self.vth = 1
@@ -63,37 +64,26 @@ class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
         )
 
         # Simulate SNN and assert values inbetween timesteps.
-        for degree_receiver in degree_receiver_neurons:
-            for t in range(1, 100):
+        starter_neuron = degree_receiver_neurons[0]
+        for t in range(1, 100):
 
-                previous_u = degree_receiver.u.get()
-                previous_v = degree_receiver.v.get()
+            # Run the simulation for 1 timestep.
+            starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
+            # Print the values coming into the timestep.
+            print(f"starter_neuron t={t}"), print_neuron_properties([starter_neuron])
 
-                # Run the simulation for 1 timestep.
-                degree_receiver.run(
-                    condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg()
-                )
-                # Print the values coming into the timestep.
-                print(f"degree_receiver t={t}"), print_neuron_properties(
-                    [degree_receiver]
-                )
+            # Assert neuron values.
+            self.redirect_tests(
+                self.bias,
+                self.du,
+                self.dv,
+                starter_neuron,
+                t,
+                self.vth,
+                degree_receiver_neurons,
+            )
 
-                # Compute expected values.
-                expected_u = (
-                    previous_u * (1 - self.du)
-                    + degree_receiver.u.get()
-                    + a_in_spike_once(t)
-                )
-                expected_v = (
-                    previous_v * (1 - self.dv) + degree_receiver.u.get() + self.bias
-                )
-
-                # Assert neuron values.
-                self.redirect_tests(
-                    self.bias, self.du, self.dv, degree_receiver, t, self.vth
-                )
-
-            degree_receiver.stop()
+        starter_neuron.stop()
 
         # TODO: Assert the neuron properties for the degree_receiver neurons are
         # correct at t>0
@@ -191,7 +181,15 @@ class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
         # TODO: Write function that creates the synapses between the
         # random spiking neurons and the degree_receiver neurons.
 
-    def redirect_tests(self, bias, du, dv, degree_receiver, t, vth):
+    def redirect_tests(
+        self, bias, du, dv, degree_receiver, t, vth, degree_receiver_neurons
+    ):
+        for some_neuron in degree_receiver_neurons:
+            some_neuron_name = get_node_belonging_to_neuron_from_list(
+                some_neuron, self.neurons, self.converted_nodes
+            )
+            print(f"t={t},some_neuron={some_neuron_name}")
+            print_neuron_properties([some_neuron])
         if t == 1:
 
             self.asserts_for_degree_receiver_at_t_is_1(
@@ -249,7 +247,9 @@ class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
         # u[t=2]=0*(1-1)+0
         # u[t=2]=0*0+0
         # u[t=2]=-0
-        self.assertEqual(degree_receiver.u.get(), 0)
+        # TODO: get node index matching the neuron.
+        # TODO: change expected value to degree of node.
+        self.assertEqual(degree_receiver.u.get(), 3)
         # v[t=2] = v[t=1] * (1-dv) + u[t=0] + bias
         # v[t=1]_before_spike = 2
         # v[t=1]_after_spike = 0
@@ -266,10 +266,10 @@ class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
         """Assert the values of the degree_receiver neuron on t=3."""
 
         # u[t=3]=u[t=2]*(1-du)+a_in
-        # u[t=3]=-2*(1-0)-0
-        # u[t=3]=-2*1-0
-        # u[t=3]=-2
-        self.assertEqual(degree_receiver.u.get(), -2)
+        # u[t=3]=3*(1-0)-0
+        # u[t=3]=3*1-0
+        # u[t=3]=3
+        self.assertEqual(degree_receiver.u.get(), 3)
         # v[t=3] = v[t=2] * (1-dv) + u[t=2] + bias
         # v[t=3] = 0 * (1-0) -2 + 2
         # v[t=3] = 0
@@ -284,9 +284,9 @@ class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
         """Assert the values of the degree_receiver neuron on t=4."""
 
         # u[t=4]=u[t=3]*(1-du)+a_in
-        # u[t=4]=0*(1-0)-1
-        # u[t=4]=-2
-        self.assertEqual(degree_receiver.u.get(), -2)
+        # u[t=4]=3*(1-0)+0
+        # u[t=4]=3
+        self.assertEqual(degree_receiver.u.get(), 3)
         # v[t=4] = v[t=3] * (1-dv) + u[t=2] + bias
         # v[t=4] = 0 * (1-0) -2 + 2
         # v[t=4] = 0
@@ -303,9 +303,9 @@ class Test_networkx_to_snn_degree_receiver(unittest.TestCase):
         """Assert the values of the degree_receiver neuron on t=4."""
         # The current stays constant indefinitely.
         # u[t=x+1]=u[t=x]*(1-du)+a_in
-        # u[t=x+1]=0*(1-0)-1
-        # u[t=x+1]=-2
-        self.assertEqual(degree_receiver.u.get(), -2)
+        # u[t=x+1]=3*(1-0)+0
+        # u[t=x+1]=3
+        self.assertEqual(degree_receiver.u.get(), 3)
         # The voltage stays constant indefinitely because the current
         # stays constant indefinitely whilst cancelling out the bias.
         # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias

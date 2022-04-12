@@ -51,7 +51,6 @@ class Test_networkx_to_snn(unittest.TestCase):
             self.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
         )
 
-
     def test_spike_once_neurons_in_get_degree(
         self,
     ):
@@ -68,43 +67,35 @@ class Test_networkx_to_snn(unittest.TestCase):
         spike_once_neurons = self.all_spike_once_neurons_are_present_in_snn(
             self.converted_nodes, self.G, self.get_degree, self.neurons
         )
-        # TODO: Create dictionary of spike_once_neurons to be able to identify them.
 
         # TODO: include assert on recurrent synapse with weight -2 on spike_once_neuron.
 
         # TODO: Assert the spike_once_neurons spike at t=1
         # Simulate SNN and assert values inbetween timesteps.
-        #for spike_once in spike_once_neurons:
+        # for spike_once in spike_once_neurons:
         # Only run the tests on the first node.
-        spike_once= spike_once_neurons[0]
-        #spike_once= spike_once_neurons[3]
-        print(f'self.converted_nodes={self.converted_nodes}')
-        print(f'self.neurons={self.neurons}')
-        if True:
-        #for spike_once in [spike_once_neurons[0],spike_once_neurons[1]]:
-            print(f"spike_once={spike_once}")
-            for t in range(1, 100):
+        starter_neuron = spike_once_neurons[0]
+        # spike_once= spike_once_neurons[3]
+        print(f"self.converted_nodes={self.converted_nodes}")
+        print(f"self.neurons={self.neurons}")
+        for t in range(1, 100):
 
-                previous_u = spike_once.u.get()
-                previous_v = spike_once.v.get()
+            # Run the simulation for 1 timestep.
+            starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
+            # Print the values coming into the timestep.
+            # print(f"t={t}"), print_neuron_properties([starter_neuron])
+            # Assert neuron values.
+            self.redirect_tests(
+                self.bias,
+                self.du,
+                self.dv,
+                starter_neuron,
+                t,
+                self.vth,
+                spike_once_neurons,
+            )
 
-                # Run the simulation for 1 timestep.
-                spike_once.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
-                # Print the values coming into the timestep.
-                #print(f"t={t}"), print_neuron_properties([spike_once])
-
-                # Compute expected values.
-                expected_u = (
-                    previous_u * (1 - self.du) + spike_once.u.get() + a_in_spike_once(t)
-                )
-                expected_v = previous_v * (1 - self.dv) + spike_once.u.get() + self.bias
-
-                # Assert neuron values.
-                self.redirect_tests(
-                    self.bias, self.du, self.dv, spike_once, t, self.vth,spike_once_neurons
-                )
-
-            spike_once.stop()
+        starter_neuron.stop()
 
         # TODO: Assert the neuron properties for the spike_once neurons are
         # correct at t>0
@@ -170,15 +161,17 @@ class Test_networkx_to_snn(unittest.TestCase):
         # TODO: Write function that creates the synapses between the
         # random spiking neurons and the degree_receiver neurons.
 
-    def redirect_tests(self, bias, du, dv, spike_once, t, vth,spike_once_neurons):
+    def redirect_tests(self, bias, du, dv, spike_once, t, vth, spike_once_neurons):
         for some_neuron in spike_once_neurons:
-            some_neuron_name=get_node_belonging_to_neuron_from_list(some_neuron,self.neurons, self.converted_nodes)
-            print(f't={t},some_neuron={some_neuron_name}')
+            some_neuron_name = get_node_belonging_to_neuron_from_list(
+                some_neuron, self.neurons, self.converted_nodes
+            )
+            print(f"t={t},some_neuron={some_neuron_name}")
             print_neuron_properties([some_neuron])
             if t == 1:
                 self.asserts_for_spike_once_at_t_is_1(bias, du, dv, some_neuron, vth)
             elif t == 2:
-                self.asserts_for_spike_once_at_t_is_2(bias, du, dv,some_neuron, vth)
+                self.asserts_for_spike_once_at_t_is_2(bias, du, dv, some_neuron, vth)
             elif t == 3:
                 self.asserts_for_spike_once_at_t_is_3(bias, du, dv, some_neuron, vth)
             elif t == 4:
