@@ -63,16 +63,24 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
                     neurons,
                     rhs_node,
                 ) = create_neuron_from_node(G, converted_nodes, neurons, neighbour)
+            else:
+                lhs_neuron = get_neuron_belonging_to_node_from_list(
+                    neurons, lhs_node, converted_nodes
+                )
+                rhs_neuron = get_neuron_belonging_to_node_from_list(
+                    neurons, neighbour, converted_nodes
+                )
 
             # 5. Add synapse
             lhs_neuron = add_synapse_between_nodes(
-                G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rhs_node
+                G, lhs_neuron, lhs_node, neighbour, rhs_neuron, neighbour
             )
 
-            # 6. recursively call that function on the neighbour neurons until no
-            # new neurons are discovered.
+    # 6. recursively call that function on the neighbour neurons until no
+    # new neurons are discovered.
+    for neighbour in nx.all_neighbors(G, lhs_node):
+        if neighbour not in visited_nodes:
             if neighbour not in visited_nodes:
-                print(f"call_on_neighbour")
                 (
                     converted_nodes,
                     discarded_neuron,
@@ -81,10 +89,6 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
                 ) = retry_build_snn(
                     G, converted_nodes, neurons, neighbour, visited_nodes
                 )
-        else:
-            lhs_neuron = get_neuron_belonging_to_node_from_list(
-                neurons, lhs_node, converted_nodes
-            )
 
     return converted_nodes, lhs_neuron, neurons, lhs_node
 
@@ -265,7 +269,6 @@ def add_synapse_left_to_right(G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rh
     # 3. Get the edge between lhs and rhs nodes. They are neighbours
     # so they have an edge by definition.However it is a directed graph.
     edge = get_edge_if_exists(G, lhs_node, neighbour)
-    print(f"edge={edge}")
 
     if not edge is None:
         # 3. Assert the synapses are fully specified.
@@ -287,7 +290,6 @@ def add_synapse_right_to_left(G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rh
     # 3. Get the edge between lhs and rhs nodes. They are neighbours
     # so they have an edge by definition.However it is a directed graph.
     edge = get_edge_if_exists(G, neighbour, lhs_node)
-    print(f"edge={edge}")
 
     if not edge is None:
         # 3. Assert the synapses are fully specified.
