@@ -2,7 +2,11 @@ import unittest
 import networkx as nx
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
-from src.helper import generate_list_of_n_random_nrs, get_a_in_with_random_neurons
+from src.helper import (
+    generate_list_of_n_random_nrs,
+    get_a_in_with_random_neurons,
+    get_node_and_neighbour_from_degree,
+)
 
 
 from src.helper_network_structure import (
@@ -56,7 +60,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
             self.G, self.rand_nrs
         )
 
-        # plot_coordinated_graph(self.get_degree)
+        plot_coordinated_graph(self.get_degree)
         (
             self.converted_nodes,
             self.lhs_neuron,
@@ -209,6 +213,9 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
                 some_neuron, self.neurons, self.converted_nodes
             )
             print(f"t={t},some_neuron={some_neuron_name}")
+            wta_circuit, neighbour = get_node_and_neighbour_from_degree(
+                some_neuron_name
+            )
             print_neuron_properties([some_neuron])
         if t == 1:
 
@@ -268,14 +275,19 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         a_in = get_a_in_with_random_neurons(
             self.G, neighbour, wta_circuit, self.rand_nrs, multiplier=1
         )
+        print(f"self.rand_nrs={self.rand_nrs}")
+        print(f"wta_circuit={wta_circuit}")
+        print(f"neighbour={neighbour}")
+        print(f"a_in={a_in}")
         # u[t=2]=u[t=1]*(1-du)+a_in, a_in=
         # u[t=2]=0*(1-1)+0
         # u[t=2]=0*0+0
         # u[t=2]=-0
-        # TODO: get node index matching the neuron.
-        # TODO: change expected value to degree of node.
         print(f"degree_receiver={degree_receiver}")
-        self.assertEqual(degree_receiver.u.get(), 3 + self.rand_nrs[1])
+        # TODO: determine why the u.get is 15+3=18 V=degree_receiver_3_1 (or degree_receiver_2_1)
+        # instead of degree_receiver_3_0=82+3=85 as computed by a_in.
+        # TODO: verify whether degree_receiver is the correct neuron.
+        self.assertEqual(degree_receiver.u.get(), a_in)
         # v[t=2] = v[t=1] * (1-dv) + u[t=0] + bias
         # v[t=1]_before_spike = 2
         # v[t=1]_after_spike = 0

@@ -68,11 +68,14 @@ def get_a_in_with_random_neurons(G, neighbour, wta_circuit, rand_nrs, multiplier
     # wta_circuit.
     degree = G.degree(wta_circuit)
     print(f"degree={degree}")
+    print(f"(wta_circuit={wta_circuit}")
 
     # Compute random value of relevant node.
     rand_val = rand_nrs[neighbour]
+    print(f"rand_val={rand_val}")
 
     a_in = degree * multiplier + rand_val
+    return a_in
 
 
 def get_node_and_neighbour_from_degree(get_degree_neuron):
