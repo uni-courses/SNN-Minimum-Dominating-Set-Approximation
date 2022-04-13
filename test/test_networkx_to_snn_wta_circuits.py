@@ -50,6 +50,8 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.get_degree = get_degree_graph_with_separate_wta_circuits(
             self.G, self.rand_range
         )
+
+        plot_coordinated_graph(self.get_degree)
         (
             self.converted_nodes,
             self.lhs_neuron,
@@ -59,7 +61,6 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
             self.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
         )
         print(f"len(self.neurons)={len(self.neurons)}")
-        plot_coordinated_graph(self.get_degree)
 
     def testdegree_receiver_neurons_in_get_degree(
         self,

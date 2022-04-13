@@ -214,24 +214,43 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_range):
             dv=0,
             bias=2,
             vth=1,
-            pos=(float(0.75), float(node) + 0.5),
+            pos=(float(0.25), float(node) + 0.5),
         )
 
     # Then create all edges between the nodes.
-    for node in G.nodes:
+    for circuit in G.nodes:
         # For each neighbour of node, named degree_receiver:
-        for neighbour in nx.all_neighbors(G, node):
+        for neighbour_a in G.nodes:
+            if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
+                for neighbour_b in nx.all_neighbors(G, circuit):
+                    if circuit != neighbour_b and neighbour_a != neighbour_b:
+                        # TODO: verify no duplicate synapses are created!
+                        print(
+                            f"circuit={circuit},neighbour_a={neighbour_a},neighbour_b={neighbour_b}"
+                        )
 
-            get_degree.add_edges_from(
-                [(f"spike_once_{node}", f"degree_receiver_{node}_{neighbour}")],
-                weight=+1,
-            )
-
-            # TODO: include random weight, instead of node weight.
-            get_degree.add_edges_from(
-                [(f"rand_{node}", f"degree_receiver_{node}_{neighbour}")], weight=node
-            )
-
+                        get_degree.add_edges_from(
+                            [
+                                (
+                                    f"spike_once_{circuit}",
+                                    f"degree_receiver_{neighbour_a}_{neighbour_b}",
+                                )
+                            ],
+                            weight=+1,
+                        )
+        for circuit_target in G.nodes:
+            if circuit != circuit_target:
+                # TODO: include random weight, instead of node weight.
+                get_degree.add_edges_from(
+                    [
+                        (
+                            f"rand_{circuit}",
+                            f"degree_receiver_{circuit_target}_{circuit}",
+                        )
+                    ],
+                    weight=circuit
+                    # [(f"rand_{node}", f"degree_receiver_{neighbour_a}_{neighbour_b}")], weight=circuit
+                )
     return get_degree
 
 

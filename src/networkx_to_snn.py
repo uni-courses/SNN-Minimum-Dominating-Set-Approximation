@@ -124,6 +124,8 @@ def get_edge_if_exists(G, lhs_node, rhs_node):
 
 
 def create_neuron_from_node(G, converted_nodes, neurons, node):
+    print(f"node={node}")
+
     bias, du, dv, vth = get_neuron_properties(G, node)
 
     neuron = LIF(bias=bias, du=du, dv=dv, vth=vth)
