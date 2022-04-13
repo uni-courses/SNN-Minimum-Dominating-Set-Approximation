@@ -1,4 +1,5 @@
 import itertools
+import random
 
 
 def list_of_all_combinations_of_set(some_set):
@@ -39,3 +40,18 @@ def get_y_position(G, node, neighbour):
         return float(node + (neighbour - 1) / len(G))
     else:
         return float(node + neighbour / len(G))
+
+
+def generate_list_of_n_random_nrs(G, max=None, seed=None):
+    """Generates list of numbers in range of 1 to (and including) len(G), or:
+    Generates list of numbers in range of 1 to (and including) max, or:
+    TODO: Verify list does not contain duplicates, throw error if it does.
+    """
+    if max is None:
+        return list(range(1, len(G) + 1))
+    elif max > len(G):
+        large_list = list(range(1, max + 1))
+        if not seed is None:
+            random.seed(seed)
+        print(random.sample(large_list, len(G)))
+        return random.sample(large_list, len(G))

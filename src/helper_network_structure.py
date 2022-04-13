@@ -90,7 +90,7 @@ def get_degree_graph(G):
     return get_degree
 
 
-def get_degree_graph_with_rand_nodes(G, rand_range):
+def get_degree_graph_with_rand_nodes(G, rand_nrs):
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -129,7 +129,7 @@ def get_degree_graph_with_rand_nodes(G, rand_range):
         )
 
         # One neuron per node named: rand
-        if rand_range < len(G):
+        if rand_nrs < len(G):
             raise Exception(
                 "The range of random numbers does not allow for randomness collision prevention."
             )
@@ -155,7 +155,7 @@ def get_degree_graph_with_rand_nodes(G, rand_range):
 
         # TODO: include random weight, instead of node weight.
         get_degree.add_edges_from(
-            [(f"rand_{node}", f"degree_receiver_{node}")], weight=node
+            [(f"rand_{node}", f"degree_receiver_{node}")], weight=rand_nrs[node]
         )
 
     return get_degree

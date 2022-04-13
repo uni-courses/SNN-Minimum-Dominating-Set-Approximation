@@ -2,6 +2,7 @@ import unittest
 import networkx as nx
 from src.helper import (
     combinations,
+    generate_list_of_n_random_nrs,
     get_some_sorting_key,
     list_of_all_combinations_of_set,
 )
@@ -85,3 +86,22 @@ class Test_helper(unittest.TestCase):
         print(f"sorted_expected_result={sorted(sorted_expected_result)}")
         actual_result = combinations(input)
         self.assertEquals(list(sorted_expected_result), list(actual_result))
+
+    def test_generate_list_of_n_random_nrs(self):
+
+        G = nx.complete_graph(6)
+        rand_nrs = generate_list_of_n_random_nrs(G)
+        self.assertEquals([1, 2, 3, 4, 5, 6], rand_nrs)
+
+        for n in range(1, 20):
+            G = nx.complete_graph(n)
+            rand_nrs = generate_list_of_n_random_nrs(G)
+            self.assertEquals(list(range(1, n + 1)), rand_nrs)
+
+        G = nx.complete_graph(6)
+        rand_nrs = generate_list_of_n_random_nrs(G, 100, seed=42)
+        self.assertEquals([29, 18, 95, 14, 87, 70], rand_nrs)
+
+        G = nx.complete_graph(7)
+        rand_nrs = generate_list_of_n_random_nrs(G, 100, seed=42)
+        self.assertEquals([18, 95, 14, 87, 70, 12, 76], rand_nrs)

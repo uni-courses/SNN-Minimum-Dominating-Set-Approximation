@@ -2,6 +2,7 @@ import unittest
 import networkx as nx
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
+from src.helper import generate_list_of_n_random_nrs
 
 
 from src.helper_network_structure import (
@@ -39,6 +40,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # Generate a fully connected graph with n=4.
         self.G = nx.complete_graph(4)
         self.rand_range = len(self.G)
+        self.rand_nrs = generate_list_of_n_random_nrs(self.G, self.rand_range, seed=42)
         # TODO: Include passing self.random_values for testing purposes as optional argument.
         # print(f"Incoming G")
         # plot_unstructured_graph(self.G)
