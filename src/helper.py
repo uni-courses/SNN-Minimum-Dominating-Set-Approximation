@@ -32,6 +32,9 @@ def get_some_sorting_key(some_set):
 
 
 def get_y_position(G, node, neighbour):
+    """Ensures the degree receiver nodes per node are alligned with
+    continuous interval. for example for node 1, the positions 0,2,3 are
+    mapped to positions: 0,1,2 by subtracting 1."""
     if neighbour > node:
         return float(node + (neighbour - 1) / len(G))
     else:

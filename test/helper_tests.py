@@ -1,3 +1,6 @@
+import networkx as nx
+
+
 def a_in_spike_once(t):
     if t == 2:
         return 1
@@ -68,6 +71,7 @@ def is_spike_once_neuron(bias, du, dv, neuron, vth):
 def neurons_contain_n_degree_receiver_neurons(bias, du, dv, neurons, n, vth):
     """Verifies at least n neurons exist with the degree_receiver properties."""
     degree_receiver_neurons = []
+    print(f"len(neurons)={len(neurons)}")
     for neuron in neurons:
 
         # Check if neuron has the correct properties.
@@ -113,3 +117,12 @@ def is_degree_receiver_neuron(bias, du, dv, neuron, vth):
     else:
         print(f"neuron.u.get()={neuron.u.get()}, whereas u={0}")
     return False
+
+
+def compute_expected_number_of_degree_receivers(G):
+    degree_receiver_count = 0
+    for node in G.nodes:
+        for neighbour in nx.all_neighbors(G, node):
+            if node != neighbour:
+                degree_receiver_count = degree_receiver_count + 1
+    return degree_receiver_count

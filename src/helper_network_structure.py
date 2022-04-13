@@ -189,7 +189,6 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_range):
         )
 
         for neighbour in nx.all_neighbors(G, node):
-            print(f"node={node},neighbour={neighbour}")
             if node != neighbour:
                 # One neuron per node named: degree_receiver_0-n.
                 get_degree.add_node(

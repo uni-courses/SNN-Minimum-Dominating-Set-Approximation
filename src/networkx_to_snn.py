@@ -51,7 +51,7 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
 
     # For all edges of node, if synapse does not yet  exists:
     # print(f"{lhs_node} neighbours={list(nx.all_neighbors(G, lhs_node))}")
-    # print(f"visited_nodes={visited_nodes}")
+    print(f"visited_nodes={visited_nodes}")
     for neighbour in nx.all_neighbors(G, lhs_node):
         if neighbour not in visited_nodes:
 

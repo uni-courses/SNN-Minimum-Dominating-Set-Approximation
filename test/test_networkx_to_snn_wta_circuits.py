@@ -14,7 +14,11 @@ from src.networkx_to_snn import (
     convert_networkx_graph_to_snn_with_one_neuron,
     get_node_belonging_to_neuron_from_list,
 )
-from test.helper_tests import a_in_spike_once, neurons_contain_n_degree_receiver_neurons
+from test.helper_tests import (
+    a_in_spike_once,
+    compute_expected_number_of_degree_receivers,
+    neurons_contain_n_degree_receiver_neurons,
+)
 
 
 class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
@@ -54,7 +58,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         ) = convert_networkx_graph_to_snn_with_one_neuron(
             self.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
         )
-        print(f"get_degree")
+        print(f"len(self.neurons)={len(self.neurons)}")
         plot_coordinated_graph(self.get_degree)
 
     def testdegree_receiver_neurons_in_get_degree(
@@ -107,20 +111,23 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # Assert for each node in graph G, that a degree_receiver node exists in
         # get_degree.
         for node in G.nodes:
-            # print(f"node={node}")
-            # print(f"get_degree.nodes={get_degree.nodes}")
-            self.assertTrue(f"degree_receiver_{node}" in get_degree.nodes)
+            for neighbour in nx.all_neighbors(G, node):
+                # print(f"node={node}")
+                # print(f"get_degree.nodes={get_degree.nodes}")
+                self.assertTrue(
+                    f"degree_receiver_{node}_{neighbour}" in get_degree.nodes
+                )
 
         for node in converted_nodes:
             print(f"converted node={node}")
 
         # Assert no more than n degree_receiver nodes exist in get_degree.
         self.assertEqual(
-            sum("degree_receiver" in string for string in get_degree.nodes), 4
-        )
+            sum("degree_receiver" in string for string in get_degree.nodes), 4 * 3
+        )  # manual assert for fully connected graph of n=4.
         self.assertEqual(
             sum("degree_receiver" in string for string in get_degree.nodes),
-            len(G.nodes),
+            compute_expected_number_of_degree_receivers(G),
         )
 
         # Write a function that verifies n neurons exist with the
@@ -133,7 +140,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
             self.du,
             self.dv,
             neurons,
-            len(G.nodes),
+            compute_expected_number_of_degree_receivers(G),
             self.vth,
         )
         self.assertTrue(has_n_degree_receiver_neurons)
