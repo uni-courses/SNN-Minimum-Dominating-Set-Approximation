@@ -71,7 +71,6 @@ def is_spike_once_neuron(bias, du, dv, neuron, vth):
 def neurons_contain_n_degree_receiver_neurons(bias, du, dv, neurons, n, vth):
     """Verifies at least n neurons exist with the degree_receiver properties."""
     degree_receiver_neurons = []
-    print(f"len(neurons)={len(neurons)}")
     for neuron in neurons:
 
         # Check if neuron has the correct properties.

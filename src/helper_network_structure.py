@@ -90,7 +90,7 @@ def get_degree_graph(G):
     return get_degree
 
 
-def get_degree_graph_with_rand_nodes(G, rand_nrs):
+def get_degree_graph_with_rand_nodes(G, rand_limit):
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -129,7 +129,7 @@ def get_degree_graph_with_rand_nodes(G, rand_nrs):
         )
 
         # One neuron per node named: rand
-        if rand_nrs < len(G):
+        if rand_limit < len(G):
             raise Exception(
                 "The range of random numbers does not allow for randomness collision prevention."
             )
@@ -155,13 +155,13 @@ def get_degree_graph_with_rand_nodes(G, rand_nrs):
 
         # TODO: include random weight, instead of node weight.
         get_degree.add_edges_from(
-            [(f"rand_{node}", f"degree_receiver_{node}")], weight=rand_nrs[node]
+            [(f"rand_{node}", f"degree_receiver_{node}")], weight=node
         )
 
     return get_degree
 
 
-def get_degree_graph_with_separate_wta_circuits(G, rand_range):
+def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -202,7 +202,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_range):
                 )
 
         # One neuron per node named: rand
-        if rand_range < len(G):
+        if len(rand_nrs) < len(G):
             raise Exception(
                 "The range of random numbers does not allow for randomness collision prevention."
             )
@@ -225,9 +225,9 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_range):
                 for neighbour_b in nx.all_neighbors(G, circuit):
                     if circuit != neighbour_b and neighbour_a != neighbour_b:
                         # TODO: verify no duplicate synapses are created!
-                        print(
-                            f"circuit={circuit},neighbour_a={neighbour_a},neighbour_b={neighbour_b}"
-                        )
+                        # print(
+                        #    f"circuit={circuit},neighbour_a={neighbour_a},neighbour_b={neighbour_b}"
+                        # )
 
                         get_degree.add_edges_from(
                             [
@@ -248,7 +248,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_range):
                             f"degree_receiver_{circuit_target}_{circuit}",
                         )
                     ],
-                    weight=circuit
+                    weight=rand_nrs[circuit]
                     # [(f"rand_{node}", f"degree_receiver_{neighbour_a}_{neighbour_b}")], weight=circuit
                 )
     return get_degree

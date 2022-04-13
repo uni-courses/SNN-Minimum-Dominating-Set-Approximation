@@ -2,7 +2,7 @@ import unittest
 import networkx as nx
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
-from src.helper import generate_list_of_n_random_nrs
+from src.helper import generate_list_of_n_random_nrs, get_a_in_with_random_neurons
 
 
 from src.helper_network_structure import (
@@ -39,8 +39,11 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.vth = 1
         # Generate a fully connected graph with n=4.
         self.G = nx.complete_graph(4)
-        self.rand_range = len(self.G)
-        self.rand_nrs = generate_list_of_n_random_nrs(self.G, self.rand_range, seed=42)
+        self.rand_range = len(self.G) + 120
+        self.rand_nrs = generate_list_of_n_random_nrs(
+            self.G, max=self.rand_range, seed=42
+        )
+        print(f"self.rand_nrs={self.rand_nrs}")
         # TODO: Include passing self.random_values for testing purposes as optional argument.
         # print(f"Incoming G")
         # plot_unstructured_graph(self.G)
@@ -50,10 +53,10 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # in the number of spikes into the degree_receiver neurons.
         # TODO: Include passing self.random_values for testing purposes as optional argument.
         self.get_degree = get_degree_graph_with_separate_wta_circuits(
-            self.G, self.rand_range
+            self.G, self.rand_nrs
         )
 
-        plot_coordinated_graph(self.get_degree)
+        # plot_coordinated_graph(self.get_degree)
         (
             self.converted_nodes,
             self.lhs_neuron,
@@ -62,7 +65,6 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         ) = convert_networkx_graph_to_snn_with_one_neuron(
             self.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
         )
-        print(f"len(self.neurons)={len(self.neurons)}")
 
     def testdegree_receiver_neurons_in_get_degree(
         self,
@@ -120,9 +122,6 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
                 self.assertTrue(
                     f"degree_receiver_{node}_{neighbour}" in get_degree.nodes
                 )
-
-        for node in converted_nodes:
-            print(f"converted node={node}")
 
         # Assert no more than n degree_receiver nodes exist in get_degree.
         self.assertEqual(
@@ -218,7 +217,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
             )
         elif t == 2:
             self.asserts_for_degree_receiver_at_t_is_2(
-                bias, du, dv, degree_receiver, vth
+                bias, du, dv, degree_receiver, vth, wta_circuit, neighbour
             )
         elif t == 3:
             self.asserts_for_degree_receiver_at_t_is_3(
@@ -261,16 +260,22 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.bias.get(), bias)  # Custom value.
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
-    def asserts_for_degree_receiver_at_t_is_2(self, bias, du, dv, degree_receiver, vth):
+    def asserts_for_degree_receiver_at_t_is_2(
+        self, bias, du, dv, degree_receiver, vth, wta_circuit, neighbour
+    ):
         """Assert the values of the degree_receiver neuron on t=2."""
-
-        # u[t=2]=u[t=1]*(1-du)+a_in
+        # TODO: get a-in
+        a_in = get_a_in_with_random_neurons(
+            self.G, neighbour, wta_circuit, self.rand_nrs, multiplier=1
+        )
+        # u[t=2]=u[t=1]*(1-du)+a_in, a_in=
         # u[t=2]=0*(1-1)+0
         # u[t=2]=0*0+0
         # u[t=2]=-0
         # TODO: get node index matching the neuron.
         # TODO: change expected value to degree of node.
-        self.assertEqual(degree_receiver.u.get(), 3)
+        print(f"degree_receiver={degree_receiver}")
+        self.assertEqual(degree_receiver.u.get(), 3 + self.rand_nrs[1])
         # v[t=2] = v[t=1] * (1-dv) + u[t=0] + bias
         # v[t=1]_before_spike = 2
         # v[t=1]_after_spike = 0

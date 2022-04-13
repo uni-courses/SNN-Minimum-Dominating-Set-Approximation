@@ -53,5 +53,30 @@ def generate_list_of_n_random_nrs(G, max=None, seed=None):
         large_list = list(range(1, max + 1))
         if not seed is None:
             random.seed(seed)
-        print(random.sample(large_list, len(G)))
         return random.sample(large_list, len(G))
+
+
+def get_a_in_with_random_neurons(G, neighbour, wta_circuit, rand_nrs, multiplier=1):
+    """Computes the incoming spike value a_in of degree_receiver_x_y.
+    Computation based on the spike_once neurons (x), and the random_neurons(y).
+    The used names for x and y are: x=wta_circuit, y=neighbour.
+
+    The multiplier can be used to multiply the spike_once inputs
+
+    """
+    # Compute the amount of neighbours the node that is represented by
+    # wta_circuit.
+    degree = G.degree(wta_circuit)
+    print(f"degree={degree}")
+
+    # Compute random value of relevant node.
+    rand_val = rand_nrs[neighbour]
+
+    a_in = degree * multiplier + rand_val
+
+
+def get_node_and_neighbour_from_degree(get_degree_neuron):
+    parts = get_degree_neuron.split("_")
+    node_index = int(parts[2])
+    neighbour_index = int(parts[3])
+    return node_index, neighbour_index

@@ -50,8 +50,6 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
         )
 
     # For all edges of node, if synapse does not yet  exists:
-    # print(f"{lhs_node} neighbours={list(nx.all_neighbors(G, lhs_node))}")
-    print(f"visited_nodes={visited_nodes}")
     for neighbour in nx.all_neighbors(G, lhs_node):
         if neighbour not in visited_nodes:
 
@@ -124,7 +122,6 @@ def get_edge_if_exists(G, lhs_node, rhs_node):
 
 
 def create_neuron_from_node(G, converted_nodes, neurons, node):
-    print(f"node={node}")
 
     bias, du, dv, vth = get_neuron_properties(G, node)
 
@@ -247,9 +244,9 @@ def add_synapse_left_to_right(G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rh
         # 5. Connect neurons using created synapse.
         # TODO: write function that checks if synapse is created or not.
         lhs_neuron = connect_synapse_left_to_right(lhs_neuron, rhs_neuron, dense)
-        print(
-            f'connecting: lhs_node={lhs_node} to:rhs_node={rhs_node} with weight:{G.edges[edge]["weight"]}\n'
-        )
+        # print(
+        #    f'connecting: lhs_node={lhs_node} to:rhs_node={rhs_node} with weight:{G.edges[edge]["weight"]}\n'
+        # )
     return lhs_neuron
 
 
@@ -268,7 +265,7 @@ def add_synapse_right_to_left(G, lhs_neuron, lhs_node, neighbour, rhs_neuron, rh
         # 5. Connect neurons using created synapse.
         # TODO: write function that checks if synapse is created or not.
         lhs_neuron = connect_synapse_right_to_left(lhs_neuron, rhs_neuron, dense)
-        print(
-            f'connecting:rhs_node={rhs_node} to:  lhs_node={lhs_node} with weight:{G.edges[edge]["weight"]}\n'
-        )
+        # print(
+        #    f'connecting:rhs_node={rhs_node} to:  lhs_node={lhs_node} with weight:{G.edges[edge]["weight"]}\n'
+        # )
     return lhs_neuron
