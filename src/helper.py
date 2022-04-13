@@ -29,3 +29,10 @@ def get_some_sorting_key(some_set):
         return max(some_set)
     else:
         return 0
+
+
+def get_y_position(G, node, neighbour):
+    if neighbour > node:
+        return float(node + (neighbour - 1) / len(G))
+    else:
+        return float(node + neighbour / len(G))
