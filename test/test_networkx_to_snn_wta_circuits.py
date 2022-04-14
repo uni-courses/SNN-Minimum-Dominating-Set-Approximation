@@ -11,17 +11,14 @@ from src.helper import (
 
 
 from src.helper_network_structure import (
-    get_degree_graph_with_rand_nodes,
     get_degree_graph_with_separate_wta_circuits,
     plot_coordinated_graph,
 )
 from src.helper_snns import print_neuron_properties
 from src.networkx_to_snn import (
     convert_networkx_graph_to_snn_with_one_neuron,
-    get_node_belonging_to_neuron_from_list,
 )
 from test.helper_tests import (
-    a_in_spike_once,
     compute_expected_number_of_degree_receivers,
     neurons_contain_n_degree_receiver_neurons,
 )
