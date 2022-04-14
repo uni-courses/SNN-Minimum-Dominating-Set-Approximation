@@ -91,10 +91,7 @@ def execute_diagram_compilation_command(
     """
     # Verify the files required for compilation exist, and convert the paths
     # into absolute filepaths.
-    (
-        abs_diagram_filepath,
-        abs_jar_path,
-    ) = assert_diagram_compilation_requirements(
+    (abs_diagram_filepath, abs_jar_path,) = assert_diagram_compilation_requirements(
         jar_path_relative_from_root,
         relative_filepath_from_root,
     )
@@ -107,9 +104,7 @@ def execute_diagram_compilation_command(
     bash_diagram_compilation_command = (
         f"java -jar {abs_jar_path} -verbose {abs_diagram_filepath}"
     )
-    print(
-        f"bash_diagram_compilation_command={bash_diagram_compilation_command}"
-    )
+    print(f"bash_diagram_compilation_command={bash_diagram_compilation_command}")
     # Generate global variable specifying max image width in pixels, in the
     # shell that compiles.
     os.environ["PLANTUML_LIMIT_SIZE"] = "16192"

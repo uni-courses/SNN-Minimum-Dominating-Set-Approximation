@@ -3,7 +3,10 @@
 
 
 ## Import used functions.
+import networkx as nx
+
 # Project code imports.
+from src.helper_network_structure import create_graph_of_network_degree_computation
 from .create_planar_triangle_free_graph import (
     create_triangle_free_graph,
     create_triangle_free_planar_graph,
@@ -35,8 +38,11 @@ args = parse_cli_args()
 # seed = 42
 # G = create_triangle_free_planar_graph(nr_nodes, edge_probability, seed, False)
 
+# Create graph for network structure with WTA.
+G = nx.complete_graph(4)
+create_graph_of_network_degree_computation(G)
+
+
 ## Run data export code if any argument is given.
-if not all(
-    arg is None for arg in [args.l, args.dd, args.sd, args.c2l, args.ec2l]
-):
+if not all(arg is None for arg in [args.l, args.dd, args.sd, args.c2l, args.ec2l]):
     export_data(args)

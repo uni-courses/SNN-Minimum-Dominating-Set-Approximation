@@ -72,8 +72,7 @@ def get_all_files_in_dir_and_child_dirs(extension, path, excluded_files=None):
         for file in f:
             if file.endswith(extension):
                 if (excluded_files is None) or (
-                    (excluded_files is not None)
-                    and (file not in excluded_files)
+                    (excluded_files is not None) and (file not in excluded_files)
                 ):
                     filepaths.append(r + "/" + file)
     return filepaths
@@ -137,9 +136,7 @@ def delete_dir_if_exists(dirpath):
 
 def convert_filepath_to_filepath_from_root(filepath, normalised_root_path):
     normalised_filepath = os.path.normpath(filepath)
-    filepath_relative_from_root = normalised_filepath[
-        len(normalised_root_path) :
-    ]
+    filepath_relative_from_root = normalised_filepath[len(normalised_root_path) :]
     return filepath_relative_from_root
 
 

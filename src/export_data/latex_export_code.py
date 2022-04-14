@@ -42,9 +42,7 @@ def export_code_to_latex(hd, include_export_code):
     verify_latex_supports_auto_generated_appendices(path_to_main_latex_file)
 
     # Get paths to files containing project python code.
-    python_project_code_filepaths = get_filepaths_in_dir(
-        "py", src_dir, ["__init__.py"]
-    )
+    python_project_code_filepaths = get_filepaths_in_dir("py", src_dir, ["__init__.py"])
 
     compiled_notebook_pdf_filepaths = get_compiled_notebook_paths(script_dir)
     print(f"python_project_code_filepaths={python_project_code_filepaths}")
@@ -81,9 +79,7 @@ def get_compiled_notebook_paths(script_dir):
     :param script_dir: absolute path of this file.
 
     """
-    notebook_filepaths = get_all_files_in_dir_and_child_dirs(
-        ".ipynb", script_dir
-    )
+    notebook_filepaths = get_all_files_in_dir_and_child_dirs(".ipynb", script_dir)
     compiled_notebook_filepaths = []
 
     # check if the jupyter notebooks were compiled
