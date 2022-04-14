@@ -41,12 +41,21 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.vth = 1
         # Generate a fully connected graph with n=4.
         self.G = nx.complete_graph(4)
-        self.rand_range = len(self.G) + 120
+        self.rand_range = (
+            len(self.G) + 2
+        )  # Allow for larger random list than nr of nodes.
         self.rand_nrs = generate_list_of_n_random_nrs(
             self.G, max=self.rand_range, seed=42
         )
+
+        # Add inhibition to rand_nrs to ensure the degree_receiver value is negative.
+        # Subtract R*R for number of nodes * range of randomness.
+        # Subtract -2 for excitatory neuron buffer.
+        self.rand_nrs = [
+            x - self.rand_range * self.rand_range - 2 for x in self.rand_nrs
+        ]
+
         print(f"self.rand_nrs={self.rand_nrs}")
-        # TODO: Include passing self.random_values for testing purposes as optional argument.
         # print(f"Incoming G")
         # plot_unstructured_graph(self.G)
 
@@ -291,9 +300,9 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # v[t=2] = v[t=1] * (1-dv) + u[t=0] + bias
         # v[t=1]_before_spike = 2
         # v[t=1]_after_spike = 0
-        # v[t=2] = 0 * (1-2) + -2 + 2
+        # v[t=2] = 0 * (1-2) + -a_in + 2
         # v[t=2] = 0
-        self.assertEqual(degree_receiver.v.get(), 0)
+        self.assertEqual(degree_receiver.v.get(), degree_receiver.u.get())
 
         self.assertEqual(degree_receiver.du.get(), du)  # Custom Value.
         self.assertEqual(degree_receiver.dv.get(), dv)  # Custom value.
@@ -315,7 +324,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # v[t=3] = v[t=2] * (1-dv) + u[t=2] + bias
         # v[t=3] = 0 * (1-0) -2 + 2
         # v[t=3] = 0
-        self.assertEqual(degree_receiver.v.get(), 0)
+        self.assertEqual(degree_receiver.v.get(), degree_receiver.u.get())
 
         self.assertEqual(degree_receiver.du.get(), du)  # Custom Value.
         self.assertEqual(degree_receiver.dv.get(), dv)  # Custom value.
@@ -336,7 +345,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # v[t=4] = v[t=3] * (1-dv) + u[t=2] + bias
         # v[t=4] = 0 * (1-0) -2 + 2
         # v[t=4] = 0
-        self.assertEqual(degree_receiver.v.get(), 0)
+        self.assertEqual(degree_receiver.v.get(), degree_receiver.u.get())
 
         self.assertEqual(degree_receiver.du.get(), du)  # Custom Value.
         self.assertEqual(degree_receiver.dv.get(), dv)  # Custom value.
@@ -360,7 +369,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
         # v[t=x+1] = 0 * (1-0) -2 + 2
         # v[t=x+1] = 0
-        self.assertEqual(degree_receiver.v.get(), 0)
+        self.assertEqual(degree_receiver.v.get(), degree_receiver.u.get())
 
         self.assertEqual(degree_receiver.du.get(), du)  # Custom Value.
         self.assertEqual(degree_receiver.dv.get(), dv)  # Custom value.
