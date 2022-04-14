@@ -4,6 +4,7 @@ import networkx as nx
 # Instantiate Lava processes to build network
 from lava.proc.dense.process import Dense
 from lava.proc.lif.process import LIF
+from src.helper import add_neuron_to_dict
 from src.helper_snns import (
     connect_synapse,
     connect_synapse_left_to_right,
@@ -21,18 +22,28 @@ def convert_networkx_graph_to_snn_with_one_neuron(
     first_node = list(G.nodes)[0]
     # print(f"G.nodes[0]={list(G.nodes)[0]}")
     # converted_nodes, lhs_neuron, neurons, lhs_node = build_snn(G, [], [], first_node)
-    converted_nodes, lhs_neuron, neurons, lhs_node = retry_build_snn(
-        G, [], [], first_node, []
+
+    # Append dictionary as property to G.
+    # G = nx.Graph(neuron_dict={})
+    neuron_dict = {}
+    # G.graph['neuron_dict']["something"]=3
+    # print(f'something in dict={G.graph["neuron_dict"]["something"]} is 3')
+    # exit()
+
+    converted_nodes, lhs_neuron, neurons, lhs_node, neuron_dict = retry_build_snn(
+        G, [], [], first_node, [], neuron_dict
     )
 
     # 5. Create a verification that checks that all neurons in the incoming
     # graph are created.
     # 6. Create a verification that checks that all synapses in the incoming
     # graph are created.
-    return converted_nodes, lhs_neuron, neurons, lhs_node
+    return converted_nodes, lhs_neuron, neurons, lhs_node, neuron_dict
 
 
-def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
+def retry_build_snn(
+    G, converted_nodes, neurons, lhs_node, visited_nodes, neuron_dict={}
+):
     # Verify prerequisites
     # print_node_properties(G, lhs_node)
     assert_all_neuron_properties_are_specified(G, lhs_node)
@@ -69,6 +80,10 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
                     neurons, neighbour, converted_nodes
                 )
 
+            # Create a neuron dictionary which returns the node name if you input a neuron.
+            print(f"lhs_node={lhs_node},neighbour={neighbour},rhs_neuron={rhs_neuron}")
+            neuron_dict = add_neuron_to_dict(neighbour, neuron_dict, rhs_neuron)
+
             # 5. Add synapse
             lhs_neuron = add_synapse_between_nodes(
                 G, lhs_neuron, lhs_node, neighbour, rhs_neuron, neighbour
@@ -84,11 +99,12 @@ def retry_build_snn(G, converted_nodes, neurons, lhs_node, visited_nodes):
                     discarded_neuron,
                     neurons,
                     discarded_node,
+                    neuron_dict,
                 ) = retry_build_snn(
-                    G, converted_nodes, neurons, neighbour, visited_nodes
+                    G, converted_nodes, neurons, neighbour, visited_nodes, neuron_dict
                 )
 
-    return converted_nodes, lhs_neuron, neurons, lhs_node
+    return converted_nodes, lhs_neuron, neurons, lhs_node, neuron_dict
 
 
 def get_neuron_belonging_to_node_from_list(neurons, node, nodes):
@@ -128,7 +144,7 @@ def create_neuron_from_node(G, converted_nodes, neurons, node):
     neuron = LIF(bias=bias, du=du, dv=dv, vth=vth)
 
     # If spike_once_neuron, create recurrent synapse
-    if node[0:11] == "spike_once_":
+    if node[0:11] == "spike_once_" or node[0:5] == "rand_":
         dense = create_weighted_synapse(-2)
 
         # Connect neuron to itself.

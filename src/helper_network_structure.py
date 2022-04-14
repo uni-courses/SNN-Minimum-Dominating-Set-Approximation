@@ -251,6 +251,10 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     weight=rand_nrs[circuit]
                     # [(f"rand_{node}", f"degree_receiver_{neighbour_a}_{neighbour_b}")], weight=circuit
                 )
+                print(
+                    f"Add edge between: circuit_target={circuit_target}, circuit={circuit},weight={rand_nrs[circuit]}"
+                )
+
     return get_degree
 
 

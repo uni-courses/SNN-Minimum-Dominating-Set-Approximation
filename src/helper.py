@@ -83,3 +83,22 @@ def get_node_and_neighbour_from_degree(get_degree_neuron):
     node_index = int(parts[2])
     neighbour_index = int(parts[3])
     return node_index, neighbour_index
+
+
+def add_neuron_to_dict(neighbour, neuron_dict, rhs_neuron):
+    neuron_dict[rhs_neuron] = neighbour
+    return neuron_dict
+
+
+def get_degrree(d, neuron):
+    neuronhash = "some_hash"
+    return d[neuronhash]
+
+
+def is_degree_receiver(neuron, neuron_dict):
+    neuron_name = neuron_dict[neuron]
+    if neuron_name[:16] == "degree_receiver_":
+        return True
+    else:
+        print(f"neuron_name[:16]={neuron_name[:16]}")
+        print(f"neuron_name={neuron_name}")
