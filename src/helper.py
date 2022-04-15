@@ -99,7 +99,7 @@ def get_a_in_with_random_neurons_and_excitation(
     rand_val = rand_nrs[neighbour]
     print(f"rand_val={rand_val}")
 
-    a_in = degree * multiplier + rand_val + (t - 1) * 1 * 2
+    a_in = degree * multiplier + rand_val + t - 1
     return a_in
 
 

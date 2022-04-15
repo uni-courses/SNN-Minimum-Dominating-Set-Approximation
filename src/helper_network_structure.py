@@ -152,7 +152,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                             f"degree_receiver_{circuit}_{neighbour_b}",
                         )
                     ],
-                    weight=3,  # To increase u(t) at every timestep.
+                    weight=1,  # To increase u(t) at every timestep.
                 )
             print(f"selector_{circuit} degree_receiver_{circuit}_{neighbour_b}")
 
