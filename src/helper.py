@@ -78,6 +78,31 @@ def get_a_in_with_random_neurons(G, neighbour, wta_circuit, rand_nrs, multiplier
     return a_in
 
 
+def get_a_in_with_random_neurons_and_excitation(
+    G, neighbour, rand_nrs, t, wta_circuit, multiplier=1
+):
+    """Computes the incoming spike value a_in of degree_receiver_x_y.
+    Computation based on the spike_once neurons (x), the random_neurons(y) and
+    the excitatory neuron.
+    The used names for x and y are: x=wta_circuit, y=neighbour.
+
+    The multiplier can be used to multiply the spike_once inputs
+
+    """
+    # Compute the amount of neighbours the node that is represented by
+    # wta_circuit.
+    degree = G.degree(wta_circuit)
+    print(f"degree={degree}")
+    print(f"(wta_circuit={wta_circuit}")
+
+    # Compute random value of relevant node.
+    rand_val = rand_nrs[neighbour]
+    print(f"rand_val={rand_val}")
+
+    a_in = degree * multiplier + rand_val + (t - 1) * 1 * 2
+    return a_in
+
+
 def get_node_and_neighbour_from_degree(get_degree_neuron):
     parts = get_degree_neuron.split("_")
     node_index = int(parts[2])

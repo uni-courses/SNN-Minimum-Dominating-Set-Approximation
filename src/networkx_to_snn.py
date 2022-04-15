@@ -81,10 +81,11 @@ def retry_build_snn(
                 )
 
             # Create a neuron dictionary which returns the node name if you input a neuron.
-            print(f"lhs_node={lhs_node},neighbour={neighbour},rhs_neuron={rhs_neuron}")
+            # print(f"lhs_node={lhs_node},neighbour={neighbour},rhs_neuron={rhs_neuron}")
             neuron_dict = add_neuron_to_dict(neighbour, neuron_dict, rhs_neuron)
 
             # 5. Add synapse
+            print(f"add_synapse from:{lhs_node} to: {neuron_dict[rhs_neuron]}")
             lhs_neuron = add_synapse_between_nodes(
                 G, lhs_neuron, lhs_node, neighbour, rhs_neuron, neighbour
             )

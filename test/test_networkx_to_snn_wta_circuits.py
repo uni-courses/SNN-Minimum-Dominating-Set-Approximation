@@ -4,7 +4,7 @@ from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 from src.helper import (
     generate_list_of_n_random_nrs,
-    get_a_in_with_random_neurons,
+    get_a_in_with_random_neurons_and_excitation,
     get_node_and_neighbour_from_degree,
     is_degree_receiver,
 )
@@ -221,28 +221,27 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
             if is_degree_receiver(some_neuron, self.neuron_dict):
 
                 wta_circuit, neighbour = get_node_and_neighbour_from_degree(neuron_name)
+                print(f"t={t},Properties of:{self.neuron_dict[some_neuron]}")
                 print_neuron_properties([some_neuron])
-                print(f"Printed neuron properties of:{self.neuron_dict[some_neuron]}")
-                print(f"with degree_receiver={starter_neuron}")
                 if t == 1:
                     self.asserts_for_degree_receiver_at_t_is_1(
                         bias, du, dv, some_neuron, vth
                     )
                 elif t == 2:
                     self.asserts_for_degree_receiver_at_t_is_2(
-                        bias, du, dv, some_neuron, vth, wta_circuit, neighbour
+                        bias, du, dv, some_neuron, t, vth, wta_circuit, neighbour
                     )
                 elif t == 3:
                     self.asserts_for_degree_receiver_at_t_is_3(
-                        bias, du, dv, some_neuron, vth, wta_circuit, neighbour
+                        bias, du, dv, some_neuron, t, vth, wta_circuit, neighbour
                     )
                 elif t == 4:
                     self.asserts_for_degree_receiver_at_t_is_4(
-                        bias, du, dv, some_neuron, vth, wta_circuit, neighbour
+                        bias, du, dv, some_neuron, t, vth, wta_circuit, neighbour
                     )
                 elif t > 4:
                     self.asserts_for_degree_receiver_at_t_is_larger_than_4(
-                        bias, du, dv, some_neuron, vth, wta_circuit, neighbour
+                        bias, du, dv, some_neuron, t, vth, wta_circuit, neighbour
                     )
             else:
                 print(f"Not a degree_receiver neuron:{neuron_name}")
@@ -277,12 +276,12 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
     def asserts_for_degree_receiver_at_t_is_2(
-        self, bias, du, dv, degree_receiver, vth, wta_circuit, neighbour
+        self, bias, du, dv, degree_receiver, t, vth, wta_circuit, neighbour
     ):
         """Assert the values of the degree_receiver neuron on t=2."""
         # Compute what the expected summed input spike values are.
-        a_in = get_a_in_with_random_neurons(
-            self.G, neighbour, wta_circuit, self.rand_nrs, multiplier=1
+        a_in = get_a_in_with_random_neurons_and_excitation(
+            self.G, neighbour, self.rand_nrs, t, wta_circuit, multiplier=1
         )
         print(f"self.rand_nrs={self.rand_nrs}")
         print(f"wta_circuit={wta_circuit}")
@@ -310,11 +309,11 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
     def asserts_for_degree_receiver_at_t_is_3(
-        self, bias, du, dv, degree_receiver, vth, wta_circuit, neighbour
+        self, bias, du, dv, degree_receiver, t, vth, wta_circuit, neighbour
     ):
         """Assert the values of the degree_receiver neuron on t=3."""
-        a_in = get_a_in_with_random_neurons(
-            self.G, neighbour, wta_circuit, self.rand_nrs, multiplier=1
+        a_in = get_a_in_with_random_neurons_and_excitation(
+            self.G, neighbour, self.rand_nrs, t, wta_circuit, multiplier=1
         )
         # u[t=3]=u[t=2]*(1-du)+a_in
         # u[t=3]=3*(1-0)-0
@@ -332,11 +331,11 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
     def asserts_for_degree_receiver_at_t_is_4(
-        self, bias, du, dv, degree_receiver, vth, wta_circuit, neighbour
+        self, bias, du, dv, degree_receiver, t, vth, wta_circuit, neighbour
     ):
         """Assert the values of the degree_receiver neuron on t=4."""
-        a_in = get_a_in_with_random_neurons(
-            self.G, neighbour, wta_circuit, self.rand_nrs, multiplier=1
+        a_in = get_a_in_with_random_neurons_and_excitation(
+            self.G, neighbour, self.rand_nrs, t, wta_circuit, multiplier=1
         )
         # u[t=4]=u[t=3]*(1-du)+a_in
         # u[t=4]=3*(1-0)+0
@@ -353,11 +352,11 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
     def asserts_for_degree_receiver_at_t_is_larger_than_4(
-        self, bias, du, dv, degree_receiver, vth, wta_circuit, neighbour
+        self, bias, du, dv, degree_receiver, t, vth, wta_circuit, neighbour
     ):
         """Assert the values of the degree_receiver neuron on t=4."""
-        a_in = get_a_in_with_random_neurons(
-            self.G, neighbour, wta_circuit, self.rand_nrs, multiplier=1
+        a_in = get_a_in_with_random_neurons_and_excitation(
+            self.G, neighbour, self.rand_nrs, t, wta_circuit, multiplier=1
         )
         # The current stays constant indefinitely.
         # u[t=x+1]=u[t=x]*(1-du)+a_in

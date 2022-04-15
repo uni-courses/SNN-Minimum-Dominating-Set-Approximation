@@ -140,7 +140,22 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     ],
                     weight=-5,  # to disable bias
                 )
-        # TODO: add synapse from selector node back into degree selector.
+            print(f"degree_receiver_{circuit}_{neighbour_b} selector_{circuit}")
+        # TODO:
+        # Add synapse from selector node back into degree selector.
+        for neighbour_b in nx.all_neighbors(G, circuit):
+            if circuit != neighbour_b:
+                get_degree.add_edges_from(
+                    [
+                        (
+                            f"selector_{circuit}",
+                            f"degree_receiver_{circuit}_{neighbour_b}",
+                        )
+                    ],
+                    weight=3,  # To increase u(t) at every timestep.
+                )
+            print(f"selector_{circuit} degree_receiver_{circuit}_{neighbour_b}")
+
     return get_degree
 
 
