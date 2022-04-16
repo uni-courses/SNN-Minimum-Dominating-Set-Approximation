@@ -186,11 +186,20 @@ def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t)
             "Error, did not find a random value in any neighbour of node:{node}."
         )
 
-    print(f"min_neighbour_rand={min_neighbour_rand}")
-    if t > min_neighbour_rand:
+    positive_min_neighbour_rand = -1 * min_neighbour_rand
+    print(f"positive_min_neighbour_rand={positive_min_neighbour_rand}")
+
+    if t < positive_min_neighbour_rand + 1:
         return 0
-    else:
+    elif t == positive_min_neighbour_rand + 1:
+        print(f"equals+1,t={t},return:{incoming_selector_weight}")
         return incoming_selector_weight
+    elif t == positive_min_neighbour_rand + 2:
+        print(f"equals+2,t={t},return:{incoming_selector_weight}")
+        return incoming_selector_weight
+    elif t == positive_min_neighbour_rand + 3:
+        print(f"equals+3,t={t},return:{0}")
+        return 0
 
 
 def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):

@@ -35,7 +35,7 @@ class Test_selector(unittest.TestCase):
         super(Test_selector, self).__init__(*args, **kwargs)
         self.du = 0
         self.dv = 1
-        self.bias = 6
+        self.bias = 5
         self.vth = 4
         self.incoming_selector_weight = -5
         # Generate a fully connected graph with n=4.
@@ -340,6 +340,7 @@ class Test_selector(unittest.TestCase):
         # v[t=4] = v[t=3] * (1-dv) + u[t=2] + bias
         # v[t=4] = 0 * (1-0) -2 + 2
         # v[t=4] = 0
+        # TODO: Compute voltage based on whether it spiked or not.
         self.assertEqual(degree_receiver.v.get(), degree_receiver.u.get())
 
         self.assertEqual(degree_receiver.du.get(), du)  # Custom Value.
@@ -365,7 +366,11 @@ class Test_selector(unittest.TestCase):
         # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
         # v[t=x+1] = 0 * (1-0) -2 + 2
         # v[t=x+1] = 0
-        expected_voltage = get_expected_voltage_of_first_spike(self.rand_nrs, t, a_in)
+        if bias - degree_receiver.u.get() > 1:
+            expected_voltage = 0  # It spikes
+        else:
+            expected_voltage = bias - degree_receiver.u.get()  # no spike
+        # expected_voltage = get_expected_voltage_of_first_spike(self.rand_nrs, t, a_in)
 
         # self.assertEqual(degree_receiver.v.get(), degree_receiver.u.get())
         self.assertEqual(degree_receiver.v.get(), expected_voltage)
