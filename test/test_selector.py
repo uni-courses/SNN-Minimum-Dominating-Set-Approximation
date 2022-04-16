@@ -6,6 +6,7 @@ from src.helper import (
     generate_list_of_n_random_nrs,
     get_a_in_for_selector_neuron,
     get_a_in_with_random_neurons_and_excitation,
+    get_degree_receiver_neuron,
     get_expected_voltage_of_first_spike,
     get_node_and_neighbour_from_degree,
     get_node_from_selector_neuron_name,
@@ -34,8 +35,9 @@ class Test_selector(unittest.TestCase):
         super(Test_selector, self).__init__(*args, **kwargs)
         self.du = 0
         self.dv = 1
-        self.bias = 5
+        self.bias = 6
         self.vth = 4
+        self.incoming_selector_weight = -5
         # Generate a fully connected graph with n=4.
         self.G = nx.complete_graph(4)
         self.rand_range = (
@@ -166,9 +168,32 @@ class Test_selector(unittest.TestCase):
             if is_selector_neuron_dict(some_neuron, self.neuron_dict):
 
                 wta_circuit = get_node_from_selector_neuron_name(neuron_name)
-                if t > 30:
-                    print(f"t={t},Properties of:{self.neuron_dict[some_neuron]}")
-                    print_neuron_properties([some_neuron])
+                if t > 26:
+                    if self.neuron_dict[some_neuron] == "selector_1":
+                        print(f"t={t},Properties of:{self.neuron_dict[some_neuron]}")
+                        print_neuron_properties([some_neuron])
+                        degree_receiver_1_0 = get_degree_receiver_neuron(
+                            self.neuron_dict, "degree_receiver_1_0"
+                        )
+                        print(
+                            f"t={t},Properties of:{self.neuron_dict[degree_receiver_1_0]}"
+                        )
+                        print_neuron_properties([degree_receiver_1_0])
+                    # degree_receiver_1_2 = get_degree_receiver_neuron(
+                    #    self.neuron_dict, "degree_receiver_1_2"
+                    # )
+                    # print(
+                    #    f"t={t},Properties of:{self.neuron_dict[degree_receiver_1_2]}"
+                    # )
+                    # print_neuron_properties([degree_receiver_1_2])
+                    # degree_receiver_1_3 = get_degree_receiver_neuron(
+                    #    self.neuron_dict, "degree_receiver_1_3"
+                    # )
+                    # print(
+                    #    f"t={t},Properties of:{self.neuron_dict[degree_receiver_1_3]}"
+                    # )
+                    # print_neuron_properties([degree_receiver_1_3])
+
                 if t == 1:
                     self.asserts_for_selector_at_t_is_1(bias, du, dv, some_neuron, vth)
                 elif t == 2:
@@ -249,7 +274,9 @@ class Test_selector(unittest.TestCase):
         """Assert the values of the degree_receiver neuron on t=2."""
         # Compute what the expected summed input spike values are.
 
-        a_in = get_a_in_for_selector_neuron(self.G, wta_circuit, self.rand_nrs, t)
+        a_in = get_a_in_for_selector_neuron(
+            self.G, self.incoming_selector_weight, wta_circuit, self.rand_nrs, t
+        )
         # u[t=2]=u[t=1]*(1-du)+a_in, a_in=
         # u[t=2]=0*(1-1)+0
         # u[t=2]=0*0+0
@@ -281,7 +308,9 @@ class Test_selector(unittest.TestCase):
         wta_circuit,
     ):
         """Assert the values of the degree_receiver neuron on t=3."""
-        a_in = get_a_in_for_selector_neuron(self.G, wta_circuit, self.rand_nrs, t)
+        a_in = get_a_in_for_selector_neuron(
+            self.G, self.incoming_selector_weight, wta_circuit, self.rand_nrs, t
+        )
         # u[t=3]=u[t=2]*(1-du)+a_in
         # u[t=3]=3*(1-0)-0
         # u[t=3]=3*1-0
@@ -301,7 +330,9 @@ class Test_selector(unittest.TestCase):
         self, bias, du, dv, degree_receiver, t, vth, wta_circuit
     ):
         """Assert the values of the degree_receiver neuron on t=4."""
-        a_in = get_a_in_for_selector_neuron(self.G, wta_circuit, self.rand_nrs, t)
+        a_in = get_a_in_for_selector_neuron(
+            self.G, self.incoming_selector_weight, wta_circuit, self.rand_nrs, t
+        )
         # u[t=4]=u[t=3]*(1-du)+a_in
         # u[t=4]=3*(1-0)+0
         # u[t=4]=3
@@ -320,7 +351,9 @@ class Test_selector(unittest.TestCase):
         self, bias, du, dv, degree_receiver, t, vth, wta_circuit
     ):
         """Assert the values of the degree_receiver neuron on t=4."""
-        a_in = get_a_in_for_selector_neuron(self.G, wta_circuit, self.rand_nrs, t)
+        a_in = get_a_in_for_selector_neuron(
+            self.G, self.incoming_selector_weight, wta_circuit, self.rand_nrs, t
+        )
         # The current stays constant indefinitely.
         # u[t=x+1]=u[t=x]*(1-du)+a_in
         # u[t=x+1]=3*(1-0)+0

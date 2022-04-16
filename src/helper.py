@@ -1,5 +1,6 @@
 import itertools
 import random
+import networkx as nx
 
 
 def list_of_all_combinations_of_set(some_set):
@@ -159,11 +160,33 @@ def get_node_from_selector_neuron_name(selector_neuron_name):
         )
 
 
-def get_a_in_for_selector_neuron(G, node, rand_nrs, t):
+def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t):
     """TODO: improve accuracy."""
     print(f"node={node}")
-    print(f"rand_nrs[node]={rand_nrs[node]}")
-    if t > rand_nrs[node]:
+    found_min_neighbour_rand = False
+    # Start with the lowest random value found in the network.
+    min_neighbour_rand = min(rand_nrs)
+    # Identify the lowest random value in the neighbours (which are part of the network).
+    # Therefore, the minimum randomness of the neighbours will always be lower than-,
+    # or equal to the minimum random value in the network.
+    for neighbour in nx.all_neighbors(G, node):
+        if rand_nrs[neighbour] >= min_neighbour_rand:
+            min_neighbour_rand = rand_nrs[neighbour]
+            found_min_neighbour_rand = True
+    if not found_min_neighbour_rand:
+        raise Exception(
+            "Error, did not find a random value in any neighbour of node:{node}."
+        )
+
+    print(f"min_neighbour_rand={min_neighbour_rand}")
+    if t > min_neighbour_rand:
         return 0
     else:
-        return -5
+        return incoming_selector_weight
+
+
+def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
+    for neuron, neuron_name in neuron_dict.items():
+        if neuron_name == desired_neuron_name:
+            return neuron
+    raise Exception("Did not find neuron!.")
