@@ -366,12 +366,14 @@ class Test_selector(unittest.TestCase):
         # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
         # v[t=x+1] = 0 * (1-0) -2 + 2
         # v[t=x+1] = 0
-        if bias - degree_receiver.u.get() > 1:
+        if bias + degree_receiver.u.get() > 1:
             expected_voltage = 0  # It spikes
+        elif degree_receiver.u.get() < self.incoming_selector_weight:
+            expected_voltage = bias + degree_receiver.u.get()  # no spike
         else:
-            expected_voltage = bias - degree_receiver.u.get()  # no spike
+            expected_voltage = bias + degree_receiver.u.get()  # no spike
         # expected_voltage = get_expected_voltage_of_first_spike(self.rand_nrs, t, a_in)
-
+        print(f"expected_voltage={expected_voltage}")
         # self.assertEqual(degree_receiver.v.get(), degree_receiver.u.get())
         self.assertEqual(degree_receiver.v.get(), expected_voltage)
 

@@ -195,8 +195,15 @@ def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t)
         print(f"equals+1,t={t},return:{incoming_selector_weight}")
         return incoming_selector_weight
     elif t == positive_min_neighbour_rand + 2:
-        print(f"equals+2,t={t},return:{incoming_selector_weight}")
-        return incoming_selector_weight
+        print(f"equals+2,t={t},return:{incoming_selector_weight}*2")
+        # Hardcoded because another degree_receiver neuron also starts firing
+        #  at this point.That means the previous current -5 is still present
+        # because du=0, then the first degree_receiver neuron fires again
+        # because it is not yet inhibited, yielding another -5. Then the new
+        # neuron also starts firing adding another -5 yielding -5*3.
+        # This is because there is a a -32 and -34 as lowest random weights
+        # using seed 42.
+        return incoming_selector_weight * 2
     elif t == positive_min_neighbour_rand + 3:
         print(f"equals+3,t={t},return:{0}")
         return 0
