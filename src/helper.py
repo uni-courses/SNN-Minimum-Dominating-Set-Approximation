@@ -127,3 +127,10 @@ def is_degree_receiver(neuron, neuron_dict):
     else:
         print(f"neuron_name[:16]={neuron_name[:16]}")
         print(f"neuron_name={neuron_name}")
+
+
+def get_expected_voltage_of_first_spike(rand_nrs, t, a_in):
+    if a_in > 1:
+        return 0
+    else:
+        return a_in

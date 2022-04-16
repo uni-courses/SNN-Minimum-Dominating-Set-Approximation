@@ -10,7 +10,6 @@ from src.helper import (
     is_degree_receiver,
 )
 
-
 from src.helper_network_structure import (
     get_degree_graph_with_separate_wta_circuits,
     plot_coordinated_graph,
@@ -19,13 +18,9 @@ from src.helper_snns import print_neuron_properties
 from src.networkx_to_snn import (
     convert_networkx_graph_to_snn_with_one_neuron,
 )
-from test.helper_tests import (
-    compute_expected_number_of_degree_receivers,
-    neurons_contain_n_degree_receiver_neurons,
-)
 
 
-class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
+class Test_selector(unittest.TestCase):
     """
     Tests whether the networks that are fed into networkx_to_snn are generating
     the correct snn networks.
@@ -33,13 +28,11 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
 
     # Initialize test object
     def __init__(self, *args, **kwargs):
-        super(Test_networkx_to_snn_degree_receiver_rand_neurons, self).__init__(
-            *args, **kwargs
-        )
+        super(Test_selector, self).__init__(*args, **kwargs)
         self.du = 0
         self.dv = 1
-        self.bias = 0
-        self.vth = 1
+        self.bias = 5
+        self.vth = 4
         # Generate a fully connected graph with n=4.
         self.G = nx.complete_graph(4)
         self.rand_range = (
@@ -79,7 +72,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
             self.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
         )
 
-    def testdegree_receiver_neurons_in_get_degree(
+    def test_selector_neurons_in_get_degree(
         self,
     ):
         """Tests whether the degree_receiver neurons are all present.
@@ -92,12 +85,12 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # correct at t=0.
         # TODO: include expected values in this test explicitly, instead of in
         # degree_receiver neuron.
-        degree_receiver_neurons = self.all_degree_receiver_neurons_are_present_in_snn(
+        selector_neurons = self.all_selector_neurons_are_present_in_snn(
             self.converted_nodes, self.G, self.get_degree, self.neurons
         )
 
         # Simulate SNN and assert values inbetween timesteps.
-        starter_neuron = degree_receiver_neurons[0]
+        starter_neuron = selector_neurons[0]
         for t in range(1, 100):
 
             # Run the simulation for 1 timestep.
@@ -113,7 +106,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
                 starter_neuron,
                 t,
                 self.vth,
-                degree_receiver_neurons,
+                selector_neurons,
             )
 
         starter_neuron.stop()
@@ -121,7 +114,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # TODO: Assert the neuron properties for the degree_receiver neurons are
         # correct at t>0
 
-    def all_degree_receiver_neurons_are_present_in_snn(
+    def all_selector_neurons_are_present_in_snn(
         self, converted_nodes, G, get_degree, neurons
     ):
         """Assumes neurons are named degree_receiver_<index>. Where index represents
@@ -129,36 +122,31 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         # Assert for each node in graph G, that a degree_receiver node exists in
         # get_degree.
         for node in G.nodes:
-            for neighbour in nx.all_neighbors(G, node):
-                # print(f"node={node}")
-                # print(f"get_degree.nodes={get_degree.nodes}")
-                self.assertTrue(
-                    f"degree_receiver_{node}_{neighbour}" in get_degree.nodes
-                )
+            self.assertTrue(f"selector_{node}" in get_degree.nodes)
 
         # Assert no more than n degree_receiver nodes exist in get_degree.
         self.assertEqual(
-            sum("degree_receiver" in string for string in get_degree.nodes), 4 * 3
+            sum("selector" in string for string in get_degree.nodes), 4
         )  # manual assert for fully connected graph of n=4.
         self.assertEqual(
-            sum("degree_receiver" in string for string in get_degree.nodes),
-            compute_expected_number_of_degree_receivers(G),
+            sum("selector" in string for string in get_degree.nodes),
+            len(G),
         )
 
         # Write a function that verifies n neurons exist with the
-        # degree_receiver properties.
+        # selector properties.
         (
-            has_n_degree_receiver_neurons,
-            degree_receiver_neurons,
-        ) = neurons_contain_n_degree_receiver_neurons(
+            has_n_selector_neurons,
+            selector_neurons,
+        ) = neurons_contain_n_selector_neurons(
             self.bias,
             self.du,
             self.dv,
             neurons,
-            compute_expected_number_of_degree_receivers(G),
+            len(G),
             self.vth,
         )
-        self.assertTrue(has_n_degree_receiver_neurons)
+        self.assertTrue(has_n_selector_neurons)
 
         # TODO: Verify they have the correct amount of outgoing synapses.
         # This is currently tested implicitly by checking the degree_receiver
@@ -168,96 +156,48 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
 
         # TODO: Subtract those neurons from neuron group and return reduced
         #  group for remainder of tests.
-        return degree_receiver_neurons
+        return selector_neurons
 
-    def degree_receiver_neurons_in_get_degree(self, get_degree, t):
-        """Tests whether the degree_receiver neurons are all present.
-        Verifies the neuron initial properties at t=0.
-        Verifies the neuron properties over time.
-        Assumes a spike occurs at t=1 and comes in at t=2 in the degree_receiver
-        neurons.
-        """
-        pass
-        # TODO: Assert all degree_receiver neurons are present in the snn.
-
-        # TODO: Assert the initial properties for the degree_receiver neurons are
-        # correct at t=0.
-        # TODO: Assert the current u(t) for the degree_receiver neurons is zero
-        # at t=0.
-
-        # TODO: Assert the current u(t) for the degree_receiver neurons is zero
-        # at t=0.
-
-        # TODO: Assert the degree_receiver neurons receive a spike at t=2
-        # TODO: Assert the current u(t=2) of each.
-        # degree_receiver neuron has the same value as the number of the
-        # degrees that the node has that is represented by the respective
-        # degree_receiver node.
-
-        # TODO: Assert the neuron properties for the degree_receiver neurons are
-        # correct at t>2.
-        # TODO: assert the current u(t) of the degree_receiver neurons does not
-        # increase after the initial spikes.
-
-    def networkx_to_snn_weight_calculation(self):
-        """
-        TODO: create new test that verifies the incoming random spikes of
-        neurons are added to the u(t) of the degree_receiver neurons.
-        Verify that this also included the degree_receiver degree count in u(t).
-        """
-        pass
-
-        # TODO: Write function that creates the random spiking neurons.
-        # Specficy the range of their random values and use those as a
-        # multiplication factor for the time window.
-        # TODO: Assert the number of spikes is within the specified window.
-        # TODO: Write function that creates the synapses between the
-        # random spiking neurons and the degree_receiver neurons.
-
-    def redirect_tests(
-        self, bias, du, dv, starter_neuron, t, vth, degree_receiver_neurons
-    ):
-        for some_neuron in degree_receiver_neurons:
+    def redirect_tests(self, bias, du, dv, starter_neuron, t, vth, selector_neurons):
+        for some_neuron in selector_neurons:
             neuron_name = self.neuron_dict[some_neuron]
-            if is_degree_receiver(some_neuron, self.neuron_dict):
+            if is_selector_neuron(some_neuron, self.neuron_dict):
 
                 wta_circuit, neighbour = get_node_and_neighbour_from_degree(neuron_name)
                 print(f"t={t},Properties of:{self.neuron_dict[some_neuron]}")
                 print_neuron_properties([some_neuron])
                 if t == 1:
-                    self.asserts_for_degree_receiver_at_t_is_1(
-                        bias, du, dv, some_neuron, vth
-                    )
+                    self.asserts_for_selector_at_t_is_1(bias, du, dv, some_neuron, vth)
                 elif t == 2:
-                    self.asserts_for_degree_receiver_at_t_is_2(
+                    self.asserts_for_selector_at_t_is_2(
                         bias, du, dv, some_neuron, t, vth, wta_circuit, neighbour
                     )
                 elif t == 3:
-                    self.asserts_for_degree_receiver_at_t_is_3(
+                    self.asserts_for_selector_at_t_is_3(
                         bias, du, dv, some_neuron, t, vth, wta_circuit, neighbour
                     )
                 elif t == 4:
-                    self.asserts_for_degree_receiver_at_t_is_4(
+                    self.asserts_for_selector_at_t_is_4(
                         bias, du, dv, some_neuron, t, vth, wta_circuit, neighbour
                     )
                 elif t > 4:
-                    self.asserts_for_degree_receiver_at_t_is_larger_than_4(
+                    self.asserts_for_selector_at_t_is_larger_than_4(
                         bias, du, dv, some_neuron, t, vth, wta_circuit, neighbour
                     )
             else:
                 print(f"Not a degree_receiver neuron:{neuron_name}")
                 exit()
 
-    def asserts_for_degree_receiver_at_t_is_0(self, bias, du, dv, degree_receiver, vth):
+    def asserts_for_selector_at_t_is_0(self, bias, du, dv, degree_receiver, vth):
         """Assert the values of the degree_receiver neuron on t=0."""
         self.assertEqual(degree_receiver.u.get(), 0)  # Default initial value.
-        self.assertEqual(degree_receiver.du.get(), du)  # Custom value.
+        self.assertEqual(degree_receiver.du.get(), 0)  # Custom value.
         self.assertEqual(degree_receiver.v.get(), 0)  # Default initial value.
         self.assertEqual(degree_receiver.dv.get(), dv)  # Default initial value.
         self.assertEqual(degree_receiver.bias.get(), bias)  # Custom value.
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
-    def asserts_for_degree_receiver_at_t_is_1(self, bias, du, dv, degree_receiver, vth):
+    def asserts_for_selector_at_t_is_1(self, bias, du, dv, degree_receiver, vth):
         """Assert the values of the degree_receiver neuron on t=1. t=1 occurs after
         one timestep."""
 
@@ -276,7 +216,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.bias.get(), bias)  # Custom value.
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
-    def asserts_for_degree_receiver_at_t_is_2(
+    def asserts_for_selector_at_t_is_2(
         self, bias, du, dv, degree_receiver, t, vth, wta_circuit, neighbour
     ):
         """Assert the values of the degree_receiver neuron on t=2."""
@@ -309,7 +249,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.bias.get(), bias)  # Custom value.
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
-    def asserts_for_degree_receiver_at_t_is_3(
+    def asserts_for_selector_at_t_is_3(
         self, bias, du, dv, degree_receiver, t, vth, wta_circuit, neighbour
     ):
         """Assert the values of the degree_receiver neuron on t=3."""
@@ -331,7 +271,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.bias.get(), bias)  # Custom value.
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
-    def asserts_for_degree_receiver_at_t_is_4(
+    def asserts_for_selector_at_t_is_4(
         self, bias, du, dv, degree_receiver, t, vth, wta_circuit, neighbour
     ):
         """Assert the values of the degree_receiver neuron on t=4."""
@@ -352,7 +292,7 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.bias.get(), bias)  # Custom value.
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
 
-    def asserts_for_degree_receiver_at_t_is_larger_than_4(
+    def asserts_for_selector_at_t_is_larger_than_4(
         self, bias, du, dv, degree_receiver, t, vth, wta_circuit, neighbour
     ):
         """Assert the values of the degree_receiver neuron on t=4."""
@@ -379,3 +319,51 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.assertEqual(degree_receiver.dv.get(), dv)  # Custom value.
         self.assertEqual(degree_receiver.bias.get(), bias)  # Custom value.
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
+
+
+def neurons_contain_n_selector_neurons(bias, du, dv, neurons, n, vth):
+    """Verifies at least n neurons exist with the selector properties."""
+    selector_neurons = []
+    for neuron in neurons:
+
+        # Check if neuron has the correct properties.
+        bool_selector_neuron = is_selector_neuron(bias, du, dv, neuron, vth)
+
+        if bool_selector_neuron:
+            # TODO: Verify a selector neuron has a recurrent synaptic
+            # connection to itself with weight -2.
+            selector_neurons.append(neuron)
+
+    if len(selector_neurons) == n:
+        return True, selector_neurons
+    else:
+        print(f"len(selector_neurons)={len(selector_neurons)}")
+        return False, selector_neurons
+
+
+def is_selector_neuron(bias, du, dv, neuron, vth):
+    """Assert the values of the selector neuron on t=0."""
+    if neuron.u.get() == 0:  # Default initial value.
+        if neuron.du.get() == du:  # Custom value.
+            if neuron.v.get() == 0:  # Default initial value.
+                if neuron.dv.get() == dv:  # Default initial value.
+                    if neuron.bias.get() == bias:  # Custom value.
+                        if neuron.vth.get() == vth:  # Default value.
+                            return True
+                        else:
+                            print(
+                                f"neuron.vth.get()={neuron.vth.get()}, whereas vth={vth}"
+                            )
+                    else:
+                        print(
+                            f"neuron.bias.get()={neuron.bias.get()}, whereas bias={bias}"
+                        )
+                else:
+                    print(f"neuron.dv.get()={neuron.dv.get()}, whereas dv={dv}")
+            else:
+                print(f"neuron.v.get()={neuron.v.get()}, whereas v={v}")
+        else:
+            print(f"neuron.du.get()={neuron.du.get()}, whereas du={du}")
+    else:
+        print(f"neuron.u.get()={neuron.u.get()}, whereas u={0}")
+    return False
