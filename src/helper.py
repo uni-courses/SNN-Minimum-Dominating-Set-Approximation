@@ -161,7 +161,15 @@ def get_node_from_selector_neuron_name(selector_neuron_name):
 
 
 def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t):
-    """TODO: improve accuracy."""
+    """If the minimum random value of a degree_receiver_x_y that is connected
+    to selector_x is z (e.g. z=32), then degree_receiver_x_y will reach u(t)=0
+    at t=z-2 (e.g. t=32-2=30). It is not quite clear why this is not at t=z.
+    However, the degree_receiver_x_y neuron will then spike at t=z (so two
+    timesteps later, e.g. t=32), because the vth=1, and the u(t) needs to be
+    LARGER than vth, which requires a value of u(t)=2. Then there is a delay of
+    1 for the spike to reach selector_x from degree_receiver_x_y. Once the spike
+    arrives at t=z+1, it will immediatly result in an input a_in of -5 for the
+    selector_x neuron."""
     print(f"node={node}")
     found_min_neighbour_rand = False
     # Start with the lowest random value found in the network.
