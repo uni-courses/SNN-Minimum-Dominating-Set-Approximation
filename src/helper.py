@@ -127,6 +127,17 @@ def is_degree_receiver(neuron, neuron_dict):
     else:
         print(f"neuron_name[:16]={neuron_name[:16]}")
         print(f"neuron_name={neuron_name}")
+        return False
+
+
+def is_selector_neuron_dict(neuron, neuron_dict):
+    neuron_name = neuron_dict[neuron]
+    if neuron_name[:9] == "selector_":
+        return True
+    else:
+        print(f"neuron_name[:9]={neuron_name[:9]}")
+        print(f"neuron_name={neuron_name}")
+        return False
 
 
 def get_expected_voltage_of_first_spike(rand_nrs, t, a_in):
@@ -134,3 +145,25 @@ def get_expected_voltage_of_first_spike(rand_nrs, t, a_in):
         return 0
     else:
         return a_in
+
+
+def get_node_from_selector_neuron_name(selector_neuron_name):
+    if selector_neuron_name[:9] == "selector_":
+        parts = selector_neuron_name.split("_")
+        node_index = int(parts[1])
+        return node_index
+
+    else:
+        raise Exception(
+            "Error tried parsing neuron as selector neuron even though it is not."
+        )
+
+
+def get_a_in_for_selector_neuron(G, node, rand_nrs, t):
+    """TODO: improve accuracy."""
+    print(f"node={node}")
+    print(f"rand_nrs[node]={rand_nrs[node]}")
+    if t > rand_nrs[node]:
+        return 0
+    else:
+        return -5

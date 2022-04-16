@@ -124,9 +124,9 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     ],
                     weight=rand_nrs[circuit],
                 )
-                print(
-                    f"Add edge between: circuit_target={circuit_target}, circuit={circuit},weight={rand_nrs[circuit]}"
-                )
+                # print(
+                #    f"Add edge between: circuit_target={circuit_target}, circuit={circuit},weight={rand_nrs[circuit]}"
+                # )
 
         # Add synapse from degree_selector to selector node.
         for neighbour_b in nx.all_neighbors(G, circuit):
@@ -140,7 +140,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     ],
                     weight=-5,  # to disable bias
                 )
-            print(f"degree_receiver_{circuit}_{neighbour_b} selector_{circuit}")
+                print(f"degree_receiver_{circuit}_{neighbour_b} selector_{circuit}")
         # TODO:
         # Add synapse from selector node back into degree selector.
         for neighbour_b in nx.all_neighbors(G, circuit):
@@ -154,7 +154,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     ],
                     weight=1,  # To increase u(t) at every timestep.
                 )
-            print(f"selector_{circuit} degree_receiver_{circuit}_{neighbour_b}")
+            # print(f"selector_{circuit} degree_receiver_{circuit}_{neighbour_b}")
 
     return get_degree
 

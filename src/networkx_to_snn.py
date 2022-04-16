@@ -48,7 +48,6 @@ def retry_build_snn(
     # print_node_properties(G, lhs_node)
     assert_all_neuron_properties_are_specified(G, lhs_node)
     # TODO: assert graph G is connected.
-    print(f"new call with:lhs_node={lhs_node}")
 
     visited_nodes.append(lhs_node)
     # Incoming node, if it is not yet converted, then convert to neuron.
@@ -64,7 +63,6 @@ def retry_build_snn(
     # For all edges of node, if synapse does not yet  exists:
     # Needs to be a set  because bi-directional edges create neighbour duplicates.
     for neighbour in set(nx.all_neighbors(G, lhs_node)):
-        print(f"neighbour={neighbour}")
         if neighbour not in visited_nodes:
 
             # Ensure target neuron is created.
@@ -88,13 +86,12 @@ def retry_build_snn(
             neuron_dict = add_neuron_to_dict(neighbour, neuron_dict, rhs_neuron)
 
             # 5. Add synapse
-            print(
-                f"add_synapse from:{lhs_node},with neighbour={neighbour}, connect to to: {neuron_dict[rhs_neuron]}"
-            )
+            # print(
+            #    f"add_synapse from:{lhs_node},with neighbour={neighbour}, connect to to: {neuron_dict[rhs_neuron]}"
+            # )
             lhs_neuron = add_synapse_between_nodes(
                 G, lhs_neuron, lhs_node, neighbour, rhs_neuron, neighbour
             )
-    print(f"done loop.")
 
     # 6. recursively call that function on the neighbour neurons until no
     # new neurons are discovered.
