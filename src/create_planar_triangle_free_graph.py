@@ -25,6 +25,28 @@ def get_graph(args, show_graph):
     return graph
 
 
+def create_manual_graph_with_4_nodes():
+    """
+    creates manual test graph with 7 undirected nodes.
+    """
+
+    graph = nx.Graph()
+    graph.add_nodes_from(
+        [0, 1, 2, 3],
+        color="w",
+    )
+    graph.add_edges_from(
+        [
+            (0, 1),
+            (0, 2),
+            (0, 3),
+            (1, 3),
+            (2, 3),
+        ]
+    )
+    return graph
+
+
 def create_manual_triangle_free_graph():
     """
     creates manual test graph with 7 undirected nodes.
