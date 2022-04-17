@@ -1,5 +1,6 @@
 import itertools
 import random
+import networkx as nx
 
 
 def list_of_all_combinations_of_set(some_set):
@@ -78,6 +79,31 @@ def get_a_in_with_random_neurons(G, neighbour, wta_circuit, rand_nrs, multiplier
     return a_in
 
 
+def get_a_in_with_random_neurons_and_excitation(
+    G, neighbour, rand_nrs, t, wta_circuit, multiplier=1
+):
+    """Computes the incoming spike value a_in of degree_receiver_x_y.
+    Computation based on the spike_once neurons (x), the random_neurons(y) and
+    the excitatory neuron.
+    The used names for x and y are: x=wta_circuit, y=neighbour.
+
+    The multiplier can be used to multiply the spike_once inputs
+
+    """
+    # Compute the amount of neighbours the node that is represented by
+    # wta_circuit.
+    degree = G.degree(wta_circuit)
+    print(f"degree={degree}")
+    print(f"(wta_circuit={wta_circuit}")
+
+    # Compute random value of relevant node.
+    rand_val = rand_nrs[neighbour]
+    print(f"rand_val={rand_val}")
+
+    a_in = degree * multiplier + rand_val + t - 1
+    return a_in
+
+
 def get_node_and_neighbour_from_degree(get_degree_neuron):
     parts = get_degree_neuron.split("_")
     node_index = int(parts[2])
@@ -102,3 +128,143 @@ def is_degree_receiver(neuron, neuron_dict):
     else:
         print(f"neuron_name[:16]={neuron_name[:16]}")
         print(f"neuron_name={neuron_name}")
+        return False
+
+
+def is_selector_neuron_dict(neuron, neuron_dict):
+    neuron_name = neuron_dict[neuron]
+    if neuron_name[:9] == "selector_":
+        return True
+    else:
+        print(f"neuron_name[:9]={neuron_name[:9]}")
+        print(f"neuron_name={neuron_name}")
+        return False
+
+
+def get_expected_voltage_of_first_spike(rand_nrs, t, a_in):
+    if a_in > 1:
+        return 0
+    else:
+        return a_in
+
+
+def get_node_from_selector_neuron_name(selector_neuron_name):
+    if selector_neuron_name[:9] == "selector_":
+        parts = selector_neuron_name.split("_")
+        node_index = int(parts[1])
+        return node_index
+
+    else:
+        raise Exception(
+            "Error tried parsing neuron as selector neuron even though it is not."
+        )
+
+
+def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t):
+    """If the minimum random value of a degree_receiver_x_y that is connected
+    to selector_x is z (e.g. z=32), then degree_receiver_x_y will reach u(t)=0
+    at t=z-2 (e.g. t=32-2=30). It is not quite clear why this is not at t=z.
+    However, the degree_receiver_x_y neuron will then spike at t=z (so two
+    timesteps later, e.g. t=32), because the vth=1, and the u(t) needs to be
+    LARGER than vth, which requires a value of u(t)=2. Then there is a delay of
+    1 for the spike to reach selector_x from degree_receiver_x_y. Once the spike
+    arrives at t=z+1, it will immediatly result in an input a_in of -5 for the
+    selector_x neuron."""
+    # print(f"node={node}")
+    found_min_neighbour_rand = False
+    # Start with the lowest random value found in the network.
+    min_neighbour_rand = min(rand_nrs)
+    print(f"min_neighbour_rand={min_neighbour_rand}")
+    # Identify the lowest random value in the neighbours (which are part of the network).
+    # Therefore, the minimum randomness of the neighbours will always be lower than-,
+    # or equal to the minimum random value in the network.
+    for neighbour in nx.all_neighbors(G, node):
+        if rand_nrs[neighbour] >= min_neighbour_rand:
+            min_neighbour_rand = rand_nrs[neighbour]
+            found_min_neighbour_rand = True
+    if not found_min_neighbour_rand:
+        raise Exception(
+            "Error, did not find a random value in any neighbour of node:{node}."
+        )
+
+    positive_min_neighbour_rand = -1 * min_neighbour_rand
+    # print(f"positive_min_neighbour_rand={positive_min_neighbour_rand}")
+
+    if t < positive_min_neighbour_rand + 1:
+        return 0
+    elif t == positive_min_neighbour_rand + 1:
+        # print(f"equals+1,t={t},return:{incoming_selector_weight}")
+        return incoming_selector_weight
+    elif t == positive_min_neighbour_rand + 2:
+        # print(f"equals+2,t={t},return:{incoming_selector_weight}*2")
+        # Hardcoded because another degree_receiver neuron also starts firing
+        #  at this point.That means the previous current -5 is still present
+        # because du=0, then the first degree_receiver neuron fires again
+        # because it is not yet inhibited, yielding another -5. Then the new
+        # neuron also starts firing adding another -5 yielding -5*3.
+        # This is because there is a a -32 and -34 as lowest random weights
+        # using seed 42.
+        return incoming_selector_weight * 2
+    elif t == positive_min_neighbour_rand + 3:
+        # print(f"equals+3,t={t},return:{0}")
+        return 0
+
+
+def get_a_in_for_selector_neuron_retry(
+    G, delta, incoming_selector_weight, node, rand_nrs, t
+):
+    """Gets the a_in spikes for the selector neuron."""
+    if delta < 2:
+        raise Exception(
+            "Error, this method does not yield correct results for delta<2."
+        )
+    neighbours = []
+    random_values = []
+    degrees = []
+    input_signals = []
+    for neighbour in nx.all_neighbors(G, node):
+        neighbours.append(neighbour)
+    # Compute number of neighbours in node.
+    for index, neighbour in enumerate(list(nx.all_neighbors(G, node))):
+        random_values.append(rand_nrs[neighbour])
+        degrees.append(len(list(nx.all_neighbors(G, neighbour))))
+        # +1 for the excitatory selector neuron.
+        input_signals.append(
+            random_values[index] + degrees[index] + 1
+        )  # TODO: determine why +1
+    print(f"node={node}")
+    # Get max randomness of node:
+    max_input = max(input_signals)
+
+    if node == 1:
+        print(f"random_values={random_values}")
+        print(f"degrees={degrees}")
+        print(f"input_signals={input_signals}")
+        print(f"incoming_selector_weight={incoming_selector_weight}")
+        print(f"max_input={max_input}")
+
+    # Compute time at which first neuron degree_receiver spikes
+    # +5: +2 Because at t=1 the currents at degree_receiver are still 0.
+    # +2 delay because the v[t] should EXCEED, (not equal) vth=1
+    # -1 because all neurons start at their degree-randomness+1 for the
+    #  excitatory selector neuron.
+    # +1 delay from degree_receiver_x_y to selector_x +
+    # +1 delay from selector_x to degree_receiver_x_y.
+    # So 2+2-1+1+1=5
+    #
+    t_degree_receiver_first_spike = -1 * max_input + 5
+    if t >= t_degree_receiver_first_spike:
+
+        print(
+            f"t={t}, returning:a_in={incoming_selector_weight}*{t-t_degree_receiver_first_spike+1}"
+        )
+        return incoming_selector_weight * (t - t_degree_receiver_first_spike + 1)
+    else:
+        return 0
+
+
+def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
+    for neuron, neuron_name in neuron_dict.items():
+        if neuron_name == desired_neuron_name:
+            return neuron
+    raise Exception("Did not find neuron!.")

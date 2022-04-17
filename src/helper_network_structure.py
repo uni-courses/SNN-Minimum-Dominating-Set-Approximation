@@ -79,6 +79,17 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
             pos=(float(0.25), float(node) + 0.5),
         )
 
+        # Add winner selector node
+        get_degree.add_node(
+            f"selector_{node}",
+            id=node,
+            du=0,
+            dv=1,
+            bias=5,  # Always spike unless inhibitied by u[t]
+            vth=4,
+            pos=(float(1.25), float(node)),
+        )
+
     # Then create all edges between the nodes.
     for circuit in G.nodes:
         # For each neighbour of node, named degree_receiver:
@@ -100,9 +111,10 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                             ],
                             weight=+1,
                         )
+
+        # Add synapse between random node and degree receiver nodes.
         for circuit_target in G.nodes:
             if circuit != circuit_target:
-                # TODO: include random weight, instead of node weight.
                 get_degree.add_edges_from(
                     [
                         (
@@ -110,12 +122,39 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                             f"degree_receiver_{circuit_target}_{circuit}",
                         )
                     ],
-                    weight=rand_nrs[circuit]
-                    # [(f"rand_{node}", f"degree_receiver_{neighbour_a}_{neighbour_b}")], weight=circuit
+                    weight=rand_nrs[circuit],
                 )
-                print(
-                    f"Add edge between: circuit_target={circuit_target}, circuit={circuit},weight={rand_nrs[circuit]}"
+                # print(
+                #    f"Add edge between: circuit_target={circuit_target}, circuit={circuit},weight={rand_nrs[circuit]}"
+                # )
+
+        # Add synapse from degree_selector to selector node.
+        for neighbour_b in nx.all_neighbors(G, circuit):
+            if circuit != neighbour_b:
+                get_degree.add_edges_from(
+                    [
+                        (
+                            f"degree_receiver_{circuit}_{neighbour_b}",
+                            f"selector_{circuit}",
+                        )
+                    ],
+                    weight=-5,  # to disable bias
                 )
+                print(f"degree_receiver_{circuit}_{neighbour_b} selector_{circuit}")
+        # TODO:
+        # Add synapse from selector node back into degree selector.
+        for neighbour_b in nx.all_neighbors(G, circuit):
+            if circuit != neighbour_b:
+                get_degree.add_edges_from(
+                    [
+                        (
+                            f"selector_{circuit}",
+                            f"degree_receiver_{circuit}_{neighbour_b}",
+                        )
+                    ],
+                    weight=1,  # To increase u(t) at every timestep.
+                )
+            # print(f"selector_{circuit} degree_receiver_{circuit}_{neighbour_b}")
 
     return get_degree
 
