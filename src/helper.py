@@ -170,7 +170,7 @@ def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t)
     1 for the spike to reach selector_x from degree_receiver_x_y. Once the spike
     arrives at t=z+1, it will immediatly result in an input a_in of -5 for the
     selector_x neuron."""
-    print(f"node={node}")
+    # print(f"node={node}")
     found_min_neighbour_rand = False
     # Start with the lowest random value found in the network.
     min_neighbour_rand = min(rand_nrs)
@@ -187,15 +187,15 @@ def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t)
         )
 
     positive_min_neighbour_rand = -1 * min_neighbour_rand
-    print(f"positive_min_neighbour_rand={positive_min_neighbour_rand}")
+    # print(f"positive_min_neighbour_rand={positive_min_neighbour_rand}")
 
     if t < positive_min_neighbour_rand + 1:
         return 0
     elif t == positive_min_neighbour_rand + 1:
-        print(f"equals+1,t={t},return:{incoming_selector_weight}")
+        # print(f"equals+1,t={t},return:{incoming_selector_weight}")
         return incoming_selector_weight
     elif t == positive_min_neighbour_rand + 2:
-        print(f"equals+2,t={t},return:{incoming_selector_weight}*2")
+        # print(f"equals+2,t={t},return:{incoming_selector_weight}*2")
         # Hardcoded because another degree_receiver neuron also starts firing
         #  at this point.That means the previous current -5 is still present
         # because du=0, then the first degree_receiver neuron fires again
@@ -205,7 +205,7 @@ def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t)
         # using seed 42.
         return incoming_selector_weight * 2
     elif t == positive_min_neighbour_rand + 3:
-        print(f"equals+3,t={t},return:{0}")
+        # print(f"equals+3,t={t},return:{0}")
         return 0
 
 

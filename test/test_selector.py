@@ -168,31 +168,34 @@ class Test_selector(unittest.TestCase):
             if is_selector_neuron_dict(some_neuron, self.neuron_dict):
 
                 wta_circuit = get_node_from_selector_neuron_name(neuron_name)
-                if t > 26:
+                if t > 20:
                     if self.neuron_dict[some_neuron] == "selector_1":
-                        print(f"t={t},Properties of:{self.neuron_dict[some_neuron]}")
-                        print_neuron_properties([some_neuron])
+                        # Get neurons that are to be printed
                         degree_receiver_1_0 = get_degree_receiver_neuron(
                             self.neuron_dict, "degree_receiver_1_0"
                         )
-                        print(
-                            f"t={t},Properties of:{self.neuron_dict[degree_receiver_1_0]}"
+                        degree_receiver_1_2 = get_degree_receiver_neuron(
+                            self.neuron_dict, "degree_receiver_1_2"
                         )
-                        print_neuron_properties([degree_receiver_1_0])
-                    # degree_receiver_1_2 = get_degree_receiver_neuron(
-                    #    self.neuron_dict, "degree_receiver_1_2"
-                    # )
-                    # print(
-                    #    f"t={t},Properties of:{self.neuron_dict[degree_receiver_1_2]}"
-                    # )
-                    # print_neuron_properties([degree_receiver_1_2])
-                    # degree_receiver_1_3 = get_degree_receiver_neuron(
-                    #    self.neuron_dict, "degree_receiver_1_3"
-                    # )
-                    # print(
-                    #    f"t={t},Properties of:{self.neuron_dict[degree_receiver_1_3]}"
-                    # )
-                    # print_neuron_properties([degree_receiver_1_3])
+                        degree_receiver_1_3 = get_degree_receiver_neuron(
+                            self.neuron_dict, "degree_receiver_1_3"
+                        )
+                        # Print which neuron properties are being printed
+                        print(
+                            f"t={t},Properties of:{self.neuron_dict[some_neuron]},"
+                            + f"{self.neuron_dict[degree_receiver_1_0]},"
+                            + f"{self.neuron_dict[degree_receiver_1_2]},"
+                            + f"{self.neuron_dict[degree_receiver_1_3]}"
+                        )
+                        # Print neuron properties.
+                        print_neuron_properties(
+                            [
+                                some_neuron,
+                                degree_receiver_1_0,
+                                degree_receiver_1_2,
+                                degree_receiver_1_3,
+                            ]
+                        )
 
                 if t == 1:
                     self.asserts_for_selector_at_t_is_1(bias, du, dv, some_neuron, vth)
@@ -359,7 +362,7 @@ class Test_selector(unittest.TestCase):
         # u[t=x+1]=u[t=x]*(1-du)+a_in
         # u[t=x+1]=3*(1-0)+0
         # u[t=x+1]=3
-        print(f"a_in={a_in}")
+        # print(f"a_in={a_in}")
         self.assertEqual(degree_receiver.u.get(), a_in)
         # The voltage stays constant indefinitely because the current
         # stays constant indefinitely whilst cancelling out the bias.
@@ -373,7 +376,7 @@ class Test_selector(unittest.TestCase):
         else:
             expected_voltage = bias + degree_receiver.u.get()  # no spike
         # expected_voltage = get_expected_voltage_of_first_spike(self.rand_nrs, t, a_in)
-        print(f"expected_voltage={expected_voltage}")
+        # print(f"expected_voltage={expected_voltage}")
         # self.assertEqual(degree_receiver.v.get(), degree_receiver.u.get())
         self.assertEqual(degree_receiver.v.get(), expected_voltage)
 
@@ -381,7 +384,6 @@ class Test_selector(unittest.TestCase):
         self.assertEqual(degree_receiver.dv.get(), dv)  # Custom value.
         self.assertEqual(degree_receiver.bias.get(), bias)  # Custom value.
         self.assertEqual(degree_receiver.vth.get(), vth)  # Default value.
-        print(f"End of t > 4 test.")
 
 
 def neurons_contain_n_selector_neurons(bias, du, dv, neurons, n, vth):
