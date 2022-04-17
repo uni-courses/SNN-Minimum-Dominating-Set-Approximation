@@ -174,6 +174,7 @@ def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t)
     found_min_neighbour_rand = False
     # Start with the lowest random value found in the network.
     min_neighbour_rand = min(rand_nrs)
+    print(f"min_neighbour_rand={min_neighbour_rand}")
     # Identify the lowest random value in the neighbours (which are part of the network).
     # Therefore, the minimum randomness of the neighbours will always be lower than-,
     # or equal to the minimum random value in the network.
@@ -206,6 +207,59 @@ def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t)
         return incoming_selector_weight * 2
     elif t == positive_min_neighbour_rand + 3:
         # print(f"equals+3,t={t},return:{0}")
+        return 0
+
+
+def get_a_in_for_selector_neuron_retry(
+    G, delta, incoming_selector_weight, node, rand_nrs, t
+):
+    """Gets the a_in spikes for the selector neuron."""
+    if delta < 2:
+        raise Exception(
+            "Error, this method does not yield correct results for delta<2."
+        )
+    neighbours = []
+    random_values = []
+    degrees = []
+    input_signals = []
+    for neighbour in nx.all_neighbors(G, node):
+        neighbours.append(neighbour)
+    # Compute number of neighbours in node.
+    for index, neighbour in enumerate(list(nx.all_neighbors(G, node))):
+        random_values.append(rand_nrs[neighbour])
+        degrees.append(len(list(nx.all_neighbors(G, neighbour))))
+        # +1 for the excitatory selector neuron.
+        input_signals.append(
+            random_values[index] + degrees[index] + 1
+        )  # TODO: determine why +1
+    print(f"node={node}")
+    # Get max randomness of node:
+    max_input = max(input_signals)
+
+    if node == 1:
+        print(f"random_values={random_values}")
+        print(f"degrees={degrees}")
+        print(f"input_signals={input_signals}")
+        print(f"incoming_selector_weight={incoming_selector_weight}")
+        print(f"max_input={max_input}")
+
+    # Compute time at which first neuron degree_receiver spikes
+    # +5: +2 Because at t=1 the currents at degree_receiver are still 0.
+    # +2 delay because the v[t] should EXCEED, (not equal) vth=1
+    # -1 because all neurons start at their degree-randomness+1 for the
+    #  excitatory selector neuron.
+    # +1 delay from degree_receiver_x_y to selector_x +
+    # +1 delay from selector_x to degree_receiver_x_y.
+    # So 2+2-1+1+1=5
+    #
+    t_degree_receiver_first_spike = -1 * max_input + 5
+    if t >= t_degree_receiver_first_spike:
+
+        print(
+            f"t={t}, returning:a_in={incoming_selector_weight}*{t-t_degree_receiver_first_spike+1}"
+        )
+        return incoming_selector_weight * (t - t_degree_receiver_first_spike + 1)
+    else:
         return 0
 
 
