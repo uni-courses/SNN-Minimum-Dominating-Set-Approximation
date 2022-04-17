@@ -9,6 +9,7 @@ from src.helper import (
     get_degree_receiver_neuron,
     get_node_from_selector_neuron_name,
     is_selector_neuron_dict,
+    print_degree_neurons,
 )
 
 from src.helper_network_structure import (
@@ -37,8 +38,8 @@ class Test_selector(unittest.TestCase):
         self.vth = 4
         self.incoming_selector_weight = -5
         # Generate a fully connected graph with n=4.
-        self.G = nx.complete_graph(4)
-        # self.G=create_manual_graph_with_4_nodes()
+        # self.G = nx.complete_graph(4)
+        self.G = create_manual_graph_with_4_nodes()
         self.rand_range = (
             len(self.G) + 2
         )  # Allow for larger random list than nr of nodes.
@@ -181,31 +182,12 @@ class Test_selector(unittest.TestCase):
                 wta_circuit = get_node_from_selector_neuron_name(selector_neuron_name)
                 if t > -1:
                     if self.neuron_dict[selector_neuron] == "selector_1":
-                        # Get neurons that are to be printed
-                        degree_receiver_1_0 = get_degree_receiver_neuron(
-                            self.neuron_dict, "degree_receiver_1_0"
-                        )
-                        degree_receiver_1_2 = get_degree_receiver_neuron(
-                            self.neuron_dict, "degree_receiver_1_2"
-                        )
-                        degree_receiver_1_3 = get_degree_receiver_neuron(
-                            self.neuron_dict, "degree_receiver_1_3"
-                        )
-                        # Print which neuron properties are being printed
-                        print(
-                            f"t={t},Properties of:{self.neuron_dict[selector_neuron]},"
-                            + f"{self.neuron_dict[degree_receiver_1_0]},"
-                            + f"{self.neuron_dict[degree_receiver_1_2]},"
-                            + f"{self.neuron_dict[degree_receiver_1_3]}"
-                        )
-                        # Print neuron properties.
-                        print_neuron_properties(
-                            [
-                                selector_neuron,
-                                degree_receiver_1_0,
-                                degree_receiver_1_2,
-                                degree_receiver_1_3,
-                            ]
+                        print_degree_neurons(
+                            self.G,
+                            self.neuron_dict,
+                            wta_circuit,
+                            t,
+                            extra_neuron=selector_neuron,
                         )
 
                 if t == 1:

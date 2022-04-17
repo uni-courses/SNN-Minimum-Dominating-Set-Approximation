@@ -2,6 +2,8 @@ import itertools
 import random
 import networkx as nx
 
+from src.helper_snns import print_neuron_properties
+
 
 def list_of_all_combinations_of_set(some_set):
     all_combinations = set()
@@ -217,4 +219,26 @@ def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
     for neuron, neuron_name in neuron_dict.items():
         if neuron_name == desired_neuron_name:
             return neuron
-    raise Exception("Did not find neuron!.")
+    raise Exception(f"Did not find neuron:{desired_neuron_name}!.")
+
+
+def print_degree_neurons(G, neuron_dict, node, t, extra_neuron=None):
+    if not extra_neuron is None:
+        degree_neuron_names = [neuron_dict[extra_neuron]]
+    else:
+        degree_neuron_names = []
+    degree_receiver_neurons = [extra_neuron]
+    for neighbour in nx.all_neighbors(G, node):
+        degree_neuron_name = f"degree_receiver_{node}_{neighbour}"
+        degree_neuron_names.append(degree_neuron_name)
+
+        # Get neurons that are to be printed
+        degree_receiver_neurons.append(
+            get_degree_receiver_neuron(neuron_dict, degree_neuron_name)
+        )
+    # Print which neuron properties are being printed
+    print(
+        f"t={t},Properties of:{neuron_dict[extra_neuron]}," + f"{degree_neuron_names},"
+    )
+    # Print neuron properties.
+    print_neuron_properties(degree_receiver_neurons)

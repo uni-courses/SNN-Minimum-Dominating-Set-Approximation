@@ -129,18 +129,20 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
         # Add synapse between random node and degree receiver nodes.
         for circuit_target in G.nodes:
             if circuit != circuit_target:
-                get_degree.add_edges_from(
-                    [
-                        (
-                            f"rand_{circuit}",
-                            f"degree_receiver_{circuit_target}_{circuit}",
-                        )
-                    ],
-                    weight=rand_nrs[circuit],
-                )
-                # print(
-                #    f"Add edge between: circuit_target={circuit_target}, circuit={circuit},weight={rand_nrs[circuit]}"
-                # )
+                # Check if there is an edge from neighbour_a to neighbour_b.
+                if circuit in nx.all_neighbors(G, circuit_target):
+                    get_degree.add_edges_from(
+                        [
+                            (
+                                f"rand_{circuit}",
+                                f"degree_receiver_{circuit_target}_{circuit}",
+                            )
+                        ],
+                        weight=rand_nrs[circuit],
+                    )
+                    print(
+                        f"Add edge between: circuit_target={circuit_target}, circuit={circuit},weight={rand_nrs[circuit]}"
+                    )
 
         # Add synapse from degree_selector to selector node.
         for neighbour_b in nx.all_neighbors(G, circuit):
