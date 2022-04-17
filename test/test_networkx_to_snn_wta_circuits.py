@@ -14,6 +14,7 @@ from src.helper import (
 from src.helper_network_structure import (
     get_degree_graph_with_separate_wta_circuits,
     plot_coordinated_graph,
+    plot_unstructured_graph,
 )
 from src.helper_snns import print_neuron_properties
 from src.networkx_to_snn import (
@@ -42,12 +43,14 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         self.vth = 1
         # Generate a fully connected graph with n=4.
         self.G = nx.complete_graph(4)
+        self.delta = 2  # The difference in randomness values.
         self.rand_range = (
             len(self.G) + 2
         )  # Allow for larger random list than nr of nodes.
         self.rand_nrs = generate_list_of_n_random_nrs(
             self.G, max=self.rand_range, seed=42
         )
+        self.random_window = self.rand_range * self.delta
 
         # Add inhibition to rand_nrs to ensure the degree_receiver value is negative.
         # Subtract R*R for number of nodes * range of randomness.
@@ -57,8 +60,8 @@ class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
         ]
 
         print(f"self.rand_nrs={self.rand_nrs}")
-        # print(f"Incoming G")
-        # plot_unstructured_graph(self.G)
+        print(f"Incoming G")
+        plot_unstructured_graph(self.G)
 
         # Convert the fully connected graph into a networkx graph that
         # stores the snn properties to create an snn that computes the degree

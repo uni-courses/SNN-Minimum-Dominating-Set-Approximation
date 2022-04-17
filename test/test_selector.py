@@ -46,7 +46,18 @@ class Test_selector(unittest.TestCase):
         self.rand_nrs = generate_list_of_n_random_nrs(
             self.G, max=self.rand_range, seed=42
         )
-
+        print(f"before={self.rand_nrs}")
+        # Include a minimal value difference of delta to the random numbers to
+        # prevent the delay between the first degree_receiver_x_y winner
+        # inhibiting the selector node, and the termination of the selector
+        # node excitation of the other degree winners. (Simply put, if it takes
+        # two timesteps for a winner to stop the excitation, a winner that is
+        # only 1 value behind the winner could also still start spiking
+        # indifinitely.) By increasing the differences between the random
+        # values this becomes impossible, yielding a single winner.
+        self.delta = 2
+        self.rand_nrs = [x * self.delta for x in self.rand_nrs]
+        print(f"after_delta={self.rand_nrs}")
         # Add inhibition to rand_nrs to ensure the degree_receiver value is negative.
         # Subtract R*R for number of nodes * range of randomness.
         # Subtract -2 for excitatory neuron buffer.
@@ -54,7 +65,9 @@ class Test_selector(unittest.TestCase):
             x - self.rand_range * self.rand_range - 2 for x in self.rand_nrs
         ]
 
-        print(f"self.rand_nrs={self.rand_nrs}")
+        print(
+            f"after inhibition of:{self.rand_range * self.rand_range}-2, rand_nrs={self.rand_nrs}"
+        )
         # print(f"Incoming G")
         # plot_unstructured_graph(self.G)
 
@@ -166,9 +179,10 @@ class Test_selector(unittest.TestCase):
             neuron_name = self.neuron_dict[some_neuron]
 
             if is_selector_neuron_dict(some_neuron, self.neuron_dict):
-
+                if t == 40:
+                    raise Exception("STOP")
                 wta_circuit = get_node_from_selector_neuron_name(neuron_name)
-                if t > 20:
+                if t > 10:
                     if self.neuron_dict[some_neuron] == "selector_1":
                         # Get neurons that are to be printed
                         degree_receiver_1_0 = get_degree_receiver_neuron(
@@ -229,7 +243,7 @@ class Test_selector(unittest.TestCase):
                         vth,
                         wta_circuit,
                     )
-                elif t > 4:
+                elif t > 40000000000:
                     self.asserts_for_selector_at_t_is_larger_than_4(
                         bias,
                         du,
