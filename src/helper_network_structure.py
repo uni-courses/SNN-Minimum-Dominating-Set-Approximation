@@ -62,6 +62,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     vth=1,
                     pos=(float(1.0), get_y_position(G, node, neighbour)),
                 )
+            print(f"created:degree_receiver_{node}_{neighbour}")
 
         # One neuron per node named: rand
         if len(rand_nrs) < len(G):
@@ -90,6 +91,17 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
             pos=(float(1.25), float(node)),
         )
 
+        # Add winner selector node
+        get_degree.add_node(
+            f"counter_{node}",
+            id=node,
+            du=1,
+            dv=1,
+            bias=5,  # Always spike unless inhibitied by u[t]
+            vth=4,
+            pos=(float(1.5), float(node) + 0.5),
+        )
+
     # Then create all edges between the nodes.
     for circuit in G.nodes:
         # For each neighbour of node, named degree_receiver:
@@ -97,20 +109,22 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
             if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
                 for neighbour_b in nx.all_neighbors(G, circuit):
                     if circuit != neighbour_b and neighbour_a != neighbour_b:
-                        # TODO: verify no duplicate synapses are created!
-                        # print(
-                        #    f"circuit={circuit},neighbour_a={neighbour_a},neighbour_b={neighbour_b}"
-                        # )
 
-                        get_degree.add_edges_from(
-                            [
-                                (
-                                    f"spike_once_{circuit}",
-                                    f"degree_receiver_{neighbour_a}_{neighbour_b}",
-                                )
-                            ],
-                            weight=+1,
-                        )
+                        # Check if there is an edge from neighbour_a to neighbour_b.
+                        if neighbour_a in nx.all_neighbors(G, neighbour_b):
+                            print(
+                                f"circuit={circuit},neighbour_a={neighbour_a},neighbour_b={neighbour_b}"
+                            )
+
+                            get_degree.add_edges_from(
+                                [
+                                    (
+                                        f"spike_once_{circuit}",
+                                        f"degree_receiver_{neighbour_a}_{neighbour_b}",
+                                    )
+                                ],
+                                weight=+1,
+                            )
 
         # Add synapse between random node and degree receiver nodes.
         for circuit_target in G.nodes:
@@ -139,6 +153,15 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                         )
                     ],
                     weight=-5,  # to disable bias
+                )
+                get_degree.add_edges_from(
+                    [
+                        (
+                            f"degree_receiver_{circuit}_{neighbour_b}",
+                            f"counter_{circuit}",
+                        )
+                    ],
+                    weight=+1,  # to disable bias
                 )
                 print(f"degree_receiver_{circuit}_{neighbour_b} selector_{circuit}")
         # TODO:

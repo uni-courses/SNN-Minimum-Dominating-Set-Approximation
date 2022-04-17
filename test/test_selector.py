@@ -2,6 +2,7 @@ import unittest
 import networkx as nx
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
+from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
 from src.helper import (
     generate_list_of_n_random_nrs,
     get_a_in_for_selector_neuron_retry,
@@ -13,6 +14,7 @@ from src.helper import (
 from src.helper_network_structure import (
     get_degree_graph_with_separate_wta_circuits,
     plot_coordinated_graph,
+    plot_unstructured_graph,
 )
 from src.helper_snns import print_neuron_properties
 from src.networkx_to_snn import (
@@ -36,6 +38,7 @@ class Test_selector(unittest.TestCase):
         self.incoming_selector_weight = -5
         # Generate a fully connected graph with n=4.
         self.G = nx.complete_graph(4)
+        # self.G=create_manual_graph_with_4_nodes()
         self.rand_range = (
             len(self.G) + 2
         )  # Allow for larger random list than nr of nodes.
@@ -65,7 +68,7 @@ class Test_selector(unittest.TestCase):
             f"after inhibition of:{self.rand_range * self.rand_range}-2, rand_nrs={self.rand_nrs}"
         )
         # print(f"Incoming G")
-        # plot_unstructured_graph(self.G)
+        plot_unstructured_graph(self.G)
 
         # Convert the fully connected graph into a networkx graph that
         # stores the snn properties to create an snn that computes the degree
@@ -74,8 +77,8 @@ class Test_selector(unittest.TestCase):
         self.get_degree = get_degree_graph_with_separate_wta_circuits(
             self.G, self.rand_nrs
         )
-
-        # plot_coordinated_graph(self.get_degree)
+        plot_unstructured_graph(self.get_degree)
+        plot_coordinated_graph(self.get_degree)
         (
             self.converted_nodes,
             self.lhs_neuron,
