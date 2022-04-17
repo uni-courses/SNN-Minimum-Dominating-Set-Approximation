@@ -160,56 +160,6 @@ def get_node_from_selector_neuron_name(selector_neuron_name):
         )
 
 
-def get_a_in_for_selector_neuron(G, incoming_selector_weight, node, rand_nrs, t):
-    """If the minimum random value of a degree_receiver_x_y that is connected
-    to selector_x is z (e.g. z=32), then degree_receiver_x_y will reach u(t)=0
-    at t=z-2 (e.g. t=32-2=30). It is not quite clear why this is not at t=z.
-    However, the degree_receiver_x_y neuron will then spike at t=z (so two
-    timesteps later, e.g. t=32), because the vth=1, and the u(t) needs to be
-    LARGER than vth, which requires a value of u(t)=2. Then there is a delay of
-    1 for the spike to reach selector_x from degree_receiver_x_y. Once the spike
-    arrives at t=z+1, it will immediatly result in an input a_in of -5 for the
-    selector_x neuron."""
-    # print(f"node={node}")
-    found_min_neighbour_rand = False
-    # Start with the lowest random value found in the network.
-    min_neighbour_rand = min(rand_nrs)
-    print(f"min_neighbour_rand={min_neighbour_rand}")
-    # Identify the lowest random value in the neighbours (which are part of the network).
-    # Therefore, the minimum randomness of the neighbours will always be lower than-,
-    # or equal to the minimum random value in the network.
-    for neighbour in nx.all_neighbors(G, node):
-        if rand_nrs[neighbour] >= min_neighbour_rand:
-            min_neighbour_rand = rand_nrs[neighbour]
-            found_min_neighbour_rand = True
-    if not found_min_neighbour_rand:
-        raise Exception(
-            "Error, did not find a random value in any neighbour of node:{node}."
-        )
-
-    positive_min_neighbour_rand = -1 * min_neighbour_rand
-    # print(f"positive_min_neighbour_rand={positive_min_neighbour_rand}")
-
-    if t < positive_min_neighbour_rand + 1:
-        return 0
-    elif t == positive_min_neighbour_rand + 1:
-        # print(f"equals+1,t={t},return:{incoming_selector_weight}")
-        return incoming_selector_weight
-    elif t == positive_min_neighbour_rand + 2:
-        # print(f"equals+2,t={t},return:{incoming_selector_weight}*2")
-        # Hardcoded because another degree_receiver neuron also starts firing
-        #  at this point.That means the previous current -5 is still present
-        # because du=0, then the first degree_receiver neuron fires again
-        # because it is not yet inhibited, yielding another -5. Then the new
-        # neuron also starts firing adding another -5 yielding -5*3.
-        # This is because there is a a -32 and -34 as lowest random weights
-        # using seed 42.
-        return incoming_selector_weight * 2
-    elif t == positive_min_neighbour_rand + 3:
-        # print(f"equals+3,t={t},return:{0}")
-        return 0
-
-
 def get_a_in_for_selector_neuron_retry(
     G, delta, incoming_selector_weight, node, rand_nrs, t
 ):

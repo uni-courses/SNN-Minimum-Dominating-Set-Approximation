@@ -4,7 +4,6 @@ from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 from src.helper import (
     generate_list_of_n_random_nrs,
-    get_a_in_for_selector_neuron,
     get_a_in_for_selector_neuron_retry,
     get_degree_receiver_neuron,
     get_node_from_selector_neuron_name,
@@ -288,8 +287,13 @@ class Test_selector(unittest.TestCase):
         """Assert the values of the selector_neuron neuron on t=2."""
         # Compute what the expected summed input spike values are.
 
-        a_in = get_a_in_for_selector_neuron(
-            self.G, self.incoming_selector_weight, wta_circuit, self.rand_nrs, t
+        a_in = get_a_in_for_selector_neuron_retry(
+            self.G,
+            self.delta,
+            self.incoming_selector_weight,
+            wta_circuit,
+            self.rand_nrs,
+            t,
         )
         # u[t=2]=u[t=1]*(1-du)+a_in, a_in=
         # u[t=2]=0*(1-1)+0
@@ -322,8 +326,13 @@ class Test_selector(unittest.TestCase):
         wta_circuit,
     ):
         """Assert the values of the selector_neuron neuron on t=3."""
-        a_in = get_a_in_for_selector_neuron(
-            self.G, self.incoming_selector_weight, wta_circuit, self.rand_nrs, t
+        a_in = get_a_in_for_selector_neuron_retry(
+            self.G,
+            self.delta,
+            self.incoming_selector_weight,
+            wta_circuit,
+            self.rand_nrs,
+            t,
         )
         # u[t=3]=u[t=2]*(1-du)+a_in
         # u[t=3]=3*(1-0)-0
@@ -344,8 +353,13 @@ class Test_selector(unittest.TestCase):
         self, bias, du, dv, selector_neuron, t, vth, wta_circuit
     ):
         """Assert the values of the selector_neuron neuron on t=4."""
-        a_in = get_a_in_for_selector_neuron(
-            self.G, self.incoming_selector_weight, wta_circuit, self.rand_nrs, t
+        a_in = get_a_in_for_selector_neuron_retry(
+            self.G,
+            self.delta,
+            self.incoming_selector_weight,
+            wta_circuit,
+            self.rand_nrs,
+            t,
         )
         # u[t=4]=u[t=3]*(1-du)+a_in
         # u[t=4]=3*(1-0)+0
