@@ -156,6 +156,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     ],
                     weight=-5,  # to disable bias
                 )
+                # TODO: UPDATE TO Go from degree_receiver_x_y to counter_y.
                 get_degree.add_edges_from(
                     [
                         (

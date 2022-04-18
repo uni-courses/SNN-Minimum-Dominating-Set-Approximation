@@ -37,11 +37,12 @@ class Test_selector(unittest.TestCase):
         self.bias = 5
         self.vth = 4
         self.incoming_selector_weight = -5
+
         # Generate a fully connected graph with n=4.
-        # self.G = nx.complete_graph(4)
-        self.G = create_manual_graph_with_4_nodes()
+        self.G = nx.complete_graph(4)
+        # self.G = create_manual_graph_with_4_nodes()
         self.rand_range = (
-            len(self.G) + 2
+            len(self.G) + 2  # 2 allows large of numbers to be sampled.
         )  # Allow for larger random list than nr of nodes.
         self.rand_nrs = generate_list_of_n_random_nrs(
             self.G, max=self.rand_range, seed=42

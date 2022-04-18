@@ -181,9 +181,7 @@ def get_a_in_for_selector_neuron_retry(
         random_values.append(rand_nrs[neighbour])
         degrees.append(len(list(nx.all_neighbors(G, neighbour))))
         # +1 for the excitatory selector neuron.
-        input_signals.append(
-            random_values[index] + degrees[index] + 1
-        )  # TODO: determine why +1
+        input_signals.append(random_values[index] + degrees[index] + 1)
     print(f"node={node}")
     # Get max randomness of node:
     max_input = max(input_signals)
