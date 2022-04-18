@@ -7,7 +7,7 @@
 
 ## Specify global variables that are used in this script.
 
-REPORT_FILENAME="report"
+REPORT_FILENAME="sample-sigconf"
 PATH_TO_REPORT_TEX="latex"
 PATH_TO_REPORT_TEX_FILE="$PATH_TO_REPORT_TEX/$REPORT_FILENAME.tex"
 OUTPUT_DIR="output"
@@ -238,8 +238,8 @@ assert_file_exists "$OUTPUT_PATH/zotero.bib"
 
 # Copy tudelft-report.bst file into relative directory from root to report.tex
 # file, inside output directory:
-cp "$PATH_TO_REPORT_TEX/tudelft-report.bst" "$OUTPUT_PATH/$PATH_TO_REPORT_TEX/tudelft-report.bst"
-assert_file_exists "$OUTPUT_PATH/$PATH_TO_REPORT_TEX/tudelft-report.bst"
+#cp "$PATH_TO_REPORT_TEX/tudelft-report.bst" "$OUTPUT_PATH/$PATH_TO_REPORT_TEX/tudelft-report.bst"
+#assert_file_exists "$OUTPUT_PATH/$PATH_TO_REPORT_TEX/tudelft-report.bst"
 
 ## Compiling latex project.
 echo "COMPILING"
@@ -249,35 +249,35 @@ echo "COMPILING"
 #xelatex -output-directory=$OUTPUT_PATH $PATH_TO_REPORT_TEX/cover.tex
 
 # Create some files needed for makeindex
-pdflatex -output-directory=$OUTPUT_PATH $PATH_TO_REPORT_TEX/report
+pdflatex -output-directory=$OUTPUT_PATH $PATH_TO_REPORT_TEX/$REPORT_FILENAME
 
 # Go into output directory to compile the glossaries
 cd $OUTPUT_PATH
 assert_current_directory_is_output_dir "$OUTPUT_PATH"
 
-# Compiling from root directory files
-makeindex report.nlo -s nomencl.ist -o report.nls
-
-# Glossary
-makeindex -s report.ist -t report.glg -o report.gls report.glo
- 
-# List of acronyms
-makeindex -s report.ist -t report.alg -o report.acr report.acn
-
-# Include glossary into report.
-makeglossaries report
+## Compiling from root directory files
+#makeindex report.nlo -s nomencl.ist -o report.nls
+#
+## Glossary
+#makeindex -s report.ist -t report.glg -o report.gls report.glo
+# 
+## List of acronyms
+#makeindex -s report.ist -t report.alg -o report.acr report.acn
+#
+## Include glossary into report.
+#makeglossaries report
 
 # Compile bibliography.
-bibtex report
+bibtex $REPORT_FILENAME
 
 # Go back up into root directory
 cd ../../
 assert_is_root_dir "$PATH_TO_REPORT_TEX_FILE"
 
 # Recompile report to include the bibliography.
-pdflatex -output-directory=$OUTPUT_PATH latex/report
+pdflatex -output-directory=$OUTPUT_PATH latex/$REPORT_FILENAME
 # Recompile report to include acronyms, glossary and nomenclature (in TOC).
-pdflatex -output-directory=$OUTPUT_PATH latex/report
+pdflatex -output-directory=$OUTPUT_PATH latex/$REPORT_FILENAME
 
 ## Post processing/clean-up.
 # Move pdf back into "$PATH_TO_REPORT_TEX.
