@@ -161,7 +161,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     [
                         (
                             f"degree_receiver_{circuit}_{neighbour_b}",
-                            f"counter_{circuit}",
+                            f"counter_{neighbour_b}",
                         )
                     ],
                     weight=+1,  # to disable bias
