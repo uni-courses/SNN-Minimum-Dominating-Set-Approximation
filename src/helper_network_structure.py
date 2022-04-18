@@ -99,7 +99,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
             dv=1,
             bias=5,  # Always spike unless inhibitied by u[t]
             vth=4,
-            pos=(float(1.5), float(node) + 0.5),
+            pos=(float(1.5), float(node)),
         )
 
     # Then create all edges between the nodes.

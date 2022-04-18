@@ -19,6 +19,7 @@ from src.helper_network_structure import (
 from src.networkx_to_snn import (
     convert_networkx_graph_to_snn_with_one_neuron,
 )
+from test.create_testobject import create_test_object
 
 
 class Test_selector(unittest.TestCase):
@@ -31,74 +32,7 @@ class Test_selector(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_selector, self).__init__(*args, **kwargs)
 
-        ## Specify the expected neuron properties.
-        # TODO: change this to make it a function of
-        self.du = 0
-        self.dv = 1
-        self.bias = 5
-        self.vth = 4
-
-        ## Specify the expected synaptic weights
-        # TODO: Specify per synapse group. (except for the random synapses)
-        self.incoming_selector_weight = -5
-
-        ## Generate the graph on which the algorithm is ran.
-        #  Generate a fully connected graph with n=4.
-        self.G = nx.complete_graph(4)
-        # self.G = create_manual_graph_with_4_nodes()
-        plot_unstructured_graph(self.G)
-
-        ## Generate the maximum random ceiling
-        # +2 to allow selecting a larger range of numbers than the number of
-        # nodes in the graph.
-        self.rand_ceil = len(self.G) + 2
-        # Get the list of random numbers.
-        self.rand_nrs = generate_list_of_n_random_nrs(
-            self.G, max=self.rand_ceil, seed=42
-        )
-        print(f"before={self.rand_nrs}")
-        # Make the random numbers differ with at least delta>=2. This is to
-        # prevent multiple degree_receiver_x_y neurons (that differ less than
-        # delta) in a single WTA circuit to spike before they are inhibited by
-        # the first winner. This inhibition goes via the selector neuron and
-        # has a delay of 2. So a winner should have a difference of at least 2.
-        self.delta = 2
-        # Spread the random numbers with delta to ensure 1 winner in WTA
-        # circuit.
-        self.rand_nrs = [x * self.delta for x in self.rand_nrs]
-        print(f"after_delta={self.rand_nrs}")
-        # Add inhibition to rand_nrs to ensure the degree_receiver current u[1]
-        # always starts negative. The a_in of the degree_receiver_x_y neuron is
-        # : the incoming spike_once_x weights+rand_x neurons+selector_excitation
-        # - There are at most n incoming spike signals.
-        # - Each spike_once should have a weight of at least random_ceiling.
-        # That is because the random value should map to 0<rand<1 with respect
-        # to the difference of 1 spike_once more or less.
-        # - The random_ceiling is specified.
-        # - The excitatory neuron comes in at +1, a buffer of 1 yields+2.
-        # Hence, the inhibition is computed as:
-        self.inhibition = len(self.G) * self.rand_ceil + self.rand_ceil + 2
-        self.rand_nrs = [x - self.inhibition for x in self.rand_nrs]
-        print(f"After inhibition of:{self.inhibition}, rand_nrs={self.rand_nrs}")
-
-        ## Convert the fully connected graph into a networkx graph that
-        # stores the snn properties.
-        self.get_degree = get_degree_graph_with_separate_wta_circuits(
-            self.G, self.rand_nrs
-        )
-        plot_unstructured_graph(self.get_degree)
-        plot_coordinated_graph(self.get_degree)
-
-        ## Convert the snn networkx graph into a Loihi implementation.
-        (
-            self.converted_nodes,
-            self.lhs_neuron,
-            self.neurons,
-            self.lhs_node,
-            self.neuron_dict,
-        ) = convert_networkx_graph_to_snn_with_one_neuron(
-            self.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
-        )
+        self = create_test_object(self, True, True)
 
     def test_selector_neurons_in_get_degree(
         self,
