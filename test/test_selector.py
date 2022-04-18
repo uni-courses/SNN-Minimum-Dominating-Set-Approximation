@@ -140,6 +140,7 @@ class Test_selector(unittest.TestCase):
         # TODO: Assert the neuron properties for the degree_receiver neurons are
         # correct at t>0
 
+    # TODO: move to separate ?test_?contains_neurons.py
     def all_selector_neurons_are_present_in_snn(
         self, converted_nodes, G, get_degree, neurons
     ):
@@ -415,6 +416,7 @@ class Test_selector(unittest.TestCase):
         self.assertEqual(selector_neuron.vth.get(), vth)  # Default value.
 
 
+# TODO: move to separate contains_neurons.py
 def neurons_contain_n_selector_neurons(bias, du, dv, neurons, n, vth):
     """Verifies at least n neurons exist with the selector properties."""
     selector_neurons = []
@@ -435,6 +437,7 @@ def neurons_contain_n_selector_neurons(bias, du, dv, neurons, n, vth):
         return False, selector_neurons
 
 
+# TODO: move to separate contains_neurons.py
 def is_selector_neuron(bias, du, dv, neuron, vth):
     """Assert the values of the selector neuron on t=0."""
     if neuron.u.get() == 0:  # Default initial value.
