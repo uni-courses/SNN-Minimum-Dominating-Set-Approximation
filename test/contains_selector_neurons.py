@@ -2,7 +2,11 @@
 def all_selector_neurons_are_present_in_snn(
     test_object, converted_nodes, G, get_degree, neurons
 ):
-    """Assumes neurons are named degree_receiver_<index>. Where index represents
+    """
+    Asserts all degree_receiver neurons are present in snn, and:
+    Asserts the initial properties for the degree_receiver neurons are
+    correct at t=0.
+    Assumes neurons are named degree_receiver_<index>. Where index represents
     the number of the node in the original graph G that they represent."""
     # Assert for each node in graph G, that a degree_receiver node exists in
     # get_degree.
@@ -20,61 +24,76 @@ def all_selector_neurons_are_present_in_snn(
 
     # Write a function that verifies n neurons exist with the
     # selector properties.
-    (has_n_selector_neurons, selector_neurons,) = neurons_contain_n_selector_neurons(
-        test_object.bias,
-        test_object.du,
-        test_object.dv,
+    has_n_selector_neurons = neurons_contain_n_selector_neurons(
+        test_object.sample_selector_neuron.bias,
+        test_object.sample_selector_neuron.du,
+        test_object.sample_selector_neuron.dv,
         neurons,
         len(G),
-        test_object.vth,
+        test_object.sample_selector_neuron.vth,
     )
     test_object.assertTrue(has_n_selector_neurons)
-    return selector_neurons
 
 
-def neurons_contain_n_selector_neurons(bias, du, dv, neurons, n, vth):
+def get_n_selector_neurons(neurons, n, sample_neuron):
     """Verifies at least n neurons exist with the selector properties."""
     selector_neurons = []
     for neuron in neurons:
 
         # Check if neuron has the correct properties.
-        bool_selector_neuron = is_selector_neuron(bias, du, dv, neuron, vth)
-
-        if bool_selector_neuron:
-            # TODO: Verify a selector neuron has a recurrent synaptic
-            # connection to ittest_object.with weight -2.
+        if has_expected_neuron_properties(neuron, sample_neuron):
             selector_neurons.append(neuron)
 
     if len(selector_neurons) == n:
-        return True, selector_neurons
+        return selector_neurons
+    else:
+        raise Exception(f"len(selector_neurons)={len(selector_neurons)}")
+
+
+def neurons_contain_n_selector_neurons(neurons, n, sample_neuron):
+    """Verifies at least n neurons exist with the selector properties."""
+    selector_neurons = []
+    for neuron in neurons:
+
+        # Check if neuron has the correct properties.
+        if has_expected_neuron_properties(neuron, sample_neuron):
+            selector_neurons.append(neuron)
+
+    if len(selector_neurons) == n:
+        return True
     else:
         print(f"len(selector_neurons)={len(selector_neurons)}")
-        return False, selector_neurons
+        return False
 
 
-def is_selector_neuron(bias, du, dv, neuron, vth):
-    """Assert the values of the selector neuron on t=0."""
+def has_expected_neuron_properties(neuron, sample_neuron):
+    """Assert the values of the incoming neuron are those of the expected
+    neuron. Note sample_neuron does not have a sample_neuron.<property>.get()
+    because it is a basic object with the properties stored as ints instead
+    of with getters and setters."""
     if neuron.u.get() == 0:  # Default initial value.
-        if neuron.du.get() == du:  # Custom value.
+        if neuron.du.get() == sample_neuron.du:  # Custom value.
             if neuron.v.get() == 0:  # Default initial value.
-                if neuron.dv.get() == dv:  # Default initial value.
-                    if neuron.bias.get() == bias:  # Custom value.
-                        if neuron.vth.get() == vth:  # Default value.
+                if neuron.dv.get() == sample_neuron.dv:  # Default initial value.
+                    if neuron.bias.get() == sample_neuron.bias:  # Custom value.
+                        if neuron.vth.get() == sample_neuron.vth:  # Default value.
                             return True
                         else:
                             print(
-                                f"neuron.vth.get()={neuron.vth.get()}, whereas vth={vth}"
+                                f"neuron.vth.get()={neuron.vth.get()}, whereas expected vth={sample_neuron.vth}"
                             )
                     else:
                         print(
-                            f"neuron.bias.get()={neuron.bias.get()}, whereas bias={bias}"
+                            f"neuron.bias.get()={neuron.bias.get()}, whereas bias={sample_neuron.bias}"
                         )
                 else:
-                    print(f"neuron.dv.get()={neuron.dv.get()}, whereas dv={dv}")
+                    print(
+                        f"neuron.dv.get()={neuron.dv.get()}, whereas dv={sample_neuron.dv}"
+                    )
             else:
-                print(f"neuron.v.get()={neuron.v.get()}, whereas v={v}")
+                print(f"neuron.v.get()={neuron.v.get()}, whereas v={sample_neuron.v}")
         else:
-            print(f"neuron.du.get()={neuron.du.get()}, whereas du={du}")
+            print(f"neuron.du.get()={neuron.du.get()}, whereas du={sample_neuron.du}")
     else:
         print(f"neuron.u.get()={neuron.u.get()}, whereas u={0}")
     return False

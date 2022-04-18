@@ -12,10 +12,7 @@ from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
 def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False):
     ## Specify the expected neuron properties.
     # TODO: change this to make it a function of
-    test_object.du = 0
-    test_object.dv = 1
-    test_object.bias = 5
-    test_object.vth = 4
+    test_object.sample_selector_neuron = Selector_neuron()
 
     ## Specify the expected synaptic weights
     # TODO: Specify per synapse group. (except for the random synapses)
@@ -85,3 +82,14 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     )
 
     return test_object
+
+
+class Selector_neuron:
+    """Creates expected properties of the selector neuron."""
+
+    def __init__(self):
+        self.first_name = "selector_0"
+        self.bias = 5
+        self.du = 0
+        self.dv = 1
+        self.vth = 4
