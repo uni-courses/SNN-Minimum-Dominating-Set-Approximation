@@ -8,11 +8,9 @@ from src.helper import (
     get_node_from_selector_neuron_name,
     print_degree_neurons,
 )
+from test.contains_neurons_of_type_x import get_n_neurons, neurons_of_expected_type_are_all_present_in_snn
 
-from test.contains_selector_neurons import (
-    all_selector_neurons_are_present_in_snn,
-    get_n_selector_neurons,
-)
+
 from test.create_testobject import create_test_object
 
 
@@ -34,8 +32,8 @@ class Test_selector(unittest.TestCase):
         self,
     ):
         """Tests whether the degree_receiver neurons are all present."""
-        selector_neurons = all_selector_neurons_are_present_in_snn(
-            self, self.converted_nodes, self.G, self.get_degree, self.neurons
+        selector_neurons = neurons_of_expected_type_are_all_present_in_snn(
+            self,len(self.G),self.G, self.get_degree,"selector_", self.neurons,self.sample_selector_neuron
         )
 
         # TODO: Explicitly verify the neurons have the correct amount of
@@ -44,12 +42,11 @@ class Test_selector(unittest.TestCase):
         # weight.
         # This is currently both tested implicitly by checking the neuron
         # behaviour over time.
-        return selector_neurons
 
-    def test_selector_neuron_presence(self):
+    def test_selector_neurons_over_time(self):
         """Verifies the neuron properties over time."""
         # TODO: create stripped down function that just gets the selector neurons.
-        selector_neurons = get_n_selector_neurons(
+        selector_neurons = get_n_neurons(
             self.neurons,
             len(self.G),
             self.sample_selector_neuron,

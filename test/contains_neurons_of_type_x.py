@@ -1,6 +1,12 @@
 # TODO: move to separate ?test_?contains_neurons.py
-def all_selector_neurons_are_present_in_snn(
-    test_object, converted_nodes, G, get_degree, neurons
+def neurons_of_expected_type_are_all_present_in_snn(
+    test_object,
+    expected_amount,
+    G,
+    get_degree,
+    neuron_identifier,
+    neurons,
+    sample_neuron,
 ):
     """
     Asserts all degree_receiver neurons are present in snn, and:
@@ -11,59 +17,48 @@ def all_selector_neurons_are_present_in_snn(
     # Assert for each node in graph G, that a degree_receiver node exists in
     # get_degree.
     for node in G.nodes:
-        test_object.assertTrue(f"selector_{node}" in get_degree.nodes)
+        test_object.assertTrue(f"{neuron_identifier}{node}" in get_degree.nodes)
 
     # Assert no more than n degree_receiver nodes exist in get_degree.
     test_object.assertEqual(
-        sum("selector" in string for string in get_degree.nodes), 4
+        sum(neuron_identifier in string for string in get_degree.nodes), expected_amount
     )  # manual assert for fully connected graph of n=4.
-    test_object.assertEqual(
-        sum("selector" in string for string in get_degree.nodes),
-        len(G),
-    )
 
     # Write a function that verifies n neurons exist with the
-    # selector properties.
-    has_n_selector_neurons = neurons_contain_n_selector_neurons(
-        test_object.sample_selector_neuron.bias,
-        test_object.sample_selector_neuron.du,
-        test_object.sample_selector_neuron.dv,
-        neurons,
-        len(G),
-        test_object.sample_selector_neuron.vth,
+    # sample_neuron properties.
+    test_object.assertTrue(
+        has_n_neurons_of_sample_type(neurons, expected_amount, sample_neuron)
     )
-    test_object.assertTrue(has_n_selector_neurons)
 
-
-def get_n_selector_neurons(neurons, n, sample_neuron):
+def has_n_neurons_of_sample_type(neurons, n, sample_neuron):
     """Verifies at least n neurons exist with the selector properties."""
-    selector_neurons = []
+    expected_neurons = []
     for neuron in neurons:
 
         # Check if neuron has the correct properties.
         if has_expected_neuron_properties(neuron, sample_neuron):
-            selector_neurons.append(neuron)
+            expected_neurons.append(neuron)
 
-    if len(selector_neurons) == n:
-        return selector_neurons
-    else:
-        raise Exception(f"len(selector_neurons)={len(selector_neurons)}")
-
-
-def neurons_contain_n_selector_neurons(neurons, n, sample_neuron):
-    """Verifies at least n neurons exist with the selector properties."""
-    selector_neurons = []
-    for neuron in neurons:
-
-        # Check if neuron has the correct properties.
-        if has_expected_neuron_properties(neuron, sample_neuron):
-            selector_neurons.append(neuron)
-
-    if len(selector_neurons) == n:
+    if len(expected_neurons) == n:
         return True
     else:
-        print(f"len(selector_neurons)={len(selector_neurons)}")
+        print(f"len(expected_neurons)={len(expected_neurons)}")
         return False
+
+
+def get_n_neurons(neurons, n, sample_neuron):
+    """Verifies at least n neurons exist with the sample_neuron properties."""
+    expected_neurons = []
+    for neuron in neurons:
+
+        # Check if neuron has the correct properties.
+        if has_expected_neuron_properties(neuron, sample_neuron):
+            expected_neurons.append(neuron)
+
+    if len(expected_neurons) == n:
+        return expected_neurons
+    else:
+        raise Exception(f"len(expected_neurons)={len(expected_neurons)}")
 
 
 def has_expected_neuron_properties(neuron, sample_neuron):
