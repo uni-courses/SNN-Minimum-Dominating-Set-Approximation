@@ -4,6 +4,7 @@ def neurons_of_expected_type_are_all_present_in_snn(
     expected_amount,
     G,
     get_degree,
+    neuron_dict,
     neuron_identifier,
     neurons,
     sample_neuron,
@@ -27,38 +28,58 @@ def neurons_of_expected_type_are_all_present_in_snn(
     # Write a function that verifies n neurons exist with the
     # sample_neuron properties.
     test_object.assertTrue(
-        has_n_neurons_of_sample_type(neurons, expected_amount, sample_neuron)
+        has_n_neurons_of_sample_type(
+            expected_amount, neurons, neuron_dict, neuron_identifier, sample_neuron
+        )
     )
 
-def has_n_neurons_of_sample_type(neurons, n, sample_neuron):
+
+def has_n_neurons_of_sample_type(
+    expected_amount, neurons, neuron_dict, neuron_identifier, sample_neuron
+):
     """Verifies at least n neurons exist with the selector properties."""
     expected_neurons = []
     for neuron in neurons:
 
         # Check if neuron has the correct properties.
         if has_expected_neuron_properties(neuron, sample_neuron):
-            expected_neurons.append(neuron)
+            # Check if the name of the neuron is correct.
+            if neuron_has_expected_name(neuron, neuron_dict, neuron_identifier):
+                expected_neurons.append(neuron)
 
-    if len(expected_neurons) == n:
+    if len(expected_neurons) == expected_amount:
         return True
     else:
         print(f"len(expected_neurons)={len(expected_neurons)}")
         return False
 
 
-def get_n_neurons(neurons, n, sample_neuron):
+def get_n_neurons(n, neurons, neuron_dict, neuron_identifier, sample_neuron):
     """Verifies at least n neurons exist with the sample_neuron properties."""
     expected_neurons = []
     for neuron in neurons:
 
         # Check if neuron has the correct properties.
         if has_expected_neuron_properties(neuron, sample_neuron):
-            expected_neurons.append(neuron)
+
+            # Check if the name of the neuron is correct.
+            if neuron_has_expected_name(neuron, neuron_dict, neuron_identifier):
+                expected_neurons.append(neuron)
 
     if len(expected_neurons) == n:
         return expected_neurons
     else:
         raise Exception(f"len(expected_neurons)={len(expected_neurons)}")
+
+
+def neuron_has_expected_name(neuron, neuron_dict, neuron_identifier):
+    if neuron_dict[neuron][: len(neuron_identifier)] == neuron_identifier:
+        return True
+    else:
+        print(
+            f"neuron_dict[neuron][:len(neuron_identifier)]={neuron_dict[neuron][:len(neuron_identifier)]}"
+        )
+        return False
 
 
 def has_expected_neuron_properties(neuron, sample_neuron):
