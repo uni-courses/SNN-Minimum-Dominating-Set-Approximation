@@ -262,9 +262,8 @@ def get_a_in_for_selector_neuron_retry(
 def get_a_in_for_spike_once(t):
     """The recurrent synapse with weight -2 should get a spike at time t=1,
     which means at the next timestep, t=2 it should receive an a_in of -2."""
-    if t >= 2:
+    if t == 2:
         print(f"t={t},return-2")
         return -2
     else:
-        print(f"t={t},return0")
         return 0

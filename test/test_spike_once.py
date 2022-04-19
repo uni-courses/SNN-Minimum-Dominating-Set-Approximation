@@ -75,14 +75,21 @@ class Test_spike_once(unittest.TestCase):
         # Get the first neuron in the SNN to start the simulation
         starter_neuron = spike_once_neurons[0]
 
+        # Create storage lists for previous neuron currents and voltages.
+        previous_us = [0] * len(spike_once_neurons)
+        previous_vs = [0] * len(spike_once_neurons)
+
         # Simulate SNN and assert values inbetween timesteps.
         for t in range(1, 25):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
+
             # Print the values coming into the timestep.
             # Assert neuron values.
             self.verify_neuron_behaviour(
+                previous_us,
+                previous_vs,
                 self.sample_spike_once_neuron,
                 starter_neuron,
                 t,
@@ -90,11 +97,16 @@ class Test_spike_once(unittest.TestCase):
             )
         # Terminate Loihi simulation.
         starter_neuron.stop()
-        raise Exception("STOP")
         return spike_once_neurons
 
     def verify_neuron_behaviour(
-        self, sample_neuron, starter_neuron, t, spike_once_neurons
+        self,
+        previous_us,
+        previous_vs,
+        sample_neuron,
+        starter_neuron,
+        t,
+        spike_once_neurons,
     ):
         """Gets the neurons that are being tested: spike_once neurons. Then
         prints those neuron properties and performs the neuron behaviour tests
@@ -120,7 +132,12 @@ class Test_spike_once(unittest.TestCase):
                     extra_neuron=spike_once_neuron,
                 )
             # Perform test on spike_once neuron behaviour.
-            self.assert_spike_once_neuron_behaviour(
+            (
+                previous_us[wta_circuit],
+                previous_vs[wta_circuit],
+            ) = self.assert_spike_once_neuron_behaviour(
+                previous_us[wta_circuit],
+                previous_vs[wta_circuit],
                 sample_neuron,
                 spike_once_neuron,
                 t,
@@ -128,17 +145,19 @@ class Test_spike_once(unittest.TestCase):
             )
 
     def assert_spike_once_neuron_behaviour(
-        self, sample_neuron, spike_once_neuron, t, wta_circuit
+        self, previous_u, previous_v, sample_neuron, spike_once_neuron, t, wta_circuit
     ):
         """Assert the values of the spike_once_neuron neuron on t=4."""
 
         a_in = get_a_in_for_spike_once(t)
-        print(f"a_in={a_in}")
 
         # The current stays constant indefinitely.
         # u[t=x+1]=u[t=x]*(1-du)+a_in
         # TODO: Include the u(t-1)
-        self.assertEqual(spike_once_neuron.u.get(), a_in)
+        self.assertEqual(
+            spike_once_neuron.u.get(),
+            previous_u * (1 - spike_once_neuron.du.get()) + a_in,
+        )
         # The voltage stays constant indefinitely because the current
         # stays constant indefinitely whilst cancelling out the bias.
         # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
@@ -158,3 +177,4 @@ class Test_spike_once(unittest.TestCase):
         self.assertEqual(
             spike_once_neuron.vth.get(), sample_neuron.vth
         )  # Default value.
+        return spike_once_neuron.u.get(), spike_once_neuron.v.get()
