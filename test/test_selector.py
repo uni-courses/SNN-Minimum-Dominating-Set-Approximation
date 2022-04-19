@@ -59,7 +59,7 @@ class Test_selector(unittest.TestCase):
         starter_neuron = selector_neurons[0]
 
         # Simulate SNN and assert values inbetween timesteps.
-        for t in range(1, 100):
+        for t in range(1, 25):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
@@ -73,6 +73,7 @@ class Test_selector(unittest.TestCase):
             )
         # Terminate Loihi simulation.
         starter_neuron.stop()
+        raise Exception("STOP")
         return selector_neurons
 
     def verify_neuron_behaviour(

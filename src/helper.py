@@ -178,6 +178,7 @@ def get_a_in_for_selector_neuron_retry(
         neighbours.append(neighbour)
     # Compute number of neighbours in node.
     for index, neighbour in enumerate(list(nx.all_neighbors(G, node))):
+        print(f"index={index},neighbour={neighbour}")
         random_values.append(rand_nrs[neighbour])
         degrees.append(len(list(nx.all_neighbors(G, neighbour))))
         # +1 for the excitatory selector neuron.
