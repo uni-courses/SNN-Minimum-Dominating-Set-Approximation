@@ -166,7 +166,8 @@ def get_wta_circuit_from_neuron_name(neuron_name):
     parts = neuron_name.split("_")
     if neuron_name[:11] == "spike_once_":
         node_index = int(parts[2])
-
+    if neuron_name[:5] == "rand_":
+        node_index = int(parts[1])
     elif neuron_name[:9] == "selector_":
         parts = neuron_name.split("_")
         node_index = int(parts[1])

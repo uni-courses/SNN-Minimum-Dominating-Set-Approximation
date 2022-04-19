@@ -15,6 +15,7 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     # TODO: change this to make it a function of
     test_object.sample_selector_neuron = Selector_neuron()
     test_object.sample_spike_once_neuron = Spike_once_neuron()
+    test_object.sample_rand_neuron = Rand_neuron()
 
     ## Specify the expected synaptic weights
     # TODO: Specify per synapse group. (except for the random synapses)
@@ -98,6 +99,17 @@ class Selector_neuron:
 
 
 class Spike_once_neuron:
+    """Creates expected properties of the spike_once neuron."""
+
+    def __init__(self):
+        self.first_name = "spike_once_0"
+        self.bias = 2
+        self.du = 0
+        self.dv = 0
+        self.vth = 1
+
+
+class Rand_neuron:
     """Creates expected properties of the spike_once neuron."""
 
     def __init__(self):
