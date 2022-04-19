@@ -112,10 +112,6 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
 
                         # Check if there is an edge from neighbour_a to neighbour_b.
                         if neighbour_a in nx.all_neighbors(G, neighbour_b):
-                            print(
-                                f"circuit={circuit},neighbour_a={neighbour_a},neighbour_b={neighbour_b}"
-                            )
-
                             get_degree.add_edges_from(
                                 [
                                     (
@@ -141,7 +137,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                         weight=rand_nrs[circuit],
                     )
                     print(
-                        f"Add edge between: circuit_target={circuit_target}, circuit={circuit},weight={rand_nrs[circuit]}"
+                        f"edge: rand_{circuit_target}, degree_receiver_{circuit_target}_{circuit}, weight={rand_nrs[circuit]}"
                     )
 
         # Add synapse from degree_selector to selector node.
@@ -156,6 +152,9 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     ],
                     weight=-5,  # to disable bias
                 )
+                print(
+                    f"edge: degree_receiver_{circuit}_{neighbour_b},selector_{circuit}, weight=-5"
+                )
                 # TODO: UPDATE TO Go from degree_receiver_x_y to counter_y.
                 get_degree.add_edges_from(
                     [
@@ -166,7 +165,9 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     ],
                     weight=+1,  # to disable bias
                 )
-                print(f"degree_receiver_{circuit}_{neighbour_b} selector_{circuit}")
+                print(
+                    f"edge: degree_receiver_{circuit}_{neighbour_b}, selector_{circuit},weight=+1"
+                )
         # TODO:
         # Add synapse from selector node back into degree selector.
         for neighbour_b in nx.all_neighbors(G, circuit):

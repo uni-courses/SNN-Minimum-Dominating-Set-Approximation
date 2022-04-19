@@ -1,4 +1,5 @@
 import networkx as nx
+from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
 
 from src.helper import generate_list_of_n_random_nrs
 from src.helper_network_structure import (
@@ -20,8 +21,8 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
 
     ## Generate the graph on which the algorithm is ran.
     #  Generate a fully connected graph with n=4.
-    test_object.G = nx.complete_graph(4)
-    # test_object.G = create_manual_graph_with_4_nodes()
+    # test_object.G = nx.complete_graph(4)
+    test_object.G = create_manual_graph_with_4_nodes()
     if plot_input_graph:
         plot_unstructured_graph(test_object.G)
 
