@@ -162,6 +162,52 @@ def get_node_from_selector_neuron_name(selector_neuron_name):
         )
 
 
+def get_wta_circuit_from_neuron_name(neuron_name):
+    parts = neuron_name.split("_")
+    if neuron_name[:11] == "spike_once_":
+        node_index = int(parts[2])
+    if neuron_name[:5] == "rand_":
+        node_index = int(parts[1])
+    elif neuron_name[:9] == "selector_":
+        parts = neuron_name.split("_")
+        node_index = int(parts[1])
+    else:
+        print(f"neuron_name[:11]={neuron_name[:11]}")
+        raise Exception(
+            "Error tried parsing neuron as spike_once or selector neuron even though it is not."
+        )
+    return node_index
+
+
+def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
+    for neuron, neuron_name in neuron_dict.items():
+        if neuron_name == desired_neuron_name:
+            return neuron
+    raise Exception(f"Did not find neuron:{desired_neuron_name}!.")
+
+
+def print_degree_neurons(G, neuron_dict, node, t, extra_neuron=None):
+    if not extra_neuron is None:
+        degree_neuron_names = [neuron_dict[extra_neuron]]
+    else:
+        degree_neuron_names = []
+    degree_receiver_neurons = [extra_neuron]
+    for neighbour in nx.all_neighbors(G, node):
+        degree_neuron_name = f"degree_receiver_{node}_{neighbour}"
+        degree_neuron_names.append(degree_neuron_name)
+
+        # Get neurons that are to be printed
+        degree_receiver_neurons.append(
+            get_degree_receiver_neuron(neuron_dict, degree_neuron_name)
+        )
+    # Print which neuron properties are being printed
+    print(
+        f"t={t},Properties of:{neuron_dict[extra_neuron]}," + f"{degree_neuron_names},"
+    )
+    # Print neuron properties.
+    print_neuron_properties(degree_receiver_neurons)
+
+
 def get_a_in_for_selector_neuron_retry(
     G, delta, incoming_selector_weight, node, rand_nrs, t
 ):
@@ -214,30 +260,11 @@ def get_a_in_for_selector_neuron_retry(
         return 0
 
 
-def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
-    for neuron, neuron_name in neuron_dict.items():
-        if neuron_name == desired_neuron_name:
-            return neuron
-    raise Exception(f"Did not find neuron:{desired_neuron_name}!.")
-
-
-def print_degree_neurons(G, neuron_dict, node, t, extra_neuron=None):
-    if not extra_neuron is None:
-        degree_neuron_names = [neuron_dict[extra_neuron]]
+def get_a_in_for_spike_once(t):
+    """The recurrent synapse with weight -2 should get a spike at time t=1,
+    which means at the next timestep, t=2 it should receive an a_in of -2."""
+    if t == 2:
+        print(f"t={t},return-2")
+        return -2
     else:
-        degree_neuron_names = []
-    degree_receiver_neurons = [extra_neuron]
-    for neighbour in nx.all_neighbors(G, node):
-        degree_neuron_name = f"degree_receiver_{node}_{neighbour}"
-        degree_neuron_names.append(degree_neuron_name)
-
-        # Get neurons that are to be printed
-        degree_receiver_neurons.append(
-            get_degree_receiver_neuron(neuron_dict, degree_neuron_name)
-        )
-    # Print which neuron properties are being printed
-    print(
-        f"t={t},Properties of:{neuron_dict[extra_neuron]}," + f"{degree_neuron_names},"
-    )
-    # Print neuron properties.
-    print_neuron_properties(degree_receiver_neurons)
+        return 0

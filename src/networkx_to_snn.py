@@ -50,6 +50,7 @@ def retry_build_snn(
     # TODO: assert graph G is connected.
 
     visited_nodes.append(lhs_node)
+
     # Incoming node, if it is not yet converted, then convert to neuron.
     if not node_is_converted(G, converted_nodes, neurons, lhs_node):
         converted_nodes, lhs_neuron, neurons, lhs_node = create_neuron_from_node(
@@ -92,6 +93,9 @@ def retry_build_snn(
             lhs_neuron = add_synapse_between_nodes(
                 G, lhs_neuron, lhs_node, neighbour, rhs_neuron, neighbour
             )
+        if len(visited_nodes) == 1:
+            # print(f'ADD{lhs_node}')
+            neuron_dict = add_neuron_to_dict(lhs_node, neuron_dict, lhs_neuron)
 
     # 6. recursively call that function on the neighbour neurons until no
     # new neurons are discovered.
