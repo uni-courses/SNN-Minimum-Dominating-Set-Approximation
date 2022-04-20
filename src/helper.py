@@ -286,6 +286,10 @@ def get_expected_amount_of_degree_receiver_neurons(G):
 
 
 def get_a_in_for_degree_receiver(G, node, rand_nrs, t, x, y):
+    if x == 0 and y == 2:
+        verbose = True
+    else:
+        verbose = False
     a_in = 0
     for circuit in G.nodes:
         # For each neighbour of node, named degree_receiver:
@@ -299,7 +303,7 @@ def get_a_in_for_degree_receiver(G, node, rand_nrs, t, x, y):
                             # Spike_once to degree_receiver
                             # f"spike_once_{circuit}", to: f"degree_receiver_{neighbour_a}_{neighbour_b}",
                             a_in = a_in + add_spike_weight_to_degree_receiver(
-                                neighbour_a, neighbour_b, 1, t, x, y
+                                neighbour_a, neighbour_b, 1, t, x, y, verbose
                             )
 
         # Add synapse between random node and degree receiver nodes.
@@ -310,7 +314,13 @@ def get_a_in_for_degree_receiver(G, node, rand_nrs, t, x, y):
                     # rand_to_degree_receiver
                     # f"rand_{circuit}", to: f"degree_receiver_{circuit_target}_{circuit}",
                     a_in = a_in + add_rand_to_degree_receiver(
-                        circuit, circuit_target, rand_nrs[circuit], t, x, y
+                        circuit,
+                        circuit_target,
+                        rand_nrs[circuit],
+                        t,
+                        x,
+                        y,
+                        verbose,
                     )
 
         # Synapse from degree_selector to selector node.
@@ -322,13 +332,15 @@ def get_a_in_for_degree_receiver(G, node, rand_nrs, t, x, y):
     for node in G.nodes:
         for neighbour in nx.all_neighbors(G, node):
             # f"selector_{circuit}", f"degree_receiver_{circuit}_{neighbour_b}",
-            a_in = a_in + add_selector_to_degree_receiver(t)
+            a_in = a_in + add_selector_to_degree_receiver(
+                t, neighbour, node, x, y, verbose
+            )
 
     return a_in
 
 
 def add_spike_weight_to_degree_receiver(
-    neighbour_a, neighbour_b, spike_once_weight, t, x, y
+    neighbour_a, neighbour_b, spike_once_weight, t, x, y, verbose=False
 ):
     """The spike_once neuron spikes at t=1, meaning the spike signal comes in
     at degree_receiver at t=2"""
@@ -337,11 +349,15 @@ def add_spike_weight_to_degree_receiver(
     if x == neighbour_a:
         if y == neighbour_b:
             if t == 2:
+                if verbose:
+                    print(f"spike_once_weight={spike_once_weight}")
                 return spike_once_weight
     return 0
 
 
-def add_rand_to_degree_receiver(circuit, circuit_target, rand_weight, t, x, y):
+def add_rand_to_degree_receiver(
+    circuit, circuit_target, rand_weight, t, x, y, verbose=False
+):
     """The rand neuron spikes at t=1, meaning the spike signal comes in
     at degree_receiver at t=2"""
     # Check if the degree_receiver_x_y that is being tested, is indeed the one
@@ -349,21 +365,26 @@ def add_rand_to_degree_receiver(circuit, circuit_target, rand_weight, t, x, y):
     if x == circuit_target:
         if y == circuit:
             if t == 2:
+                if verbose:
+                    print(f"rand_weight={rand_weight}")
                 return rand_weight
     return 0
 
 
-def add_selector_to_degree_receiver(t):
+def add_selector_to_degree_receiver(t, neighbour, node, x, y, verbose=False):
     """The selector neuron spikes at t=1, meaning the excitatory spike signal
     comes in at degree_receiver at t=2. The selector keeps firing until it is
     inhibited."""
     # Check if the degree_receiver_x_y that is being tested, is indeed the one
     # in the for loops for which a synapse exists.
-    if t >= 2:
-        # TODO: compute when to stop excitation.
-        return 1
-    else:
-        return 0
+    if x == node:
+        if y == neighbour:
+            if t >= 2:
+                # TODO: compute when to stop excitation.
+                if verbose:
+                    print(f"selector_to_deg={1}")
+                return 1
+    return 0
 
 
 def sort_neurons(neurons, neuron_dict):
@@ -374,3 +395,12 @@ def sort_neurons(neurons, neuron_dict):
         if neuron in neurons:
             sorted_neurons.append(neuron)
     return sorted_neurons
+
+
+def fill_dictionary(neuron_dict, neurons, previous_us, previous_vs):
+    sorted_neurons = sort_neurons(neurons, neuron_dict)
+    for neuron in sorted_neurons:
+        degree_receiver_neuron_name = neuron_dict[neuron]
+        previous_us[degree_receiver_neuron_name] = 0
+        previous_vs[degree_receiver_neuron_name] = 0
+    return previous_us, previous_vs

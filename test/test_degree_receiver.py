@@ -5,6 +5,7 @@ from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
 from src.helper import (
+    fill_dictionary,
     get_a_in_for_degree_receiver,
     get_expected_amount_of_degree_receiver_neurons,
     get_wta_circuit_from_neuron_name,
@@ -32,8 +33,8 @@ class Test_degree_receiver(unittest.TestCase):
         super(Test_degree_receiver, self).__init__(*args, **kwargs)
 
         # Moved into separate file to increase overview in this test file.
-        # self = create_test_object(self)
-        self = create_test_object(self, True, True)
+        self = create_test_object(self)
+        # self = create_test_object(self, True, True)
 
     def test_degree_receiver_neuron_presence(
         self,
@@ -79,8 +80,13 @@ class Test_degree_receiver(unittest.TestCase):
         starter_neuron = degree_receiver_neurons[0]
 
         # Create storage lists for previous neuron currents and voltages.
-        previous_us = [0] * len(degree_receiver_neurons)
-        previous_vs = [0] * len(degree_receiver_neurons)
+        previous_us = {}
+        previous_vs = {}
+        previous_us, previous_vs = fill_dictionary(
+            self.neuron_dict, degree_receiver_neurons, previous_us, previous_vs
+        )
+        # previous_us = [0] * len(degree_receiver_neurons)
+        # previous_vs = [0] * len(degree_receiver_neurons)
 
         # Simulate SNN and assert values inbetween timesteps.
         for t in range(1, 25):
@@ -128,11 +134,11 @@ class Test_degree_receiver(unittest.TestCase):
 
             # Perform test on degree_receiver neuron behaviour.
             (
-                previous_us[wta_circuit],
-                previous_vs[wta_circuit],
+                previous_us[degree_receiver_neuron_name],
+                previous_vs[degree_receiver_neuron_name],
             ) = self.assert_degree_receiver_neuron_behaviour(
-                previous_us[wta_circuit],
-                previous_vs[wta_circuit],
+                previous_us[degree_receiver_neuron_name],
+                previous_vs[degree_receiver_neuron_name],
                 sample_neuron,
                 degree_receiver_neuron,
                 t,
@@ -151,7 +157,7 @@ class Test_degree_receiver(unittest.TestCase):
         y,
     ):
         """Assert the values of the degree_receiver_neuron neuron on t=4."""
-
+        print(f"x={wta_circuit},y={y}")
         a_in = get_a_in_for_degree_receiver(
             self.G, wta_circuit, self.rand_nrs, t, wta_circuit, y
         )
