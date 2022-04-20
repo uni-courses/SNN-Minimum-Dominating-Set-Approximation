@@ -1,3 +1,4 @@
+import collections
 import itertools
 import random
 import networkx as nx
@@ -128,8 +129,6 @@ def is_degree_receiver(neuron, neuron_dict):
     if neuron_name[:16] == "degree_receiver_":
         return True
     else:
-        print(f"neuron_name[:16]={neuron_name[:16]}")
-        print(f"neuron_name={neuron_name}")
         return False
 
 
@@ -138,8 +137,6 @@ def is_selector_neuron_dict(neuron, neuron_dict):
     if neuron_name[:9] == "selector_":
         return True
     else:
-        print(f"neuron_name[:9]={neuron_name[:9]}")
-        print(f"neuron_name={neuron_name}")
         return False
 
 
@@ -201,26 +198,20 @@ def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
     raise Exception(f"Did not find neuron:{desired_neuron_name}!.")
 
 
-def print_degree_neurons(G, neuron_dict, node, t, extra_neuron=None):
-    if not extra_neuron is None:
-        degree_neuron_names = [neuron_dict[extra_neuron]]
-    else:
-        degree_neuron_names = []
-    degree_receiver_neurons = [extra_neuron]
-    for neighbour in nx.all_neighbors(G, node):
-        degree_neuron_name = f"degree_receiver_{node}_{neighbour}"
-        degree_neuron_names.append(degree_neuron_name)
+def print_neurons_properties(neuron_dict, neurons, t, descriptions=""):
+    sorted_neurons = []
+    # Sort by value.
+    descriptions = ""
+    sorted_dict = dict(sorted(neuron_dict.items(), key=lambda item: item[1]))
+    if descriptions == "":
+        for neuron, neuron_name in sorted_dict.items():
+            if neuron in neurons:
+                sorted_neurons.append(neuron)
+                descriptions = f"{descriptions} {neuron_name[-9:]}"
 
-        # Get neurons that are to be printed
-        degree_receiver_neurons.append(
-            get_degree_receiver_neuron(neuron_dict, degree_neuron_name)
-        )
-    # Print which neuron properties are being printed
-    print(
-        f"t={t},Properties of:{neuron_dict[extra_neuron]}," + f"{degree_neuron_names},"
-    )
-    # Print neuron properties.
-    print_neuron_properties(degree_receiver_neurons)
+    print(f"t={t}")
+    print(descriptions[1:])
+    print_neuron_properties(sorted_neurons)
 
 
 def get_a_in_for_selector_neuron_retry(
@@ -373,3 +364,13 @@ def add_selector_to_degree_receiver(t):
         return 1
     else:
         return 0
+
+
+def sort_neurons(neurons, neuron_dict):
+    sorted_neurons = []
+    # Sort by value.
+    sorted_dict = dict(sorted(neuron_dict.items(), key=lambda item: item[1]))
+    for neuron, neuron_name in sorted_dict.items():
+        if neuron in neurons:
+            sorted_neurons.append(neuron)
+    return sorted_neurons

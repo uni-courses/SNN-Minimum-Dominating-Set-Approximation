@@ -9,7 +9,8 @@ from src.helper import (
     get_expected_amount_of_degree_receiver_neurons,
     get_wta_circuit_from_neuron_name,
     get_y_from_degree_receiver_x_y,
-    print_degree_neurons,
+    print_neurons_properties,
+    sort_neurons,
 )
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
@@ -113,16 +114,17 @@ class Test_degree_receiver(unittest.TestCase):
         """Gets the neurons that are being tested: degree_receiver neurons. Then
         prints those neuron properties and performs the neuron behaviour tests
         for the given timestep t."""
-
+        sorted_neurons = sort_neurons(degree_receiver_neurons, self.neuron_dict)
+        print_neurons_properties(self.neuron_dict, sorted_neurons, t, descriptions=[])
         # Run test on each degree_receiver neuron in the SNN.
-        for degree_receiver_neuron in degree_receiver_neurons:
+        for degree_receiver_neuron in sorted_neurons:
 
             # Get the name of the degree_receiver neuron and get which node is tested.
             degree_receiver_neuron_name = self.neuron_dict[degree_receiver_neuron]
             wta_circuit = get_wta_circuit_from_neuron_name(degree_receiver_neuron_name)
             # get degree_receiver_x_get_wta_circuit_from_neuron_namey
             y = get_y_from_degree_receiver_x_y(degree_receiver_neuron_name)
-            print(f"wta_circuit={wta_circuit}")
+            # print(f"degree_receiver_{wta_circuit}_{y}")
 
             # Print neuron properties of degree_receiver node and degree_receiver_x_y neurons.
             # TODO: rename from print_degree_neurons, to print_tested_neurons.
