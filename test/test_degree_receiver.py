@@ -159,7 +159,15 @@ class Test_degree_receiver(unittest.TestCase):
         """Assert the values of the degree_receiver_neuron neuron on t=4."""
         print(f"x={wta_circuit},y={y}")
         a_in = get_a_in_for_degree_receiver(
-            self.G, wta_circuit, self.rand_nrs, t, wta_circuit, y
+            self.G,
+            wta_circuit,
+            previous_u,
+            previous_v,
+            self.rand_nrs,
+            self.sample_degree_receiver_neuron,
+            t,
+            wta_circuit,
+            y,
         )
 
         # The current stays constant indefinitely.

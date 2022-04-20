@@ -285,8 +285,10 @@ def get_expected_amount_of_degree_receiver_neurons(G):
     return expected_amount
 
 
-def get_a_in_for_degree_receiver(G, node, rand_nrs, t, x, y):
-    if x == 0 and y == 2:
+def get_a_in_for_degree_receiver(
+    G, node, previous_u, previous_v, rand_nrs, sample_degree_receiver_neuron, t, x, y
+):
+    if x == 3 and y == 0 and t == 22:
         verbose = True
     else:
         verbose = False
@@ -333,7 +335,15 @@ def get_a_in_for_degree_receiver(G, node, rand_nrs, t, x, y):
         for neighbour in nx.all_neighbors(G, node):
             # f"selector_{circuit}", f"degree_receiver_{circuit}_{neighbour_b}",
             a_in = a_in + add_selector_to_degree_receiver(
-                t, neighbour, node, x, y, verbose
+                t,
+                neighbour,
+                node,
+                previous_u,
+                previous_v,
+                sample_degree_receiver_neuron,
+                x,
+                y,
+                verbose,
             )
 
     return a_in
@@ -371,7 +381,17 @@ def add_rand_to_degree_receiver(
     return 0
 
 
-def add_selector_to_degree_receiver(t, neighbour, node, x, y, verbose=False):
+def add_selector_to_degree_receiver(
+    t,
+    neighbour,
+    node,
+    previous_u,
+    previous_v,
+    sample_degree_receiver_neuron,
+    x,
+    y,
+    verbose=False,
+):
     """The selector neuron spikes at t=1, meaning the excitatory spike signal
     comes in at degree_receiver at t=2. The selector keeps firing until it is
     inhibited."""
@@ -380,8 +400,19 @@ def add_selector_to_degree_receiver(t, neighbour, node, x, y, verbose=False):
     if x == node:
         if y == neighbour:
             if t >= 2:
-                # TODO: compute when to stop excitation.
+                if previous_u > sample_degree_receiver_neuron.vth:
+                    # TODO: compute when to stop excitation.
+                    print(f"STOOOOP")
+                    # TODO: when this is detected for degree_receiver_x_y for some x,
+                    # for x=3 at t=22), the a_in for x should be 1 for one more timestep
+                    # and then it should be 0 for ever.
+                    return 1
                 if verbose:
+                    print(f"previous_u={previous_u}")
+                    print(f"previous_v={previous_v}")
+                    print(
+                        f"sample_degree_receiver_neuron.vth={sample_degree_receiver_neuron.vth}"
+                    )
                     print(f"selector_to_deg={1}")
                 return 1
     return 0
