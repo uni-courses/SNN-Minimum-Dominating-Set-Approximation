@@ -62,7 +62,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                     vth=1,
                     pos=(float(1.0), get_y_position(G, node, neighbour)),
                 )
-            print(f"created:degree_receiver_{node}_{neighbour}")
+            # print(f"created:degree_receiver_{node}_{neighbour}")
 
         # One neuron per node named: rand
         if len(rand_nrs) < len(G):
@@ -136,9 +136,9 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                         ],
                         weight=rand_nrs[circuit],
                     )
-                    print(
-                        f"edge: rand_{circuit_target}, degree_receiver_{circuit_target}_{circuit}, weight={rand_nrs[circuit]}"
-                    )
+                    # print(
+                    #    f"edge: rand_{circuit_target}, degree_receiver_{circuit_target}_{circuit}, weight={rand_nrs[circuit]}"
+                    # )
 
         # Add synapse from degree_selector to selector node.
         for neighbour_b in nx.all_neighbors(G, circuit):

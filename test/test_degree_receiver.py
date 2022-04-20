@@ -1,5 +1,6 @@
 import unittest
 import networkx as nx
+from numpy import sort
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
@@ -7,6 +8,7 @@ from src.helper import (
     get_a_in_for_degree_receiver,
     get_expected_amount_of_degree_receiver_neurons,
     get_wta_circuit_from_neuron_name,
+    get_y_from_degree_receiver_x_y,
     print_degree_neurons,
 )
 from test.contains_neurons_of_type_x import (
@@ -118,6 +120,8 @@ class Test_degree_receiver(unittest.TestCase):
             # Get the name of the degree_receiver neuron and get which node is tested.
             degree_receiver_neuron_name = self.neuron_dict[degree_receiver_neuron]
             wta_circuit = get_wta_circuit_from_neuron_name(degree_receiver_neuron_name)
+            # get degree_receiver_x_get_wta_circuit_from_neuron_namey
+            y = get_y_from_degree_receiver_x_y(degree_receiver_neuron_name)
             print(f"wta_circuit={wta_circuit}")
 
             # Print neuron properties of degree_receiver node and degree_receiver_x_y neurons.
@@ -142,6 +146,7 @@ class Test_degree_receiver(unittest.TestCase):
                 degree_receiver_neuron,
                 t,
                 wta_circuit,
+                y,
             )
 
     def assert_degree_receiver_neuron_behaviour(
@@ -152,10 +157,13 @@ class Test_degree_receiver(unittest.TestCase):
         degree_receiver_neuron,
         t,
         wta_circuit,
+        y,
     ):
         """Assert the values of the degree_receiver_neuron neuron on t=4."""
 
-        a_in = get_a_in_for_degree_receiver(t)
+        a_in = get_a_in_for_degree_receiver(
+            self.G, wta_circuit, self.rand_nrs, t, wta_circuit, y
+        )
 
         # The current stays constant indefinitely.
         # u[t=x+1]=u[t=x]*(1-du)+a_in

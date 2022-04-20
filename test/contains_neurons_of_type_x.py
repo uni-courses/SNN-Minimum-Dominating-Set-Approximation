@@ -99,7 +99,7 @@ def neuron_has_expected_name(neuron, neuron_dict, neuron_identifier):
         return False
 
 
-def has_expected_neuron_properties(neuron, sample_neuron):
+def has_expected_neuron_properties(neuron, sample_neuron, verbose=False):
     """Assert the values of the incoming neuron are those of the expected
     neuron. Note sample_neuron does not have a sample_neuron.<property>.get()
     because it is a basic object with the properties stored as ints instead
@@ -111,22 +111,22 @@ def has_expected_neuron_properties(neuron, sample_neuron):
                     if neuron.bias.get() == sample_neuron.bias:  # Custom value.
                         if neuron.vth.get() == sample_neuron.vth:  # Default value.
                             return True
-                        else:
+                        elif verbose:
                             print(
                                 f"neuron.vth.get()={neuron.vth.get()}, whereas expected vth={sample_neuron.vth}"
                             )
-                    else:
+                    elif verbose:
                         print(
                             f"neuron.bias.get()={neuron.bias.get()}, whereas bias={sample_neuron.bias}"
                         )
-                else:
+                elif verbose:
                     print(
                         f"neuron.dv.get()={neuron.dv.get()}, whereas dv={sample_neuron.dv}"
                     )
-            else:
+            elif verbose:
                 print(f"neuron.v.get()={neuron.v.get()}, whereas v={sample_neuron.v}")
-        else:
+        elif verbose:
             print(f"neuron.du.get()={neuron.du.get()}, whereas du={sample_neuron.du}")
-    else:
+    elif verbose:
         print(f"neuron.u.get()={neuron.u.get()}, whereas u={0}")
     return False

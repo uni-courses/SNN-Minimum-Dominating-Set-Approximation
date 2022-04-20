@@ -175,11 +175,23 @@ def get_wta_circuit_from_neuron_name(neuron_name):
         parts = neuron_name.split("_")
         node_index = int(parts[2])
     else:
-        print(f"neuron_name[:11]={neuron_name[:11]}")
+        print(f"neuron_name={neuron_name}")
         raise Exception(
             "Error tried parsing neuron as spike_once or selector neuron even though it is not."
         )
     return node_index
+
+
+def get_y_from_degree_receiver_x_y(neuron_name):
+    if neuron_name[:16] == "degree_receiver_":
+        parts = neuron_name.split("_")
+        y = int(parts[3])
+    else:
+        print(f"neuron_name[:16]={neuron_name[:16]}")
+        raise Exception(
+            "Error tried parsing neuron as spike_once or selector neuron even though it is not."
+        )
+    return y
 
 
 def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
@@ -282,5 +294,82 @@ def get_expected_amount_of_degree_receiver_neurons(G):
     return expected_amount
 
 
-def get_a_in_for_degree_receiver(G, delta, incoming_selector_weight, node, rand_nrs, t):
-    return None
+def get_a_in_for_degree_receiver(G, node, rand_nrs, t, x, y):
+    a_in = 0
+    for circuit in G.nodes:
+        # For each neighbour of node, named degree_receiver:
+        for neighbour_a in G.nodes:
+            if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
+                for neighbour_b in nx.all_neighbors(G, circuit):
+                    if circuit != neighbour_b and neighbour_a != neighbour_b:
+
+                        # Check if there is an edge from neighbour_a to neighbour_b.
+                        if neighbour_a in nx.all_neighbors(G, neighbour_b):
+                            # Spike_once to degree_receiver
+                            # f"spike_once_{circuit}", to: f"degree_receiver_{neighbour_a}_{neighbour_b}",
+                            a_in = a_in + add_spike_weight_to_degree_receiver(
+                                neighbour_a, neighbour_b, 1, t, x, y
+                            )
+
+        # Add synapse between random node and degree receiver nodes.
+        for circuit_target in G.nodes:
+            if circuit != circuit_target:
+                # Check if there is an edge from neighbour_a to neighbour_b.
+                if circuit in nx.all_neighbors(G, circuit_target):
+                    # rand_to_degree_receiver
+                    # f"rand_{circuit}", to: f"degree_receiver_{circuit_target}_{circuit}",
+                    a_in = a_in + add_rand_to_degree_receiver(
+                        circuit, circuit_target, rand_nrs[circuit], t, x, y
+                    )
+
+        # Synapse from degree_selector to selector node.
+        for neighbour_b in nx.all_neighbors(G, circuit):
+            if circuit != neighbour_b:
+                # f"degree_receiver_{circuit}_{neighbour_b}",to: f"selector_{circuit}",
+                pass
+
+    for node in G.nodes:
+        for neighbour in nx.all_neighbors(G, node):
+            # f"selector_{circuit}", f"degree_receiver_{circuit}_{neighbour_b}",
+            a_in = a_in + add_selector_to_degree_receiver(t)
+
+    return a_in
+
+
+def add_spike_weight_to_degree_receiver(
+    neighbour_a, neighbour_b, spike_once_weight, t, x, y
+):
+    """The spike_once neuron spikes at t=1, meaning the spike signal comes in
+    at degree_receiver at t=2"""
+    # Check if the degree_receiver_x_y that is being tested, is indeed the one
+    # in the for loops for which a synapse exists.
+    if x == neighbour_a:
+        if y == neighbour_b:
+            if t == 2:
+                return spike_once_weight
+    return 0
+
+
+def add_rand_to_degree_receiver(circuit, circuit_target, rand_weight, t, x, y):
+    """The rand neuron spikes at t=1, meaning the spike signal comes in
+    at degree_receiver at t=2"""
+    # Check if the degree_receiver_x_y that is being tested, is indeed the one
+    # in the for loops for which a synapse exists.
+    if x == circuit_target:
+        if y == circuit:
+            if t == 2:
+                return rand_weight
+    return 0
+
+
+def add_selector_to_degree_receiver(t):
+    """The selector neuron spikes at t=1, meaning the excitatory spike signal
+    comes in at degree_receiver at t=2. The selector keeps firing until it is
+    inhibited."""
+    # Check if the degree_receiver_x_y that is being tested, is indeed the one
+    # in the for loops for which a synapse exists.
+    if t >= 2:
+        # TODO: compute when to stop excitation.
+        return 1
+    else:
+        return 0
