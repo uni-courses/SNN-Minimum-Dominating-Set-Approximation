@@ -171,6 +171,9 @@ def get_wta_circuit_from_neuron_name(neuron_name):
     elif neuron_name[:9] == "selector_":
         parts = neuron_name.split("_")
         node_index = int(parts[1])
+    elif neuron_name[:16] == "degree_receiver_":
+        parts = neuron_name.split("_")
+        node_index = int(parts[2])
     else:
         print(f"neuron_name[:11]={neuron_name[:11]}")
         raise Exception(
@@ -268,3 +271,16 @@ def get_a_in_for_spike_once(t):
         return -2
     else:
         return 0
+
+
+def get_expected_amount_of_degree_receiver_neurons(G):
+    expected_amount = 0
+    for node in G.nodes:
+        for neighbour in nx.all_neighbors(G, node):
+            if node != neighbour:
+                expected_amount = expected_amount + 1
+    return expected_amount
+
+
+def get_a_in_for_degree_receiver(G, delta, incoming_selector_weight, node, rand_nrs, t):
+    return None

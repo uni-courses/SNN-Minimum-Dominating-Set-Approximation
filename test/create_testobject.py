@@ -16,6 +16,7 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     test_object.sample_selector_neuron = Selector_neuron()
     test_object.sample_spike_once_neuron = Spike_once_neuron()
     test_object.sample_rand_neuron = Rand_neuron()
+    test_object.sample_degree_receiver_neuron = Degree_receiver()
 
     ## Specify the expected synaptic weights
     # TODO: Specify per synapse group. (except for the random synapses)
@@ -117,4 +118,15 @@ class Rand_neuron:
         self.bias = 2
         self.du = 0
         self.dv = 0
+        self.vth = 1
+
+
+class Degree_receiver:
+    """Creates expected properties of the spike_once neuron."""
+
+    def __init__(self):
+        self.first_name = "spike_once_0"
+        self.bias = 0
+        self.du = 0
+        self.dv = 1
         self.vth = 1

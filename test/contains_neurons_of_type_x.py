@@ -1,3 +1,5 @@
+import networkx as nx
+
 # TODO: move to separate ?test_?contains_neurons.py
 def neurons_of_expected_type_are_all_present_in_snn(
     test_object,
@@ -17,9 +19,13 @@ def neurons_of_expected_type_are_all_present_in_snn(
     the number of the node in the original graph G that they represent."""
     # Assert for each node in graph G, that a degree_receiver node exists in
     # get_degree.
-    for node in G.nodes:
-        test_object.assertTrue(f"{neuron_identifier}{node}" in get_degree.nodes)
-
+    if neuron_identifier == "degree_receiver_":
+        test_all_degree_receiver_neurons_are_in_graph(
+            test_object, G, get_degree, neuron_identifier
+        )
+    else:
+        for node in G.nodes:
+            test_object.assertTrue(f"{neuron_identifier}{node}" in get_degree.nodes)
     # Assert no more than n degree_receiver nodes exist in get_degree.
     test_object.assertEqual(
         sum(neuron_identifier in string for string in get_degree.nodes), expected_amount
@@ -32,6 +38,17 @@ def neurons_of_expected_type_are_all_present_in_snn(
             expected_amount, neurons, neuron_dict, neuron_identifier, sample_neuron
         )
     )
+
+
+def test_all_degree_receiver_neurons_are_in_graph(
+    test_object, G, get_degree, neuron_identifier
+):
+    for node in G.nodes:
+        for neighbour in nx.all_neighbors(G, node):
+            if node != neighbour:
+                test_object.assertTrue(
+                    f"{neuron_identifier}{node}_{neighbour}" in get_degree.nodes
+                )
 
 
 def has_n_neurons_of_sample_type(

@@ -5,6 +5,7 @@ from lava.magma.core.run_configs import Loihi1SimCfg
 from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
 from src.helper import (
     get_a_in_for_degree_receiver,
+    get_expected_amount_of_degree_receiver_neurons,
     get_wta_circuit_from_neuron_name,
     print_degree_neurons,
 )
@@ -37,7 +38,7 @@ class Test_degree_receiver(unittest.TestCase):
         """Tests whether the degree_receiver neurons are all present."""
         degree_receiver_neurons = neurons_of_expected_type_are_all_present_in_snn(
             self,
-            len(self.G),
+            get_expected_amount_of_degree_receiver_neurons(self.G),
             self.G,
             self.get_degree,
             self.neuron_dict,
@@ -46,7 +47,7 @@ class Test_degree_receiver(unittest.TestCase):
             self.sample_degree_receiver_neuron,
         )
         get_n_neurons(
-            len(self.G),
+            get_expected_amount_of_degree_receiver_neurons(self.G),
             self.neurons,
             self.neuron_dict,
             "degree_receiver_",
@@ -64,7 +65,7 @@ class Test_degree_receiver(unittest.TestCase):
         """Verifies the neuron properties over time."""
         # TODO: create stripped down function that just gets the degree_receiver neurons.
         degree_receiver_neurons = get_n_neurons(
-            len(self.G),
+            get_expected_amount_of_degree_receiver_neurons(self.G),
             self.neurons,
             self.neuron_dict,
             "degree_receiver_",
