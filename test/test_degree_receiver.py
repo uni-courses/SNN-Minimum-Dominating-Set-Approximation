@@ -32,8 +32,8 @@ class Test_degree_receiver(unittest.TestCase):
         super(Test_degree_receiver, self).__init__(*args, **kwargs)
 
         # Moved into separate file to increase overview in this test file.
-        self = create_test_object(self)
-        # self = create_test_object(self, True, True)
+        # self = create_test_object(self)
+        self = create_test_object(self, True, True)
 
     def test_degree_receiver_neuron_presence(
         self,
@@ -126,17 +126,6 @@ class Test_degree_receiver(unittest.TestCase):
             y = get_y_from_degree_receiver_x_y(degree_receiver_neuron_name)
             # print(f"degree_receiver_{wta_circuit}_{y}")
 
-            # Print neuron properties of degree_receiver node and degree_receiver_x_y neurons.
-            # TODO: rename from print_degree_neurons, to print_tested_neurons.
-            # TODO: allow variable to pass which neurons are printed.
-            if self.neuron_dict[degree_receiver_neuron] == "degree_receiver_1":
-                print_degree_neurons(
-                    self.G,
-                    self.neuron_dict,
-                    wta_circuit,
-                    t,
-                    extra_neuron=degree_receiver_neuron,
-                )
             # Perform test on degree_receiver neuron behaviour.
             (
                 previous_us[wta_circuit],
