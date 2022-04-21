@@ -24,8 +24,8 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
 
     ## Generate the graph on which the algorithm is ran.
     #  Generate a fully connected graph with n=4.
-    # test_object.G = nx.complete_graph(4)
-    test_object.G = create_manual_graph_with_4_nodes()
+    test_object.G = nx.complete_graph(4)
+    # test_object.G = create_manual_graph_with_4_nodes()
     if plot_input_graph:
         plot_unstructured_graph(test_object.G)
 
