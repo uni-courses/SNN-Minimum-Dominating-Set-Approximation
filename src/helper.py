@@ -346,7 +346,7 @@ def get_a_in_for_degree_receiver(
             # f"selector_{circuit}", f"degree_receiver_{circuit}_{neighbour_b}",
             if t == 22 and x == 3:
                 print(f"before a_in={a_in}")
-            a_in = a_in + add_selector_to_degree_receiver(
+            a_in = a_in + get_a_in_from_selector_into_degree_receiver(
                 found_winner,
                 found_winner_at_t,
                 t,
@@ -397,7 +397,7 @@ def add_rand_to_degree_receiver(
     return 0
 
 
-def add_selector_to_degree_receiver(
+def get_a_in_from_selector_into_degree_receiver(
     found_winner,
     found_winner_at_t,
     t,

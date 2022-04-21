@@ -11,7 +11,7 @@ from src.helper import (
 )
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
-    neurons_of_expected_type_are_all_present_in_snn,
+    assert_neurons_of_expected_type_are_all_present_in_snn,
 )
 
 
@@ -36,7 +36,7 @@ class Test_spike_once(unittest.TestCase):
         self,
     ):
         """Tests whether the degree_receiver neurons are all present."""
-        spike_once_neurons = neurons_of_expected_type_are_all_present_in_snn(
+        spike_once_neurons = assert_neurons_of_expected_type_are_all_present_in_snn(
             self,
             len(self.G),
             self.G,

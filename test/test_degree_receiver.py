@@ -15,7 +15,7 @@ from src.helper import (
 )
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
-    neurons_of_expected_type_are_all_present_in_snn,
+    assert_neurons_of_expected_type_are_all_present_in_snn,
 )
 
 
@@ -40,15 +40,17 @@ class Test_degree_receiver(unittest.TestCase):
         self,
     ):
         """Tests whether the degree_receiver neurons are all present."""
-        degree_receiver_neurons = neurons_of_expected_type_are_all_present_in_snn(
-            self,
-            get_expected_amount_of_degree_receiver_neurons(self.G),
-            self.G,
-            self.get_degree,
-            self.neuron_dict,
-            "degree_receiver_",
-            self.neurons,
-            self.sample_degree_receiver_neuron,
+        degree_receiver_neurons = (
+            assert_neurons_of_expected_type_are_all_present_in_snn(
+                self,
+                get_expected_amount_of_degree_receiver_neurons(self.G),
+                self.G,
+                self.get_degree,
+                self.neuron_dict,
+                "degree_receiver_",
+                self.neurons,
+                self.sample_degree_receiver_neuron,
+            )
         )
         get_n_neurons(
             get_expected_amount_of_degree_receiver_neurons(self.G),

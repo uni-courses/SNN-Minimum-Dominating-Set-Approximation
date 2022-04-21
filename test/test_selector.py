@@ -1,16 +1,21 @@
 import unittest
 import networkx as nx
+from numpy import sort
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
 from src.helper import (
-    get_a_in_for_selector_neuron_retry,
-    get_node_from_selector_neuron_name,
-    print_degree_neurons,
+    fill_dictionary,
+    get_a_in_for_degree_receiver,
+    get_expected_amount_of_degree_receiver_neurons,
+    get_wta_circuit_from_neuron_name,
+    get_y_from_degree_receiver_x_y,
+    print_neurons_properties,
+    sort_neurons,
 )
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
-    neurons_of_expected_type_are_all_present_in_snn,
+    assert_neurons_of_expected_type_are_all_present_in_snn,
 )
 
 
@@ -31,18 +36,26 @@ class Test_selector(unittest.TestCase):
         self = create_test_object(self)
         # self = create_test_object(self, True, True)
 
-    def test_selector_neuron_presence(
+    def test_degree_receiver_neuron_presence(
         self,
     ):
         """Tests whether the degree_receiver neurons are all present."""
-        selector_neurons = neurons_of_expected_type_are_all_present_in_snn(
+        assert_neurons_of_expected_type_are_all_present_in_snn(
             self,
-            len(self.G),
+            get_expected_amount_of_degree_receiver_neurons(self.G),
             self.G,
             self.get_degree,
-            "selector_",
+            self.neuron_dict,
+            "degree_receiver_",
             self.neurons,
-            self.sample_selector_neuron,
+            self.sample_degree_receiver_neuron,
+        )
+        degree_receiver_neurons = get_n_neurons(
+            get_expected_amount_of_degree_receiver_neurons(self.G),
+            self.neurons,
+            self.neuron_dict,
+            "degree_receiver_",
+            self.sample_degree_receiver_neuron,
         )
 
         # TODO: Explicitly verify the neurons have the correct amount of
@@ -52,99 +65,150 @@ class Test_selector(unittest.TestCase):
         # This is currently both tested implicitly by checking the neuron
         # behaviour over time.
 
-    def test_selector_neurons_over_time(self):
+    def test_degree_receiver_neurons_over_time(self):
         """Verifies the neuron properties over time."""
-        # TODO: create stripped down function that just gets the selector neurons.
-        selector_neurons = get_n_neurons(
+        # TODO: create stripped down function that just gets the degree_receiver neurons.
+        degree_receiver_neurons = get_n_neurons(
+            get_expected_amount_of_degree_receiver_neurons(self.G),
             self.neurons,
-            len(self.G),
-            self.sample_selector_neuron,
+            self.neuron_dict,
+            "degree_receiver_",
+            self.sample_degree_receiver_neuron,
         )
 
         # Get the first neuron in the SNN to start the simulation
-        starter_neuron = selector_neurons[0]
+        starter_neuron = degree_receiver_neurons[0]
+
+        # Create storage lists for previous neuron currents and voltages.
+        previous_us = {}
+        previous_vs = {}
+        previous_us, previous_vs = fill_dictionary(
+            self.neuron_dict, degree_receiver_neurons, previous_us, previous_vs
+        )
+        # previous_us = [0] * len(degree_receiver_neurons)
+        # previous_vs = [0] * len(degree_receiver_neurons)
 
         # Simulate SNN and assert values inbetween timesteps.
         for t in range(1, 25):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
+
             # Print the values coming into the timestep.
             # Assert neuron values.
             self.verify_neuron_behaviour(
-                self.sample_selector_neuron,
+                previous_us,
+                previous_vs,
+                self.sample_degree_receiver_neuron,
                 starter_neuron,
                 t,
-                selector_neurons,
+                degree_receiver_neurons,
             )
         # Terminate Loihi simulation.
         starter_neuron.stop()
-        raise Exception("STOP")
-        return selector_neurons
+        return degree_receiver_neurons
 
     def verify_neuron_behaviour(
-        self, sample_neuron, starter_neuron, t, selector_neurons
+        self,
+        previous_us,
+        previous_vs,
+        sample_neuron,
+        starter_neuron,
+        t,
+        degree_receiver_neurons,
     ):
-        """Gets the neurons that are being tested: selector neurons. Then
+        """Gets the neurons that are being tested: degree_receiver neurons. Then
         prints those neuron properties and performs the neuron behaviour tests
         for the given timestep t."""
+        sorted_neurons = sort_neurons(degree_receiver_neurons, self.neuron_dict)
+        print_neurons_properties(self.neuron_dict, sorted_neurons, t, descriptions=[])
+        # Run test on each degree_receiver neuron in the SNN.
+        for degree_receiver_neuron in sorted_neurons:
 
-        # Run test on each selector neuron in the SNN.
-        for selector_neuron in selector_neurons:
+            # Get the name of the degree_receiver neuron and get which node is tested.
+            degree_receiver_neuron_name = self.neuron_dict[degree_receiver_neuron]
+            wta_circuit = get_wta_circuit_from_neuron_name(degree_receiver_neuron_name)
+            # get degree_receiver_x_get_wta_circuit_from_neuron_namey
+            y = get_y_from_degree_receiver_x_y(degree_receiver_neuron_name)
 
-            # Get the name of the selector neuron and get which node is tested.
-            selector_neuron_name = self.neuron_dict[selector_neuron]
-            wta_circuit = get_node_from_selector_neuron_name(selector_neuron_name)
-
-            # Print neuron properties of selector node and degree_receiver_x_y neurons.
-            # TODO: rename from print_degree_neurons, to print_tested_neurons.
-            # TODO: allow variable to pass which neurons are printed.
-            if self.neuron_dict[selector_neuron] == "selector_1":
-                print_degree_neurons(
-                    self.G,
-                    self.neuron_dict,
-                    wta_circuit,
-                    t,
-                    extra_neuron=selector_neuron,
-                )
-            # Perform test on selector neuron behaviour.
-            self.assert_selector_neuron_behaviour(
+            # Perform test on degree_receiver neuron behaviour.
+            (
+                previous_us[degree_receiver_neuron_name],
+                previous_vs[degree_receiver_neuron_name],
+            ) = self.assert_degree_receiver_neuron_behaviour(
+                previous_us[degree_receiver_neuron_name],
+                previous_vs[degree_receiver_neuron_name],
                 sample_neuron,
-                selector_neuron,
+                degree_receiver_neuron,
                 t,
                 wta_circuit,
+                y,
             )
+        self.run_test_on_selector_neurons(sorted_neurons, t)
 
-    def assert_selector_neuron_behaviour(
-        self, sample_neuron, selector_neuron, t, wta_circuit
+    def run_test_on_selector_neurons(self, sorted_degree_receivers_neurons, t):
+        selector_neurons = get_n_neurons(
+            len(self.G),
+            self.neurons,
+            self.neuron_dict,
+            "selector_",
+            self.sample_selector_neuron,
+            True,
+        )
+        sorted_selector_neurons = sort_neurons(selector_neurons, self.neuron_dict)
+        print_neurons_properties(self.neuron_dict, selector_neurons, t, descriptions=[])
+
+    def assert_degree_receiver_neuron_behaviour(
+        self,
+        previous_u,
+        previous_v,
+        sample_neuron,
+        degree_receiver_neuron,
+        t,
+        wta_circuit,
+        y,
     ):
-        """Assert the values of the selector_neuron neuron on t=4."""
-        a_in = get_a_in_for_selector_neuron_retry(
+        """Assert the values of the degree_receiver_neuron neuron on t=4."""
+        print(f"x={wta_circuit},y={y}")
+        a_in = get_a_in_for_degree_receiver(
             self.G,
-            self.delta,
-            self.incoming_selector_weight,
+            self.found_winner,
+            self.found_winner_at_t,
             wta_circuit,
+            previous_u,
+            previous_v,
             self.rand_nrs,
+            self.sample_degree_receiver_neuron,
             t,
+            wta_circuit,
+            y,
         )
 
-        # The current stays constant indefinitely.
         # u[t=x+1]=u[t=x]*(1-du)+a_in
-        self.assertEqual(selector_neuron.u.get(), a_in)
-        # The voltage stays constant indefinitely because the current
-        # stays constant indefinitely whilst cancelling out the bias.
-        # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
-        if sample_neuron.bias + selector_neuron.u.get() > 1:
-            expected_voltage = 0  # It spikes
-        elif selector_neuron.u.get() < self.incoming_selector_weight:
-            expected_voltage = sample_neuron.bias + selector_neuron.u.get()  # no spike
-        else:
-            expected_voltage = sample_neuron.bias + selector_neuron.u.get()  # no spike
-        self.assertEqual(selector_neuron.v.get(), expected_voltage)
-
-        self.assertEqual(selector_neuron.du.get(), sample_neuron.du)  # Custom Value.
-        self.assertEqual(selector_neuron.dv.get(), sample_neuron.dv)  # Custom value.
         self.assertEqual(
-            selector_neuron.bias.get(), sample_neuron.bias
+            degree_receiver_neuron.u.get(),
+            previous_u * (1 - degree_receiver_neuron.du.get()) + a_in,
+        )
+
+        # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
+        if sample_neuron.bias + degree_receiver_neuron.u.get() > 1:
+            expected_voltage = 0  # It spikes
+        else:
+            expected_voltage = (
+                sample_neuron.bias + degree_receiver_neuron.u.get()
+            )  # no spike
+        self.assertEqual(degree_receiver_neuron.v.get(), expected_voltage)
+
+        self.assertEqual(
+            degree_receiver_neuron.du.get(), sample_neuron.du
+        )  # Custom Value.
+        self.assertEqual(
+            degree_receiver_neuron.dv.get(), sample_neuron.dv
         )  # Custom value.
-        self.assertEqual(selector_neuron.vth.get(), sample_neuron.vth)  # Default value.
+        self.assertEqual(
+            degree_receiver_neuron.bias.get(), sample_neuron.bias
+        )  # Custom value.
+        self.assertEqual(
+            degree_receiver_neuron.vth.get(), sample_neuron.vth
+        )  # Default value.
+        return degree_receiver_neuron.u.get(), degree_receiver_neuron.v.get()
