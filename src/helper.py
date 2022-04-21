@@ -1,3 +1,4 @@
+import collections
 import itertools
 import random
 import networkx as nx
@@ -128,8 +129,6 @@ def is_degree_receiver(neuron, neuron_dict):
     if neuron_name[:16] == "degree_receiver_":
         return True
     else:
-        print(f"neuron_name[:16]={neuron_name[:16]}")
-        print(f"neuron_name={neuron_name}")
         return False
 
 
@@ -138,8 +137,6 @@ def is_selector_neuron_dict(neuron, neuron_dict):
     if neuron_name[:9] == "selector_":
         return True
     else:
-        print(f"neuron_name[:9]={neuron_name[:9]}")
-        print(f"neuron_name={neuron_name}")
         return False
 
 
@@ -166,17 +163,32 @@ def get_wta_circuit_from_neuron_name(neuron_name):
     parts = neuron_name.split("_")
     if neuron_name[:11] == "spike_once_":
         node_index = int(parts[2])
-    if neuron_name[:5] == "rand_":
+    elif neuron_name[:5] == "rand_":
         node_index = int(parts[1])
     elif neuron_name[:9] == "selector_":
         parts = neuron_name.split("_")
         node_index = int(parts[1])
+    elif neuron_name[:16] == "degree_receiver_":
+        parts = neuron_name.split("_")
+        node_index = int(parts[2])
     else:
-        print(f"neuron_name[:11]={neuron_name[:11]}")
+        print(f"neuron_name={neuron_name}")
         raise Exception(
             "Error tried parsing neuron as spike_once or selector neuron even though it is not."
         )
     return node_index
+
+
+def get_y_from_degree_receiver_x_y(neuron_name):
+    if neuron_name[:16] == "degree_receiver_":
+        parts = neuron_name.split("_")
+        y = int(parts[3])
+    else:
+        print(f"neuron_name[:16]={neuron_name[:16]}")
+        raise Exception(
+            "Error tried parsing neuron as spike_once or selector neuron even though it is not."
+        )
+    return y
 
 
 def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
@@ -186,26 +198,20 @@ def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
     raise Exception(f"Did not find neuron:{desired_neuron_name}!.")
 
 
-def print_degree_neurons(G, neuron_dict, node, t, extra_neuron=None):
-    if not extra_neuron is None:
-        degree_neuron_names = [neuron_dict[extra_neuron]]
-    else:
-        degree_neuron_names = []
-    degree_receiver_neurons = [extra_neuron]
-    for neighbour in nx.all_neighbors(G, node):
-        degree_neuron_name = f"degree_receiver_{node}_{neighbour}"
-        degree_neuron_names.append(degree_neuron_name)
+def print_neurons_properties(neuron_dict, neurons, t, descriptions=""):
+    sorted_neurons = []
+    # Sort by value.
+    descriptions = ""
+    sorted_dict = dict(sorted(neuron_dict.items(), key=lambda item: item[1]))
+    if descriptions == "":
+        for neuron, neuron_name in sorted_dict.items():
+            if neuron in neurons:
+                sorted_neurons.append(neuron)
+                descriptions = f"{descriptions} {neuron_name[-9:]}"
 
-        # Get neurons that are to be printed
-        degree_receiver_neurons.append(
-            get_degree_receiver_neuron(neuron_dict, degree_neuron_name)
-        )
-    # Print which neuron properties are being printed
-    print(
-        f"t={t},Properties of:{neuron_dict[extra_neuron]}," + f"{degree_neuron_names},"
-    )
-    # Print neuron properties.
-    print_neuron_properties(degree_receiver_neurons)
+    print(f"t={t}")
+    print(descriptions[1:])
+    print_neuron_properties(sorted_neurons)
 
 
 def get_a_in_for_selector_neuron_retry(
@@ -268,3 +274,202 @@ def get_a_in_for_spike_once(t):
         return -2
     else:
         return 0
+
+
+def get_expected_amount_of_degree_receiver_neurons(G):
+    expected_amount = 0
+    for node in G.nodes:
+        for neighbour in nx.all_neighbors(G, node):
+            if node != neighbour:
+                expected_amount = expected_amount + 1
+    return expected_amount
+
+
+def get_a_in_for_degree_receiver(
+    G,
+    found_winner,
+    found_winner_at_t,
+    node,
+    previous_u,
+    previous_v,
+    rand_nrs,
+    sample_degree_receiver_neuron,
+    t,
+    x,
+    y,
+):
+    if x == 3 and y == 0 and t == 22:
+        verbose = True
+    else:
+        verbose = False
+    a_in = 0
+    for circuit in G.nodes:
+        # For each neighbour of node, named degree_receiver:
+        for neighbour_a in G.nodes:
+            if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
+                for neighbour_b in nx.all_neighbors(G, circuit):
+                    if circuit != neighbour_b and neighbour_a != neighbour_b:
+
+                        # Check if there is an edge from neighbour_a to neighbour_b.
+                        if neighbour_a in nx.all_neighbors(G, neighbour_b):
+                            # Spike_once to degree_receiver
+                            # f"spike_once_{circuit}", to: f"degree_receiver_{neighbour_a}_{neighbour_b}",
+                            a_in = a_in + add_spike_weight_to_degree_receiver(
+                                neighbour_a, neighbour_b, 1, t, x, y, verbose
+                            )
+
+        # Add synapse between random node and degree receiver nodes.
+        for circuit_target in G.nodes:
+            if circuit != circuit_target:
+                # Check if there is an edge from neighbour_a to neighbour_b.
+                if circuit in nx.all_neighbors(G, circuit_target):
+                    # rand_to_degree_receiver
+                    # f"rand_{circuit}", to: f"degree_receiver_{circuit_target}_{circuit}",
+                    a_in = a_in + add_rand_to_degree_receiver(
+                        circuit,
+                        circuit_target,
+                        rand_nrs[circuit],
+                        t,
+                        x,
+                        y,
+                        verbose,
+                    )
+
+        # Synapse from degree_selector to selector node.
+        for neighbour_b in nx.all_neighbors(G, circuit):
+            if circuit != neighbour_b:
+                # f"degree_receiver_{circuit}_{neighbour_b}",to: f"selector_{circuit}",
+                pass
+
+    for node in G.nodes:
+        for neighbour in nx.all_neighbors(G, node):
+            # f"selector_{circuit}", f"degree_receiver_{circuit}_{neighbour_b}",
+            if t == 22 and x == 3:
+                print(f"before a_in={a_in}")
+            a_in = a_in + add_selector_to_degree_receiver(
+                found_winner,
+                found_winner_at_t,
+                t,
+                neighbour,
+                node,
+                previous_u,
+                previous_v,
+                sample_degree_receiver_neuron,
+                x,
+                y,
+                verbose,
+            )
+            if t == 22 and x == 3:
+                print(f"t={t},node={node},neighbour={neighbour} a_in={a_in}")
+
+    return a_in
+
+
+def add_spike_weight_to_degree_receiver(
+    neighbour_a, neighbour_b, spike_once_weight, t, x, y, verbose=False
+):
+    """The spike_once neuron spikes at t=1, meaning the spike signal comes in
+    at degree_receiver at t=2"""
+    # Check if the degree_receiver_x_y that is being tested, is indeed the one
+    # in the for loops for which a synapse exists.
+    if x == neighbour_a:
+        if y == neighbour_b:
+            if t == 2:
+                if verbose:
+                    print(f"spike_once_weight={spike_once_weight}")
+                return spike_once_weight
+    return 0
+
+
+def add_rand_to_degree_receiver(
+    circuit, circuit_target, rand_weight, t, x, y, verbose=False
+):
+    """The rand neuron spikes at t=1, meaning the spike signal comes in
+    at degree_receiver at t=2"""
+    # Check if the degree_receiver_x_y that is being tested, is indeed the one
+    # in the for loops for which a synapse exists.
+    if x == circuit_target:
+        if y == circuit:
+            if t == 2:
+                if verbose:
+                    print(f"rand_weight={rand_weight}")
+                return rand_weight
+    return 0
+
+
+def add_selector_to_degree_receiver(
+    found_winner,
+    found_winner_at_t,
+    t,
+    neighbour,
+    node,
+    previous_u,
+    previous_v,
+    sample_degree_receiver_neuron,
+    x,
+    y,
+    verbose=False,
+):
+    """The selector neuron spikes at t=1, meaning the excitatory spike signal
+    comes in at degree_receiver at t=2. The selector keeps firing until it is
+    inhibited."""
+    # Check if the degree_receiver_x_y that is being tested, is indeed the one
+    # in the for loops for which a synapse exists.
+    if x == node:
+        if y == neighbour:
+            # Spikes only start coming in from selector excitatory neuron at t>=2.
+            if t >= 2:
+                # Check if a winner degree_receiver_x_y is found for WTA circuit x.
+                if not found_winner[node]:
+
+                    # No winner has been found yet. Check if the previous current of the
+                    # degree_receiver_x_y neuron was larger than its threshold.
+                    if previous_u > sample_degree_receiver_neuron.vth:
+
+                        # The winning degree_receiver_x_y neuron has fired in the previous round.
+                        # The excitatory selector neuron still sends one last spike to the other
+                        # degree_receiver_x_z neurons (and to x_y). After that no more spikes
+                        # come in. Store that a winner is found
+                        found_winner[node] = True
+                        # Store the timestep, such that for the other degree_receivers_x_z,
+                        # the inhibition of the selector neuron can be processed as a_in=0
+                        # AFTER t=this time step.
+                        found_winner_at_t[node] = t
+                        # The selector neuron still sends 1 last spike to degree_receiver_x_y.
+                        return 1
+                    else:
+                        # If degree_receiver_x_y neurons have not yet reached vth, they
+                        # will always get an excitatory spike from selector neuron.
+                        return 1
+                elif found_winner_at_t[node] < t:
+                    # The selector neuron still sends 1 last spike to all other degree_receiver_x_z
+                    # neurons at time found_winner_at_t, after time found_winner_at_t, no more
+                    # spikes come in, so a_in from the selector neuron will be 0 for degree_receiver_x_..
+                    return 0
+                else:
+                    # A winner has not yet been found, or found after the first WTA circuit winner
+                    # was found (after t=found_winner_at_t[node]), so the degree_receiver_x_,.. will
+                    # still receive an input signal from the selector neuron.
+                    return 1
+    # This is not the neuron who's input spikes from selector_x are computed, so no input
+    # signals will be returned.
+    return 0
+
+
+def sort_neurons(neurons, neuron_dict):
+    sorted_neurons = []
+    # Sort by value.
+    sorted_dict = dict(sorted(neuron_dict.items(), key=lambda item: item[1]))
+    for neuron, neuron_name in sorted_dict.items():
+        if neuron in neurons:
+            sorted_neurons.append(neuron)
+    return sorted_neurons
+
+
+def fill_dictionary(neuron_dict, neurons, previous_us, previous_vs):
+    sorted_neurons = sort_neurons(neurons, neuron_dict)
+    for neuron in sorted_neurons:
+        degree_receiver_neuron_name = neuron_dict[neuron]
+        previous_us[degree_receiver_neuron_name] = 0
+        previous_vs[degree_receiver_neuron_name] = 0
+    return previous_us, previous_vs

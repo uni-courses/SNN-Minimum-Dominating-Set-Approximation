@@ -16,6 +16,7 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     test_object.sample_selector_neuron = Selector_neuron()
     test_object.sample_spike_once_neuron = Spike_once_neuron()
     test_object.sample_rand_neuron = Rand_neuron()
+    test_object.sample_degree_receiver_neuron = Degree_receiver()
 
     ## Specify the expected synaptic weights
     # TODO: Specify per synapse group. (except for the random synapses)
@@ -23,8 +24,8 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
 
     ## Generate the graph on which the algorithm is ran.
     #  Generate a fully connected graph with n=4.
-    # test_object.G = nx.complete_graph(4)
-    test_object.G = create_manual_graph_with_4_nodes()
+    test_object.G = nx.complete_graph(4)
+    # test_object.G = create_manual_graph_with_4_nodes()
     if plot_input_graph:
         plot_unstructured_graph(test_object.G)
 
@@ -84,6 +85,13 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
         test_object.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
     )
 
+    # Specify boolean array that stores whether a winner has been found in WTA
+    # circuits.
+    test_object.found_winner = [False] * len(test_object.G)
+    # degree_receiver_x_y neurons will get first input spike from selector
+    # neuron at t=2
+    test_object.found_winner_at_t = [2] * len(test_object.G)
+
     return test_object
 
 
@@ -117,4 +125,15 @@ class Rand_neuron:
         self.bias = 2
         self.du = 0
         self.dv = 0
+        self.vth = 1
+
+
+class Degree_receiver:
+    """Creates expected properties of the spike_once neuron."""
+
+    def __init__(self):
+        self.first_name = "spike_once_0"
+        self.bias = 0
+        self.du = 0
+        self.dv = 1
         self.vth = 1

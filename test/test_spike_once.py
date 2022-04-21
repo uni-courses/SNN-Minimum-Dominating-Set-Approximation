@@ -6,7 +6,8 @@ from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nod
 from src.helper import (
     get_a_in_for_spike_once,
     get_wta_circuit_from_neuron_name,
-    print_degree_neurons,
+    print_neurons_properties,
+    sort_neurons,
 )
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
@@ -110,26 +111,18 @@ class Test_spike_once(unittest.TestCase):
         """Gets the neurons that are being tested: spike_once neurons. Then
         prints those neuron properties and performs the neuron behaviour tests
         for the given timestep t."""
+        sorted_neurons = sort_neurons(spike_once_neurons, self.neuron_dict)
+        print_neurons_properties(self.neuron_dict, sorted_neurons, t, descriptions=[])
 
         # Run test on each spike_once neuron in the SNN.
-        for spike_once_neuron in spike_once_neurons:
+        for spike_once_neuron in sorted_neurons:
+            # for spike_once_neuron in spike_once_neurons:
 
             # Get the name of the spike_once neuron and get which node is tested.
             spike_once_neuron_name = self.neuron_dict[spike_once_neuron]
             wta_circuit = get_wta_circuit_from_neuron_name(spike_once_neuron_name)
             print(f"wta_circuit={wta_circuit}")
 
-            # Print neuron properties of spike_once node and degree_receiver_x_y neurons.
-            # TODO: rename from print_degree_neurons, to print_tested_neurons.
-            # TODO: allow variable to pass which neurons are printed.
-            if self.neuron_dict[spike_once_neuron] == "spike_once_1":
-                print_degree_neurons(
-                    self.G,
-                    self.neuron_dict,
-                    wta_circuit,
-                    t,
-                    extra_neuron=spike_once_neuron,
-                )
             # Perform test on spike_once neuron behaviour.
             (
                 previous_us[wta_circuit],
