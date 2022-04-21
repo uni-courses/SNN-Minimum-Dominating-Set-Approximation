@@ -6,7 +6,8 @@ from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nod
 from src.helper import (
     get_a_in_for_spike_once,
     get_wta_circuit_from_neuron_name,
-    print_degree_neurons,
+    print_neurons_properties,
+    sort_neurons,
 )
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
@@ -111,25 +112,17 @@ class Test_rand(unittest.TestCase):
         prints those neuron properties and performs the neuron behaviour tests
         for the given timestep t."""
 
+        sorted_neurons = sort_neurons(rand_neurons, self.neuron_dict)
+        print_neurons_properties(self.neuron_dict, sorted_neurons, t, descriptions=[])
         # Run test on each rand neuron in the SNN.
-        for rand_neuron in rand_neurons:
+        for rand_neuron in sorted_neurons:
 
             # Get the name of the rand neuron and get which node is tested.
             rand_neuron_name = self.neuron_dict[rand_neuron]
             wta_circuit = get_wta_circuit_from_neuron_name(rand_neuron_name)
             print(f"wta_circuit={wta_circuit}")
 
-            # Print neuron properties of rand node and degree_receiver_x_y neurons.
-            # TODO: rename from print_degree_neurons, to print_tested_neurons.
-            # TODO: allow variable to pass which neurons are printed.
-            if self.neuron_dict[rand_neuron] == "rand_1":
-                print_degree_neurons(
-                    self.G,
-                    self.neuron_dict,
-                    wta_circuit,
-                    t,
-                    extra_neuron=rand_neuron,
-                )
+
             # Perform test on rand neuron behaviour.
             (
                 previous_us[wta_circuit],
