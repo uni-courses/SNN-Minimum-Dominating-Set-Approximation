@@ -85,6 +85,13 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
         test_object.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
     )
 
+    # Specify boolean array that stores whether a winner has been found in WTA
+    # circuits.
+    test_object.found_winner = [False] * len(test_object.G)
+    # degree_receiver_x_y neurons will get first input spike from selector
+    # neuron at t=2
+    test_object.found_winner_at_t = [2] * len(test_object.G)
+
     return test_object
 
 

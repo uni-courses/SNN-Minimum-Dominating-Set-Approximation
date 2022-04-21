@@ -286,7 +286,17 @@ def get_expected_amount_of_degree_receiver_neurons(G):
 
 
 def get_a_in_for_degree_receiver(
-    G, node, previous_u, previous_v, rand_nrs, sample_degree_receiver_neuron, t, x, y
+    G,
+    found_winner,
+    found_winner_at_t,
+    node,
+    previous_u,
+    previous_v,
+    rand_nrs,
+    sample_degree_receiver_neuron,
+    t,
+    x,
+    y,
 ):
     if x == 3 and y == 0 and t == 22:
         verbose = True
@@ -334,7 +344,11 @@ def get_a_in_for_degree_receiver(
     for node in G.nodes:
         for neighbour in nx.all_neighbors(G, node):
             # f"selector_{circuit}", f"degree_receiver_{circuit}_{neighbour_b}",
+            if t == 22 and x == 3:
+                print(f"before a_in={a_in}")
             a_in = a_in + add_selector_to_degree_receiver(
+                found_winner,
+                found_winner_at_t,
                 t,
                 neighbour,
                 node,
@@ -345,6 +359,8 @@ def get_a_in_for_degree_receiver(
                 y,
                 verbose,
             )
+            if t == 22 and x == 3:
+                print(f"t={t},node={node},neighbour={neighbour} a_in={a_in}")
 
     return a_in
 
@@ -382,6 +398,8 @@ def add_rand_to_degree_receiver(
 
 
 def add_selector_to_degree_receiver(
+    found_winner,
+    found_winner_at_t,
     t,
     neighbour,
     node,
@@ -399,22 +417,42 @@ def add_selector_to_degree_receiver(
     # in the for loops for which a synapse exists.
     if x == node:
         if y == neighbour:
+            # Spikes only start coming in from selector excitatory neuron at t>=2.
             if t >= 2:
-                if previous_u > sample_degree_receiver_neuron.vth:
-                    # TODO: compute when to stop excitation.
-                    print(f"STOOOOP")
-                    # TODO: when this is detected for degree_receiver_x_y for some x,
-                    # for x=3 at t=22), the a_in for x should be 1 for one more timestep
-                    # and then it should be 0 for ever.
+                # Check if a winner degree_receiver_x_y is found for WTA circuit x.
+                if not found_winner[node]:
+
+                    # No winner has been found yet. Check if the previous current of the
+                    # degree_receiver_x_y neuron was larger than its threshold.
+                    if previous_u > sample_degree_receiver_neuron.vth:
+
+                        # The winning degree_receiver_x_y neuron has fired in the previous round.
+                        # The excitatory selector neuron still sends one last spike to the other
+                        # degree_receiver_x_z neurons (and to x_y). After that no more spikes
+                        # come in. Store that a winner is found
+                        found_winner[node] = True
+                        # Store the timestep, such that for the other degree_receivers_x_z,
+                        # the inhibition of the selector neuron can be processed as a_in=0
+                        # AFTER t=this time step.
+                        found_winner_at_t[node] = t
+                        # The selector neuron still sends 1 last spike to degree_receiver_x_y.
+                        return 1
+                    else:
+                        # If degree_receiver_x_y neurons have not yet reached vth, they
+                        # will always get an excitatory spike from selector neuron.
+                        return 1
+                elif found_winner_at_t[node] < t:
+                    # The selector neuron still sends 1 last spike to all other degree_receiver_x_z
+                    # neurons at time found_winner_at_t, after time found_winner_at_t, no more
+                    # spikes come in, so a_in from the selector neuron will be 0 for degree_receiver_x_..
+                    return 0
+                else:
+                    # A winner has not yet been found, or found after the first WTA circuit winner
+                    # was found (after t=found_winner_at_t[node]), so the degree_receiver_x_,.. will
+                    # still receive an input signal from the selector neuron.
                     return 1
-                if verbose:
-                    print(f"previous_u={previous_u}")
-                    print(f"previous_v={previous_v}")
-                    print(
-                        f"sample_degree_receiver_neuron.vth={sample_degree_receiver_neuron.vth}"
-                    )
-                    print(f"selector_to_deg={1}")
-                return 1
+    # This is not the neuron who's input spikes from selector_x are computed, so no input
+    # signals will be returned.
     return 0
 
 

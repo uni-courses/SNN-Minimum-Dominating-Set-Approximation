@@ -130,7 +130,6 @@ class Test_degree_receiver(unittest.TestCase):
             wta_circuit = get_wta_circuit_from_neuron_name(degree_receiver_neuron_name)
             # get degree_receiver_x_get_wta_circuit_from_neuron_namey
             y = get_y_from_degree_receiver_x_y(degree_receiver_neuron_name)
-            # print(f"degree_receiver_{wta_circuit}_{y}")
 
             # Perform test on degree_receiver neuron behaviour.
             (
@@ -160,6 +159,8 @@ class Test_degree_receiver(unittest.TestCase):
         print(f"x={wta_circuit},y={y}")
         a_in = get_a_in_for_degree_receiver(
             self.G,
+            self.found_winner,
+            self.found_winner_at_t,
             wta_circuit,
             previous_u,
             previous_v,
@@ -170,15 +171,12 @@ class Test_degree_receiver(unittest.TestCase):
             y,
         )
 
-        # The current stays constant indefinitely.
         # u[t=x+1]=u[t=x]*(1-du)+a_in
-        # TODO: Include the u(t-1)
         self.assertEqual(
             degree_receiver_neuron.u.get(),
             previous_u * (1 - degree_receiver_neuron.du.get()) + a_in,
         )
-        # The voltage stays constant indefinitely because the current
-        # stays constant indefinitely whilst cancelling out the bias.
+
         # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
         if sample_neuron.bias + degree_receiver_neuron.u.get() > 1:
             expected_voltage = 0  # It spikes
