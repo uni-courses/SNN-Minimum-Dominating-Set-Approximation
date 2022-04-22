@@ -268,8 +268,12 @@ class Test_selector(unittest.TestCase):
     ):
         self.assertTrue(True)
 
-        # Loop over WTA circuits (it's incoming).
+        # TODO: change to previous_a_in like previous_u and do initialisation in test object initialisation.
+        a_in = 0
 
+        # TODO: Compute expected selector neuron properties based on a_in previous.
+
+        # Compute what the a_in for selector_x will be in next round(/time this function is called).
         # Get degree_receiver neurons from wta circuits.
         wta_degree_receiver_neurons = get_degree_reciever_neurons_per_wta_circuit(
             sorted_degree_receiver_neurons, self.neuron_dict, wta_circuit
@@ -279,7 +283,17 @@ class Test_selector(unittest.TestCase):
             print(
                 f"wta_degree_receiver_neuron={self.neuron_dict[wta_degree_receiver_neuron]}"
             )
-            # Determine if a neuron has spiked
-            # If yes: determine a_in of selector neuron.
-            # If no: determine a_in of selector neuron.
-        return None, None
+
+            # Determine if degree_receiver neuron has spiked.
+            if (
+                wta_degree_receiver_neuron.bias + wta_degree_receiver_neuron.u.get()
+                > wta_degree_receiver_neuron.vth
+            ):
+                # degree_receiver neuron has spiked, so selector neuron get's -5 as input in next round.
+                # TODO: change to previous_a_in like previous_u
+                a_in = a_in - 5
+            else:
+                # TODO: change to previous_a_in like previous_u
+                a_in = a_in  # no spike
+
+        return None, None  # TODO: return a_in
