@@ -4,6 +4,7 @@ import random
 import networkx as nx
 
 from src.helper_snns import print_neuron_properties
+from test.contains_neurons_of_type_x import get_n_neurons
 
 
 def list_of_all_combinations_of_set(some_set):
@@ -473,3 +474,20 @@ def fill_dictionary(neuron_dict, neurons, previous_us, previous_vs):
         previous_us[degree_receiver_neuron_name] = 0
         previous_vs[degree_receiver_neuron_name] = 0
     return previous_us, previous_vs
+
+
+def get_degree_reciever_neurons_per_wta_circuit(
+    degree_receiver_neurons, neuron_dict, wta_circuit
+):
+    wta_degree_receiver_neurons = []
+    for degree_receiver_neuron in degree_receiver_neurons:
+        neuron_name = neuron_dict[degree_receiver_neuron]
+        if neuron_name[:16] == "degree_receiver_":
+            parts = neuron_name.split("_")
+            # get wta circuit of neuron.
+            node_index = int(parts[2])
+            if wta_circuit == node_index:
+                wta_degree_receiver_neurons.append(degree_receiver_neuron)
+        else:
+            raise Exception("Expected only degree_receiver neurons.")
+    return wta_degree_receiver_neurons

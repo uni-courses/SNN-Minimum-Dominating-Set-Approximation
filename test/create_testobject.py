@@ -1,13 +1,19 @@
 import networkx as nx
 from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
 
-from src.helper import generate_list_of_n_random_nrs
+from src.helper import (
+    fill_dictionary,
+    generate_list_of_n_random_nrs,
+    get_expected_amount_of_degree_receiver_neurons,
+    sort_neurons,
+)
 from src.helper_network_structure import (
     get_degree_graph_with_separate_wta_circuits,
     plot_coordinated_graph,
     plot_unstructured_graph,
 )
 from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
+from test.contains_neurons_of_type_x import get_n_neurons
 
 
 def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False):
@@ -93,6 +99,71 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     test_object.found_winner_at_t = [2] * len(test_object.G)
 
     return test_object
+
+
+def get_degree_receiver_neurons(test_object, sorted=True):
+    degree_receiver_neurons = get_n_neurons(
+        get_expected_amount_of_degree_receiver_neurons(test_object.G),
+        test_object.neurons,
+        test_object.neuron_dict,
+        "degree_receiver_",
+        test_object.sample_degree_receiver_neuron,
+    )
+
+    # Sort the neurons by default before returning them.
+    if sorted:
+        sorted_degree_receiver_neurons = sort_neurons(
+            degree_receiver_neurons, test_object.neuron_dict
+        )
+
+    # Get the first neuron in the SNN to start the simulation
+    starter_neuron = degree_receiver_neurons[0]
+    return test_object, sorted_degree_receiver_neurons, starter_neuron
+
+
+def get_selector_neurons(test_object, sorted=True):
+    # TODO: create stripped down function that just gets the selector neurons.
+    selector_neurons = get_n_neurons(
+        len(test_object.G),
+        test_object.neurons,
+        test_object.neuron_dict,
+        "selector_",
+        test_object.sample_selector_neuron,
+    )
+
+    # Sort the neurons by default before returning them.
+    if sorted:
+        sorted_selector_neurons = sort_neurons(
+            selector_neurons, test_object.neuron_dict
+        )
+
+    # Get the first neuron in the SNN to start the simulation
+    starter_neuron = selector_neurons[0]
+    return test_object, sorted_selector_neurons, starter_neuron
+
+
+def get_degree_receiver_previous_property_dicts(test_object, degree_receiver_neurons):
+    degree_receiver_previous_us = {}
+    degree_receiver_previous_vs = {}
+    degree_receiver_previous_us, degree_receiver_previous_vs = fill_dictionary(
+        test_object.neuron_dict,
+        degree_receiver_neurons,
+        degree_receiver_previous_us,
+        degree_receiver_previous_vs,
+    )
+    return degree_receiver_previous_us, degree_receiver_previous_vs
+
+
+def get_selector_previous_property_dicts(test_object, selector_neurons):
+    selector_previous_us = {}
+    selector_previous_vs = {}
+    selector_previous_us, selector_previous_vs = fill_dictionary(
+        test_object.neuron_dict,
+        selector_neurons,
+        selector_previous_us,
+        selector_previous_vs,
+    )
+    return selector_previous_us, selector_previous_vs
 
 
 class Selector_neuron:
