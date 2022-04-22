@@ -158,7 +158,6 @@ class Test_degree_receiver(unittest.TestCase):
         y,
     ):
         """Assert the values of the degree_receiver_neuron neuron on t=4."""
-        print(f"x={wta_circuit},y={y}")
         a_in = get_a_in_for_degree_receiver(
             self.G,
             self.found_winner,

@@ -93,6 +93,7 @@ class Test_selector(unittest.TestCase):
             self, sorted_degree_receiver_neurons
         )
         (
+            selector_previous_a_in,
             selector_previous_us,
             selector_previous_vs,
         ) = get_selector_previous_property_dicts(self, sorted_selector_neurons)
@@ -101,7 +102,7 @@ class Test_selector(unittest.TestCase):
         # degree_receiver_previous_vs = [0] * len(degree_receiver_neurons)
 
         # Simulate SNN and assert values inbetween timesteps.
-        for t in range(1, 25):
+        for t in range(1, 250):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
@@ -112,6 +113,7 @@ class Test_selector(unittest.TestCase):
                 degree_receiver_previous_us,
                 degree_receiver_previous_vs,
                 self.sample_degree_receiver_neuron,
+                selector_previous_a_in,
                 selector_previous_us,
                 selector_previous_vs,
                 sorted_degree_receiver_neurons,
@@ -121,7 +123,7 @@ class Test_selector(unittest.TestCase):
             )
         # Terminate Loihi simulation.
         starter_neuron.stop()
-        raise Exception("Stop")
+        # raise Exception("Stop")
         return sorted_degree_receiver_neurons
 
     def verify_neuron_behaviour(
@@ -129,6 +131,7 @@ class Test_selector(unittest.TestCase):
         degree_receiver_previous_us,
         degree_receiver_previous_vs,
         sample_neuron,
+        selector_previous_a_in,
         selector_previous_us,
         selector_previous_vs,
         sorted_degree_receiver_neurons,
@@ -142,6 +145,9 @@ class Test_selector(unittest.TestCase):
         #
         print_neurons_properties(
             self.neuron_dict, sorted_degree_receiver_neurons, t, descriptions=[]
+        )
+        print_neurons_properties(
+            self.neuron_dict, sorted_selector_neurons, t, descriptions=[]
         )
         # Run test on each degree_receiver neuron in the SNN.
         for degree_receiver_neuron in sorted_degree_receiver_neurons:
@@ -167,6 +173,7 @@ class Test_selector(unittest.TestCase):
             )
         self.run_test_on_selector_neurons(
             self.sample_selector_neuron,
+            selector_previous_a_in,
             selector_previous_us,
             selector_previous_vs,
             sorted_degree_receiver_neurons,
@@ -177,6 +184,7 @@ class Test_selector(unittest.TestCase):
     def run_test_on_selector_neurons(
         self,
         sample_selector_neuron,
+        selector_previous_a_in,
         selector_previous_us,
         selector_previous_vs,
         sorted_degree_receiver_neurons,
@@ -189,9 +197,11 @@ class Test_selector(unittest.TestCase):
             wta_circuit = int(selector_neuron_name[9:])
             print(f"wta_circuit={wta_circuit}")
             (
+                selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],
                 selector_previous_vs[selector_neuron_name],
             ) = self.assert_selector_neuron_behaviour(
+                selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],
                 selector_previous_vs[selector_neuron_name],
                 sample_selector_neuron,
@@ -212,7 +222,6 @@ class Test_selector(unittest.TestCase):
         y,
     ):
         """Assert the values of the degree_receiver_neuron neuron on t=4."""
-        print(f"x={wta_circuit},y={y}")
         a_in = get_a_in_for_degree_receiver(
             self.G,
             self.found_winner,
@@ -258,6 +267,7 @@ class Test_selector(unittest.TestCase):
 
     def assert_selector_neuron_behaviour(
         self,
+        previous_a_in,
         previous_u,
         previous_v,
         sample_selector_neuron,
@@ -268,10 +278,10 @@ class Test_selector(unittest.TestCase):
     ):
         self.assertTrue(True)
 
-        # TODO: change to previous_a_in like previous_u and do initialisation in test object initialisation.
-        a_in = 0
-
-        # TODO: Compute expected selector neuron properties based on a_in previous.
+        # Compute expected selector neuron properties based on a_in previous.
+        perform_selector_asserts(
+            self, previous_a_in, previous_u, sample_selector_neuron, selector_neuron
+        )
 
         # Compute what the a_in for selector_x will be in next round(/time this function is called).
         # Get degree_receiver neurons from wta circuits.
@@ -280,20 +290,40 @@ class Test_selector(unittest.TestCase):
         )
         # Loop over relevant degree_receiver neurons
         for wta_degree_receiver_neuron in wta_degree_receiver_neurons:
-            print(
-                f"wta_degree_receiver_neuron={self.neuron_dict[wta_degree_receiver_neuron]}"
-            )
 
             # Determine if degree_receiver neuron has spiked.
             if (
-                wta_degree_receiver_neuron.bias + wta_degree_receiver_neuron.u.get()
-                > wta_degree_receiver_neuron.vth
+                wta_degree_receiver_neuron.bias.get()
+                + wta_degree_receiver_neuron.u.get()
+                > wta_degree_receiver_neuron.vth.get()
             ):
                 # degree_receiver neuron has spiked, so selector neuron get's -5 as input in next round.
-                # TODO: change to previous_a_in like previous_u
-                a_in = a_in - 5
+                previous_a_in = previous_a_in - 5
+                print(f"SPIKE, previous_a_in={previous_a_in}")
             else:
-                # TODO: change to previous_a_in like previous_u
-                a_in = a_in  # no spike
+                previous_a_in = previous_a_in  # no spike
 
-        return None, None  # TODO: return a_in
+        return previous_a_in, previous_u, previous_v
+
+
+def perform_selector_asserts(
+    self, previous_a_in, previouw_u, sample_neuron, selector_neuron
+):
+    print(f"previous_a_in={previous_a_in}")
+    # u[t=x+1]=u[t=x]*(1-du)+a_in
+    self.assertEqual(
+        selector_neuron.u.get(),
+        previouw_u * (1 - selector_neuron.du.get()) + previous_a_in,
+    )
+
+    # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
+    if sample_neuron.bias + selector_neuron.u.get() > 1:
+        expected_voltage = 0  # It spikes
+    else:
+        expected_voltage = sample_neuron.bias + selector_neuron.u.get()  # no spike
+    self.assertEqual(selector_neuron.v.get(), expected_voltage)
+
+    self.assertEqual(selector_neuron.du.get(), sample_neuron.du)  # Custom Value.
+    self.assertEqual(selector_neuron.dv.get(), sample_neuron.dv)  # Custom value.
+    self.assertEqual(selector_neuron.bias.get(), sample_neuron.bias)  # Custom value.
+    self.assertEqual(selector_neuron.vth.get(), sample_neuron.vth)  # Default value.

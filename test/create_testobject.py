@@ -155,15 +155,21 @@ def get_degree_receiver_previous_property_dicts(test_object, degree_receiver_neu
 
 
 def get_selector_previous_property_dicts(test_object, selector_neurons):
+    selector_previous_a_in = {}
     selector_previous_us = {}
     selector_previous_vs = {}
-    selector_previous_us, selector_previous_vs = fill_dictionary(
+    (
+        selector_previous_a_in,
+        selector_previous_us,
+        selector_previous_vs,
+    ) = fill_dictionary(
         test_object.neuron_dict,
         selector_neurons,
         selector_previous_us,
         selector_previous_vs,
+        selector_previous_a_in,
     )
-    return selector_previous_us, selector_previous_vs
+    return selector_previous_a_in, selector_previous_us, selector_previous_vs
 
 
 class Selector_neuron:

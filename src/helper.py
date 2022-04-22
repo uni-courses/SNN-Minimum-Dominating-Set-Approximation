@@ -467,12 +467,19 @@ def sort_neurons(neurons, neuron_dict):
     return sorted_neurons
 
 
-def fill_dictionary(neuron_dict, neurons, previous_us, previous_vs):
+def fill_dictionary(
+    neuron_dict, neurons, previous_us, previous_vs, previous_selector=None
+):
     sorted_neurons = sort_neurons(neurons, neuron_dict)
     for neuron in sorted_neurons:
-        degree_receiver_neuron_name = neuron_dict[neuron]
-        previous_us[degree_receiver_neuron_name] = 0
-        previous_vs[degree_receiver_neuron_name] = 0
+        neuron_name = neuron_dict[neuron]
+        previous_us[neuron_name] = 0
+        previous_vs[neuron_name] = 0
+        if not previous_selector is None:
+            previous_selector[neuron_name] = 0
+
+    if not previous_selector is None:
+        return previous_us, previous_vs, previous_selector
     return previous_us, previous_vs
 
 
