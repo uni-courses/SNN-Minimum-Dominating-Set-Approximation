@@ -97,8 +97,8 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
             id=node,
             du=1,
             dv=1,
-            bias=5,  # Always spike unless inhibitied by u[t]
-            vth=4,
+            bias=0,
+            vth=0,
             pos=(float(1.5), float(node)),
         )
 

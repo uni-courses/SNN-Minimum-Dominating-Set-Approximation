@@ -11,7 +11,7 @@ from src.helper import (
 )
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
-    neurons_of_expected_type_are_all_present_in_snn,
+    assert_neurons_of_expected_type_are_all_present_in_snn,
 )
 
 
@@ -36,7 +36,7 @@ class Test_rand(unittest.TestCase):
         self,
     ):
         """Tests whether the degree_receiver neurons are all present."""
-        rand_neurons = neurons_of_expected_type_are_all_present_in_snn(
+        rand_neurons = assert_neurons_of_expected_type_are_all_present_in_snn(
             self,
             len(self.G),
             self.G,
@@ -121,7 +121,6 @@ class Test_rand(unittest.TestCase):
             rand_neuron_name = self.neuron_dict[rand_neuron]
             wta_circuit = get_wta_circuit_from_neuron_name(rand_neuron_name)
             print(f"wta_circuit={wta_circuit}")
-
 
             # Perform test on rand neuron behaviour.
             (

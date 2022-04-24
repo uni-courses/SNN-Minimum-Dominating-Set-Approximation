@@ -1,13 +1,19 @@
 import networkx as nx
 from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
 
-from src.helper import generate_list_of_n_random_nrs
+from src.helper import (
+    fill_dictionary,
+    generate_list_of_n_random_nrs,
+    get_expected_amount_of_degree_receiver_neurons,
+    sort_neurons,
+)
 from src.helper_network_structure import (
     get_degree_graph_with_separate_wta_circuits,
     plot_coordinated_graph,
     plot_unstructured_graph,
 )
 from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
+from test.contains_neurons_of_type_x import get_n_neurons
 
 
 def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False):
@@ -17,6 +23,7 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     test_object.sample_spike_once_neuron = Spike_once_neuron()
     test_object.sample_rand_neuron = Rand_neuron()
     test_object.sample_degree_receiver_neuron = Degree_receiver()
+    test_object.sample_counter_neuron = Counter_neuron()
 
     ## Specify the expected synaptic weights
     # TODO: Specify per synapse group. (except for the random synapses)
@@ -24,8 +31,8 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
 
     ## Generate the graph on which the algorithm is ran.
     #  Generate a fully connected graph with n=4.
-    test_object.G = nx.complete_graph(4)
-    # test_object.G = create_manual_graph_with_4_nodes()
+    # test_object.G = nx.complete_graph(4)
+    test_object.G = create_manual_graph_with_4_nodes()
     if plot_input_graph:
         plot_unstructured_graph(test_object.G)
 
@@ -95,6 +102,114 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     return test_object
 
 
+def get_degree_receiver_neurons(test_object, sorted=True):
+    degree_receiver_neurons = get_n_neurons(
+        get_expected_amount_of_degree_receiver_neurons(test_object.G),
+        test_object.neurons,
+        test_object.neuron_dict,
+        "degree_receiver_",
+        test_object.sample_degree_receiver_neuron,
+    )
+
+    # Sort the neurons by default before returning them.
+    if sorted:
+        sorted_degree_receiver_neurons = sort_neurons(
+            degree_receiver_neurons, test_object.neuron_dict
+        )
+
+    # Get the first neuron in the SNN to start the simulation
+    starter_neuron = degree_receiver_neurons[0]
+    return test_object, sorted_degree_receiver_neurons, starter_neuron
+
+
+def get_selector_neurons(test_object, sorted=True):
+    # TODO: create stripped down function that just gets the selector neurons.
+    selector_neurons = get_n_neurons(
+        len(test_object.G),
+        test_object.neurons,
+        test_object.neuron_dict,
+        "selector_",
+        test_object.sample_selector_neuron,
+    )
+
+    # Sort the neurons by default before returning them.
+    if sorted:
+        sorted_selector_neurons = sort_neurons(
+            selector_neurons, test_object.neuron_dict
+        )
+
+    # Get the first neuron in the SNN to start the simulation
+    starter_neuron = selector_neurons[0]
+    return test_object, sorted_selector_neurons, starter_neuron
+
+
+def get_counter_neurons(test_object, sorted=True):
+    # TODO: create stripped down function that just gets the counter neurons.
+    counter_neurons = get_n_neurons(
+        len(test_object.G),
+        test_object.neurons,
+        test_object.neuron_dict,
+        "counter_",
+        test_object.sample_counter_neuron,
+    )
+
+    # Sort the neurons by default before returning them.
+    if sorted:
+        sorted_counter_neurons = sort_neurons(counter_neurons, test_object.neuron_dict)
+
+    # Get the first neuron in the SNN to start the simulation
+    starter_neuron = counter_neurons[0]
+    return test_object, sorted_counter_neurons, starter_neuron
+
+
+def get_degree_receiver_previous_property_dicts(test_object, degree_receiver_neurons):
+    degree_receiver_previous_us = {}
+    degree_receiver_previous_vs = {}
+    degree_receiver_previous_us, degree_receiver_previous_vs = fill_dictionary(
+        test_object.neuron_dict,
+        degree_receiver_neurons,
+        degree_receiver_previous_us,
+        degree_receiver_previous_vs,
+    )
+    return degree_receiver_previous_us, degree_receiver_previous_vs
+
+
+def get_selector_previous_property_dicts(test_object, selector_neurons):
+    selector_previous_a_in = {}
+    selector_previous_us = {}
+    selector_previous_vs = {}
+    (
+        selector_previous_a_in,
+        selector_previous_us,
+        selector_previous_vs,
+    ) = fill_dictionary(
+        test_object.neuron_dict,
+        selector_neurons,
+        selector_previous_us,
+        selector_previous_vs,
+        selector_previous_a_in,
+    )
+    return selector_previous_a_in, selector_previous_us, selector_previous_vs
+
+
+def get_counter_previous_property_dicts(test_object, counter_neurons):
+    counter_previous_a_in = {}
+    counter_previous_us = {}
+    counter_previous_vs = {}
+    (
+        counter_previous_a_in,
+        counter_previous_us,
+        counter_previous_vs,
+    ) = fill_dictionary(
+        test_object.neuron_dict,
+        counter_neurons,
+        counter_previous_us,
+        counter_previous_vs,
+        counter_previous_a_in,
+    )
+    return counter_previous_a_in, counter_previous_us, counter_previous_vs
+
+
 class Selector_neuron:
     """Creates expected properties of the selector neuron."""
 
@@ -118,14 +233,25 @@ class Spike_once_neuron:
 
 
 class Rand_neuron:
-    """Creates expected properties of the spike_once neuron."""
+    """Creates expected properties of the rand neuron."""
 
     def __init__(self):
-        self.first_name = "spike_once_0"
+        self.first_name = "rand_0"
         self.bias = 2
         self.du = 0
         self.dv = 0
         self.vth = 1
+
+
+class Counter_neuron:
+    """Creates expected properties of the counter neuron."""
+
+    def __init__(self):
+        self.first_name = "counter_0"
+        self.bias = 0
+        self.du = 1
+        self.dv = 1
+        self.vth = 0
 
 
 class Degree_receiver:

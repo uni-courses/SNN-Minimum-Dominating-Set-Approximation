@@ -4,6 +4,7 @@ import random
 import networkx as nx
 
 from src.helper_snns import print_neuron_properties
+from test.contains_neurons_of_type_x import get_n_neurons
 
 
 def list_of_all_combinations_of_set(some_set):
@@ -71,12 +72,12 @@ def get_a_in_with_random_neurons(G, neighbour, wta_circuit, rand_nrs, multiplier
     # Compute the amount of neighbours the node that is represented by
     # wta_circuit.
     degree = G.degree(wta_circuit)
-    print(f"degree={degree}")
-    print(f"(wta_circuit={wta_circuit}")
+    # print(f"degree={degree}")
+    # print(f"(wta_circuit={wta_circuit}")
 
     # Compute random value of relevant node.
     rand_val = rand_nrs[neighbour]
-    print(f"rand_val={rand_val}")
+    # print(f"rand_val={rand_val}")
 
     a_in = degree * multiplier + rand_val
     return a_in
@@ -96,18 +97,19 @@ def get_a_in_with_random_neurons_and_excitation(
     # Compute the amount of neighbours the node that is represented by
     # wta_circuit.
     degree = G.degree(wta_circuit)
-    print(f"degree={degree}")
-    print(f"(wta_circuit={wta_circuit}")
+    # print(f"degree={degree}")
+    # print(f"(wta_circuit={wta_circuit}")
 
     # Compute random value of relevant node.
     rand_val = rand_nrs[neighbour]
-    print(f"rand_val={rand_val}")
+    # print(f"rand_val={rand_val}")
 
     a_in = degree * multiplier + rand_val + t - 1
     return a_in
 
 
 def get_node_and_neighbour_from_degree(get_degree_neuron):
+    print(f"get_degree_neuron={get_degree_neuron}")
     parts = get_degree_neuron.split("_")
     node_index = int(parts[2])
     neighbour_index = int(parts[3])
@@ -166,6 +168,9 @@ def get_wta_circuit_from_neuron_name(neuron_name):
     elif neuron_name[:5] == "rand_":
         node_index = int(parts[1])
     elif neuron_name[:9] == "selector_":
+        parts = neuron_name.split("_")
+        node_index = int(parts[1])
+    elif neuron_name[:8] == "counter_":
         parts = neuron_name.split("_")
         node_index = int(parts[1])
     elif neuron_name[:16] == "degree_receiver_":
@@ -346,7 +351,7 @@ def get_a_in_for_degree_receiver(
             # f"selector_{circuit}", f"degree_receiver_{circuit}_{neighbour_b}",
             if t == 22 and x == 3:
                 print(f"before a_in={a_in}")
-            a_in = a_in + add_selector_to_degree_receiver(
+            a_in = a_in + get_a_in_from_selector_into_degree_receiver(
                 found_winner,
                 found_winner_at_t,
                 t,
@@ -397,7 +402,7 @@ def add_rand_to_degree_receiver(
     return 0
 
 
-def add_selector_to_degree_receiver(
+def get_a_in_from_selector_into_degree_receiver(
     found_winner,
     found_winner_at_t,
     t,
@@ -466,10 +471,50 @@ def sort_neurons(neurons, neuron_dict):
     return sorted_neurons
 
 
-def fill_dictionary(neuron_dict, neurons, previous_us, previous_vs):
+def fill_dictionary(
+    neuron_dict, neurons, previous_us, previous_vs, previous_selector=None
+):
     sorted_neurons = sort_neurons(neurons, neuron_dict)
     for neuron in sorted_neurons:
-        degree_receiver_neuron_name = neuron_dict[neuron]
-        previous_us[degree_receiver_neuron_name] = 0
-        previous_vs[degree_receiver_neuron_name] = 0
+        neuron_name = neuron_dict[neuron]
+        previous_us[neuron_name] = 0
+        previous_vs[neuron_name] = 0
+        if not previous_selector is None:
+            previous_selector[neuron_name] = 0
+
+    if not previous_selector is None:
+        return previous_us, previous_vs, previous_selector
     return previous_us, previous_vs
+
+
+def get_degree_reciever_neurons_per_wta_circuit(
+    degree_receiver_neurons, neuron_dict, wta_circuit
+):
+    wta_degree_receiver_neurons = []
+    for degree_receiver_neuron in degree_receiver_neurons:
+        neuron_name = neuron_dict[degree_receiver_neuron]
+        if neuron_name[:16] == "degree_receiver_":
+            parts = neuron_name.split("_")
+            # get wta circuit of neuron.
+            node_index = int(parts[2])
+            if wta_circuit == node_index:
+                wta_degree_receiver_neurons.append(degree_receiver_neuron)
+        else:
+            raise Exception("Expected only degree_receiver neurons.")
+    return wta_degree_receiver_neurons
+
+
+def degree_receiver_x_y_is_connected_to_counter_z(
+    counter_neuron, degree_receiver_neuron, G, neuron_dict
+):
+    z = get_wta_circuit_from_neuron_name(neuron_dict[counter_neuron])
+    x, y = get_node_and_neighbour_from_degree(neuron_dict[degree_receiver_neuron])
+    for circuit in G.nodes:
+        for neighbour_b in nx.all_neighbors(G, circuit):
+            if x == circuit and y == neighbour_b and neighbour_b == z:
+                if circuit != neighbour_b:
+                    return True
+                else:
+                    return False
+    # raise Exception("Would have expected to find x and y.")
+    return False
