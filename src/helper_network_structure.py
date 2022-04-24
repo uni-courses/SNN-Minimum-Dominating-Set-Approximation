@@ -36,6 +36,18 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
     to each of the degree_receiver that represents a neighbour of node A.
     """
     get_degree = nx.DiGraph()
+
+    # Create a node to make the graph connected. (Otherwise, recurrent snn builder can not span/cross the network.)
+    get_degree.add_node(
+        f"connecting_node",
+        id=len(G.nodes),
+        du=0,
+        dv=0,
+        bias=0,
+        vth=1,
+        pos=(float(-0.25), float(0.25)),
+    )
+
     # First create all the nodes in the get_degree graph.
     for node in G.nodes:
 
@@ -100,6 +112,18 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
             bias=0,
             vth=0,
             pos=(float(1.5), float(node)),
+        )
+
+    # Ensure SNN graph is connected(Otherwise, recurrent snn builder can not span/cross the network.)
+    for circuit in G.nodes:
+        get_degree.add_edges_from(
+            [
+                (
+                    f"connecting_node",
+                    f"spike_once_{circuit}",
+                )
+            ],
+            weight=0,
         )
 
     # Then create all edges between the nodes.

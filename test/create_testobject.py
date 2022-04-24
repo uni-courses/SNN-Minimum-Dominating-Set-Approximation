@@ -16,7 +16,7 @@ from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
 from test.contains_neurons_of_type_x import get_n_neurons
 
 
-def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False):
+def create_test_object(test_object, G, plot_input_graph=False, plot_snn_graph=False):
     ## Specify the expected neuron properties.
     # TODO: change this to make it a function of
     test_object.sample_selector_neuron = Selector_neuron()
@@ -31,8 +31,8 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
 
     ## Generate the graph on which the algorithm is ran.
     #  Generate a fully connected graph with n=4.
-    # test_object.G = G
-    test_object.G = nx.complete_graph(4)
+    test_object.G = G
+    # test_object.G = nx.complete_graph(4)
     # test_object.G = create_manual_graph_with_4_nodes()
     if plot_input_graph:
         plot_unstructured_graph(test_object.G)
@@ -98,6 +98,8 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     ) = convert_networkx_graph_to_snn_with_one_neuron(
         test_object.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
     )
+    for key, value in test_object.neuron_dict.items():
+        print(key, " : ", value)
 
     # Specify boolean array that stores whether a winner has been found in WTA
     # circuits.

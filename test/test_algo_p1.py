@@ -16,6 +16,7 @@ from src.helper import (
     get_y_from_degree_receiver_x_y,
     print_neurons_properties,
 )
+from src.neumann import partial_alipour
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
     assert_neurons_of_expected_type_are_all_present_in_snn,
@@ -49,24 +50,32 @@ class Test_counter(unittest.TestCase):
 
         # Get list of planer triangle free graphs.
         graphs = []
-        for size in range(10, 45, 5):
-            graphs.append(create_triangle_free_planar_graph(size, 0.6, 42,False))
+        for size in range(5, 45, 5):
+            graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
 
         # for G in get_graphs():
-        for G in [graphs]:
+        for G in graphs:
 
             # Initialise paramers used for testing.
-            test_object = create_test_object(self)
+            test_object = create_test_object(self, G)
+            # test_object = create_test_object(self,G,True,True)
 
             # Run default tests on neurons
             # and get counted degree from neurons after inhibition time.
-            test_object.run_test_degree_receiver_neurons_over_time()
+            counter_neurons = test_object.run_test_degree_receiver_neurons_over_time(
+                extraction_time=test_object.inhibition + 1
+            )
 
             # Compute degree count using Alipour algorithm
+            G_alipour = partial_alipour(G, test_object.rand_nrs)
 
             # Compare the counts per node and assert they are equal.
+            for node in G.nodes:
+                test_object.assertEqual(
+                    G_alipour.nodes[node]["marks"], counter_neurons[node].u.get()
+                )
 
-    def run_test_degree_receiver_neurons_over_time(test_object):
+    def run_test_degree_receiver_neurons_over_time(test_object, extraction_time=None):
         """Verifies the neuron properties over time."""
 
         # Collect the neurons of a particular type and get a starter neuron for
@@ -132,10 +141,15 @@ class Test_counter(unittest.TestCase):
                 starter_neuron,
                 t,
             )
+            if not extraction_time is None and t == extraction_time:
+                extracted_neurons = sorted_counter_neurons
         # Terminate Loihi simulation.
         starter_neuron.stop()
         # raise Exception("Stop")
-        return sorted_degree_receiver_neurons
+        if not extraction_time:
+            return extracted_neurons
+        else:
+            return sorted_counter_neurons
 
     def verify_neuron_behaviour(
         test_object,

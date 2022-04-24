@@ -82,3 +82,23 @@ def compute_mtds(input_graph, m=0):
             dset.append(n[0])
 
     return dset
+
+
+def partial_alipour(G, rand_nrs):
+    """
+    This code implements the alipour algorithm as described in the paper https://doi.org/10.48550/arXiv.2012.04883
+    The algorithm is implemented on a single computer instead of an actual network of nodes.
+    """
+    for node in G.nodes:
+        G.nodes[node]["marks"] = 0
+        G.nodes[node]["random_number"] = rand_nrs[node]
+        G.nodes[node]["weight"] = G.degree(node) + G.nodes[node]["random_number"]
+
+    for node in G.nodes:
+        max_weight = max(G.nodes[n]["weight"] for n in nx.all_neighbors(G, node))
+        for n in nx.all_neighbors(G, node):
+            if (
+                G.nodes[n]["weight"] == max_weight
+            ):  # should all max weight neurons be marked or only one of them?
+                G.nodes[n]["marks"] += 1
+    return G

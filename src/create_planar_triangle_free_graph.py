@@ -150,7 +150,10 @@ def plot_basic_graph(G):
         "with_labels": True,
         "node_color": "white",
         "edgecolors": "blue",
+        # "pos": nx.circular_layout,
     }
-    nx.draw_networkx(G, **options)
+    # call_graph: nx.Graph
+    pos = nx.circular_layout(G)
+    nx.draw_networkx(G, pos=pos, **options)
     plt.show()
     plt.clf()
