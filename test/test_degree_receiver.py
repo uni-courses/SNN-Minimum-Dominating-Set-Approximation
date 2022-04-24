@@ -34,8 +34,8 @@ class Test_degree_receiver(unittest.TestCase):
         super(Test_degree_receiver, self).__init__(*args, **kwargs)
 
         # Moved into separate file to increase overview in this test file.
-        # self = create_test_object(self)
-        self = create_test_object(self, True, True)
+        self = create_test_object(self)
+        # self = create_test_object(self, True, True)
 
     def test_degree_receiver_neuron_presence(
         self,

@@ -231,6 +231,7 @@ class Test_selector(unittest.TestCase):
             previous_u,
             previous_v,
             self.rand_nrs,
+            self.rand_ceil * self.delta + 1,
             self.sample_degree_receiver_neuron,
             t,
             wta_circuit,
