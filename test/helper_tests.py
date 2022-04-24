@@ -125,3 +125,29 @@ def compute_expected_number_of_degree_receivers(G):
             if node != neighbour:
                 degree_receiver_count = degree_receiver_count + 1
     return degree_receiver_count
+
+
+def perform_generic_neuron_property_asserts(
+    test_object, previous_a_in, previouw_u, sample_neuron, tested_neuron
+):
+    # u[t=x+1]=u[t=x]*(1-du)+a_in
+    test_object.assertEqual(
+        tested_neuron.u.get(),
+        previouw_u * (1 - tested_neuron.du.get()) + previous_a_in,
+    )
+
+    # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
+    if sample_neuron.bias + tested_neuron.u.get() > sample_neuron.vth:
+        expected_voltage = 0  # It spikes
+    else:
+        expected_voltage = sample_neuron.bias + tested_neuron.u.get()  # no spike
+    test_object.assertEqual(tested_neuron.v.get(), expected_voltage)
+
+    test_object.assertEqual(tested_neuron.du.get(), sample_neuron.du)  # Custom Value.
+    test_object.assertEqual(tested_neuron.dv.get(), sample_neuron.dv)  # Custom value.
+    test_object.assertEqual(
+        tested_neuron.bias.get(), sample_neuron.bias
+    )  # Custom value.
+    test_object.assertEqual(
+        tested_neuron.vth.get(), sample_neuron.vth
+    )  # Default value.
