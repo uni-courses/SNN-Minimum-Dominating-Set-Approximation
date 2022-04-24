@@ -62,18 +62,28 @@ class Test_counter(unittest.TestCase):
 
             # Run default tests on neurons
             # and get counted degree from neurons after inhibition time.
-            counter_neurons = test_object.run_test_degree_receiver_neurons_over_time(
+            (
+                counter_neurons,
+                starter_neuron,
+            ) = test_object.run_test_degree_receiver_neurons_over_time(
                 extraction_time=test_object.inhibition + 1
             )
 
             # Compute degree count using Alipour algorithm
-            G_alipour = partial_alipour(G, test_object.rand_nrs)
+            G_alipour = partial_alipour(G, test_object.rand_ceil, test_object.rand_nrs)
 
             # Compare the counts per node and assert they are equal.
             for node in G.nodes:
+                print(f"node={node}")
+                print(
+                    f"counter_neuron={test_object.neuron_dict[counter_neurons[node]]}"
+                )
+
                 test_object.assertEqual(
                     G_alipour.nodes[node]["marks"], counter_neurons[node].u.get()
                 )
+            # Terminate Loihi simulation.
+            starter_neuron.stop()
 
     def run_test_degree_receiver_neurons_over_time(test_object, extraction_time=None):
         """Verifies the neuron properties over time."""
@@ -143,13 +153,12 @@ class Test_counter(unittest.TestCase):
             )
             if not extraction_time is None and t == extraction_time:
                 extracted_neurons = sorted_counter_neurons
-        # Terminate Loihi simulation.
-        starter_neuron.stop()
+
         # raise Exception("Stop")
         if not extraction_time:
-            return extracted_neurons
+            return extracted_neurons, starter_neuron
         else:
-            return sorted_counter_neurons
+            return sorted_counter_neurons, starter_neuron
 
     def verify_neuron_behaviour(
         test_object,

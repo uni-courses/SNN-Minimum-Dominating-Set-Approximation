@@ -109,7 +109,6 @@ def get_a_in_with_random_neurons_and_excitation(
 
 
 def get_node_and_neighbour_from_degree(get_degree_neuron):
-    print(f"get_degree_neuron={get_degree_neuron}")
     parts = get_degree_neuron.split("_")
     node_index = int(parts[2])
     neighbour_index = int(parts[3])

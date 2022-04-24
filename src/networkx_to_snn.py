@@ -40,23 +40,6 @@ def convert_networkx_graph_to_snn_with_one_neuron(
         visited_nodes,
     ) = retry_build_snn(G, [], [], first_node, [], neuron_dict)
 
-    while len(visited_nodes) < len(G):
-        print(list(set(G.nodes) - set(visited_nodes)))
-
-        for node in G.nodes:
-            print(f"node={node}")
-        for visited_node in visited_nodes:
-            print(f"visited_node={visited_node}")
-        lhs, new_neighbour = get_unvisited_neighbour_retry(G, visited_nodes)
-        # lhs,new_neighbour=get_unvisited_neighbour(G,visited_nodes)
-        print(f"new_neighbour={new_neighbour}")
-        print(f"new_neighbour={new_neighbour}")
-        raise Exception(f"len(G)={len(G)}, only visited_nodes={len(visited_nodes)}")
-
-    # After:
-    print(f"AFTER")
-    for key, value in neuron_dict.items():
-        print(key, " : ", value)
     # 5. Create a verification that checks that all neurons in the incoming
     # graph are created.
     # 6. Create a verification that checks that all synapses in the incoming
@@ -73,9 +56,6 @@ def retry_build_snn(
     # TODO: assert graph G is connected.
 
     visited_nodes.append(lhs_node)
-    print(f"visited_nodes={visited_nodes}")
-    for key, value in neuron_dict.items():
-        print(key, " : ", value)
 
     # Incoming node, if it is not yet converted, then convert to neuron.
     if not node_is_converted(G, converted_nodes, neurons, lhs_node):
@@ -139,40 +119,6 @@ def retry_build_snn(
                     G, converted_nodes, neurons, neighbour, visited_nodes, neuron_dict
                 )
     return converted_nodes, lhs_neuron, neurons, lhs_node, neuron_dict, visited_nodes
-
-
-def get_unvisited_neighbour(G, visited_nodes):
-    if len(visited_nodes) > 0:
-        unvisited_nodes = list(set(G.nodes) - set(visited_nodes))
-        for unvisited_node in unvisited_nodes:
-            print(f"unvisited_node={unvisited_node}")
-
-        for visited_node in visited_nodes:
-            for new_neighbour in nx.all_neighbors(G, visited_node):
-                if new_neighbour in unvisited_nodes:
-                    return visited_node, new_neighbour
-        raise Exception("Error, would have expected to have found a neighbour.")
-    else:
-        raise Exception(
-            "Error, can't find neighbours of visited nodes if no nodes are visited."
-        )
-
-
-def get_unvisited_neighbour_retry(G, visited_nodes):
-    if len(visited_nodes) > 0:
-        unvisited_nodes = list(set(G.nodes) - set(visited_nodes))
-        for unvisited_node in unvisited_nodes:
-            print(f"unvisited_node={unvisited_node}")
-        plot_coordinated_graph(G)
-        for unvisited_node in unvisited_nodes:
-            for visited_node in nx.all_neighbors(G, unvisited_node):
-                if visited_node in visited_nodes:
-                    return visited_node, unvisited_node
-        raise Exception("Error, would have expected to have found a neighbour.")
-    else:
-        raise Exception(
-            "Error, can't find neighbours of visited nodes if no nodes are visited."
-        )
 
 
 def get_neuron_belonging_to_node_from_list(neurons, node, nodes):

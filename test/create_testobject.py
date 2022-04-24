@@ -98,8 +98,6 @@ def create_test_object(test_object, G, plot_input_graph=False, plot_snn_graph=Fa
     ) = convert_networkx_graph_to_snn_with_one_neuron(
         test_object.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
     )
-    for key, value in test_object.neuron_dict.items():
-        print(key, " : ", value)
 
     # Specify boolean array that stores whether a winner has been found in WTA
     # circuits.

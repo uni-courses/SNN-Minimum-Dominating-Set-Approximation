@@ -78,7 +78,7 @@ def get_n_neurons(
     expected_neurons = []
 
     for neuron in neurons:
-        print(neuron_dict[neuron])
+        # print(neuron_dict[neuron])
 
         # Check if neuron has the correct properties.
         if in_simulation:
