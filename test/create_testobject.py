@@ -23,6 +23,7 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     test_object.sample_spike_once_neuron = Spike_once_neuron()
     test_object.sample_rand_neuron = Rand_neuron()
     test_object.sample_degree_receiver_neuron = Degree_receiver()
+    test_object.sample_counter_neuron = Counter_neuron()
 
     ## Specify the expected synaptic weights
     # TODO: Specify per synapse group. (except for the random synapses)
@@ -142,6 +143,25 @@ def get_selector_neurons(test_object, sorted=True):
     return test_object, sorted_selector_neurons, starter_neuron
 
 
+def get_counter_neurons(test_object, sorted=True):
+    # TODO: create stripped down function that just gets the counter neurons.
+    counter_neurons = get_n_neurons(
+        len(test_object.G),
+        test_object.neurons,
+        test_object.neuron_dict,
+        "counter_",
+        test_object.sample_counter_neuron,
+    )
+
+    # Sort the neurons by default before returning them.
+    if sorted:
+        sorted_counter_neurons = sort_neurons(counter_neurons, test_object.neuron_dict)
+
+    # Get the first neuron in the SNN to start the simulation
+    starter_neuron = counter_neurons[0]
+    return test_object, sorted_counter_neurons, starter_neuron
+
+
 def get_degree_receiver_previous_property_dicts(test_object, degree_receiver_neurons):
     degree_receiver_previous_us = {}
     degree_receiver_previous_vs = {}
@@ -172,6 +192,24 @@ def get_selector_previous_property_dicts(test_object, selector_neurons):
     return selector_previous_a_in, selector_previous_us, selector_previous_vs
 
 
+def get_counter_previous_property_dicts(test_object, counter_neurons):
+    counter_previous_a_in = {}
+    counter_previous_us = {}
+    counter_previous_vs = {}
+    (
+        counter_previous_a_in,
+        counter_previous_us,
+        counter_previous_vs,
+    ) = fill_dictionary(
+        test_object.neuron_dict,
+        counter_neurons,
+        counter_previous_us,
+        counter_previous_vs,
+        counter_previous_a_in,
+    )
+    return counter_previous_a_in, counter_previous_us, counter_previous_vs
+
+
 class Selector_neuron:
     """Creates expected properties of the selector neuron."""
 
@@ -195,10 +233,21 @@ class Spike_once_neuron:
 
 
 class Rand_neuron:
-    """Creates expected properties of the spike_once neuron."""
+    """Creates expected properties of the rand neuron."""
 
     def __init__(self):
-        self.first_name = "spike_once_0"
+        self.first_name = "rand_0"
+        self.bias = 2
+        self.du = 0
+        self.dv = 0
+        self.vth = 1
+
+
+class Counter_neuron:
+    """Creates expected properties of the counter neuron."""
+
+    def __init__(self):
+        self.first_name = "counter_0"
         self.bias = 2
         self.du = 0
         self.dv = 0
