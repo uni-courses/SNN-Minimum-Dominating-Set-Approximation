@@ -41,8 +41,8 @@ class Test_counter(unittest.TestCase):
         super(Test_counter, self).__init__(*args, **kwargs)
 
         # Moved into separate file to increase overview in this test file.
-        self = create_test_object(self)
-        # self = create_test_object(self, True, True)
+        # self = create_test_object(self)
+        self = create_test_object(self, True, True)
 
     def test_degree_receiver_neuron_presence(
         self,
@@ -203,15 +203,15 @@ class Test_counter(unittest.TestCase):
         )
 
         # Verify counter neurons behave as expected.
-        self.run_test_on_counter_neurons(
-            self.sample_counter_neuron,
-            counter_previous_a_in,
-            counter_previous_us,
-            counter_previous_vs,
-            sorted_degree_receiver_neurons,
-            sorted_counter_neurons,
-            t,
-        )
+        # self.run_test_on_counter_neurons(
+        #    self.sample_counter_neuron,
+        #    counter_previous_a_in,
+        #    counter_previous_us,
+        #    counter_previous_vs,
+        #    sorted_degree_receiver_neurons,
+        #    sorted_counter_neurons,
+        #    t,
+        # )
 
     def run_test_on_selector_neurons(
         self,
@@ -232,7 +232,7 @@ class Test_counter(unittest.TestCase):
                 selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],
                 selector_previous_vs[selector_neuron_name],
-            ) = self.assert_selector_neuron_behaviour(
+            ) = self.get_selector_a_in_and_call_asserts(
                 selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],
                 selector_previous_vs[selector_neuron_name],
@@ -300,36 +300,12 @@ class Test_counter(unittest.TestCase):
             y,
         )
 
-        # u[t=x+1]=u[t=x]*(1-du)+a_in
-        self.assertEqual(
-            degree_receiver_neuron.u.get(),
-            previous_u * (1 - degree_receiver_neuron.du.get()) + a_in,
+        self.perform_generic_neuron_property_asserts(
+            a_in, previous_u, sample_neuron, degree_receiver_neuron
         )
-
-        # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
-        if sample_neuron.bias + degree_receiver_neuron.u.get() > 1:
-            expected_voltage = 0  # It spikes
-        else:
-            expected_voltage = (
-                sample_neuron.bias + degree_receiver_neuron.u.get()
-            )  # no spike
-        self.assertEqual(degree_receiver_neuron.v.get(), expected_voltage)
-
-        self.assertEqual(
-            degree_receiver_neuron.du.get(), sample_neuron.du
-        )  # Custom Value.
-        self.assertEqual(
-            degree_receiver_neuron.dv.get(), sample_neuron.dv
-        )  # Custom value.
-        self.assertEqual(
-            degree_receiver_neuron.bias.get(), sample_neuron.bias
-        )  # Custom value.
-        self.assertEqual(
-            degree_receiver_neuron.vth.get(), sample_neuron.vth
-        )  # Default value.
         return degree_receiver_neuron.u.get(), degree_receiver_neuron.v.get()
 
-    def assert_selector_neuron_behaviour(
+    def get_selector_a_in_and_call_asserts(
         self,
         previous_a_in,
         previous_u,
@@ -410,25 +386,23 @@ class Test_counter(unittest.TestCase):
         return previous_a_in, previous_u, previous_v
 
     def perform_generic_neuron_property_asserts(
-        self, previous_a_in, previouw_u, sample_neuron, selector_neuron
+        self, previous_a_in, previouw_u, sample_neuron, tested_neuron
     ):
         print(f"previous_a_in={previous_a_in}")
         # u[t=x+1]=u[t=x]*(1-du)+a_in
         self.assertEqual(
-            selector_neuron.u.get(),
-            previouw_u * (1 - selector_neuron.du.get()) + previous_a_in,
+            tested_neuron.u.get(),
+            previouw_u * (1 - tested_neuron.du.get()) + previous_a_in,
         )
 
         # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
-        if sample_neuron.bias + selector_neuron.u.get() > 1:
+        if sample_neuron.bias + tested_neuron.u.get() > 1:
             expected_voltage = 0  # It spikes
         else:
-            expected_voltage = sample_neuron.bias + selector_neuron.u.get()  # no spike
-        self.assertEqual(selector_neuron.v.get(), expected_voltage)
+            expected_voltage = sample_neuron.bias + tested_neuron.u.get()  # no spike
+        self.assertEqual(tested_neuron.v.get(), expected_voltage)
 
-        self.assertEqual(selector_neuron.du.get(), sample_neuron.du)  # Custom Value.
-        self.assertEqual(selector_neuron.dv.get(), sample_neuron.dv)  # Custom value.
-        self.assertEqual(
-            selector_neuron.bias.get(), sample_neuron.bias
-        )  # Custom value.
-        self.assertEqual(selector_neuron.vth.get(), sample_neuron.vth)  # Default value.
+        self.assertEqual(tested_neuron.du.get(), sample_neuron.du)  # Custom Value.
+        self.assertEqual(tested_neuron.dv.get(), sample_neuron.dv)  # Custom value.
+        self.assertEqual(tested_neuron.bias.get(), sample_neuron.bias)  # Custom value.
+        self.assertEqual(tested_neuron.vth.get(), sample_neuron.vth)  # Default value.
