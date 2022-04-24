@@ -5,13 +5,13 @@ from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
 from src.helper import (
+    degree_receiver_x_y_is_connected_to_counter_z,
     get_a_in_for_degree_receiver,
     get_degree_reciever_neurons_per_wta_circuit,
     get_expected_amount_of_degree_receiver_neurons,
     get_wta_circuit_from_neuron_name,
     get_y_from_degree_receiver_x_y,
     print_neurons_properties,
-    sort_neurons,
 )
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
@@ -41,8 +41,8 @@ class Test_counter(unittest.TestCase):
         super(Test_counter, self).__init__(*args, **kwargs)
 
         # Moved into separate file to increase overview in this test file.
-        # self = create_test_object(self)
-        self = create_test_object(self, True, True)
+        self = create_test_object(self)
+        # self = create_test_object(self, True, True)
 
     def test_degree_receiver_neuron_presence(
         self,
@@ -203,15 +203,15 @@ class Test_counter(unittest.TestCase):
         )
 
         # Verify counter neurons behave as expected.
-        # self.run_test_on_counter_neurons(
-        #    self.sample_counter_neuron,
-        #    counter_previous_a_in,
-        #    counter_previous_us,
-        #    counter_previous_vs,
-        #    sorted_degree_receiver_neurons,
-        #    sorted_counter_neurons,
-        #    t,
-        # )
+        self.run_test_on_counter_neurons(
+            self.sample_counter_neuron,
+            counter_previous_a_in,
+            counter_previous_us,
+            counter_previous_vs,
+            sorted_degree_receiver_neurons,
+            sorted_counter_neurons,
+            t,
+        )
 
     def run_test_on_selector_neurons(
         self,
@@ -227,7 +227,7 @@ class Test_counter(unittest.TestCase):
         for selector_neuron in sorted_selector_neurons:
             selector_neuron_name = self.neuron_dict[selector_neuron]
             wta_circuit = int(selector_neuron_name[9:])
-            print(f"wta_circuit={wta_circuit}")
+            # print(f"wta_circuit={wta_circuit}")
             (
                 selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],
@@ -256,10 +256,7 @@ class Test_counter(unittest.TestCase):
         # Run tests on counter.
         for counter_neuron in sorted_counter_neurons:
             counter_neuron_name = self.neuron_dict[counter_neuron]
-            print(f"counter_neuron_name={counter_neuron_name}")
-            print(f"counter_neuron_name[9:]={counter_neuron_name[9:]}")
             wta_circuit = int(counter_neuron_name[8:])
-            print(f"wta_circuit={wta_circuit}")
             (
                 counter_previous_a_in[counter_neuron_name],
                 counter_previous_us[counter_neuron_name],
@@ -339,7 +336,6 @@ class Test_counter(unittest.TestCase):
             ):
                 # degree_receiver neuron has spiked, so selector neuron get's -5 as input in next round.
                 previous_a_in = previous_a_in - 5
-                print(f"SPIKE, previous_a_in={previous_a_in}")
             else:
                 previous_a_in = previous_a_in  # no spike
 
@@ -363,32 +359,39 @@ class Test_counter(unittest.TestCase):
             previous_a_in, previous_u, sample_counter_neuron, counter_neuron
         )
 
-        # Compute what the a_in for counter_x will be in next round(/time this function is called).
-        # Get degree_receiver neurons from wta circuits.
-        wta_degree_receiver_neurons = get_degree_reciever_neurons_per_wta_circuit(
-            sorted_degree_receiver_neurons, self.neuron_dict, wta_circuit
-        )
-        # Loop over relevant degree_receiver neurons
-        for wta_degree_receiver_neuron in wta_degree_receiver_neurons:
+        for node in self.G.nodes:
+            # Get degree_receiver neurons from wta circuits.
+            node_degree_receiver_neurons = get_degree_reciever_neurons_per_wta_circuit(
+                sorted_degree_receiver_neurons, self.neuron_dict, node
+            )
 
-            # Determine if degree_receiver neuron has spiked.
-            if (
-                wta_degree_receiver_neuron.bias.get()
-                + wta_degree_receiver_neuron.u.get()
-                > wta_degree_receiver_neuron.vth.get()
-            ):
-                # degree_receiver neuron has spiked, so counter neuron get's -5 as input in next round.
-                previous_a_in = previous_a_in - 5
-                print(f"SPIKE, previous_a_in={previous_a_in}")
-            else:
-                previous_a_in = previous_a_in  # no spike
+            # Loop over relevant degree_receiver neurons
+            for wta_degree_receiver_neuron in node_degree_receiver_neurons:
+
+                # Determine if degree_receiver neuron has spiked.
+                if (
+                    wta_degree_receiver_neuron.bias.get()
+                    + wta_degree_receiver_neuron.u.get()
+                    > wta_degree_receiver_neuron.vth.get()
+                ):
+                    # degree_receiver neuron has spiked.
+                    # Get x,y in degree_receiver_x_y
+                    if degree_receiver_x_y_is_connected_to_counter_z(
+                        counter_neuron,
+                        wta_degree_receiver_neuron,
+                        self.G,
+                        self.neuron_dict,
+                    ):
+                        previous_a_in = previous_a_in + 1
+                        print(f"FOUND SPIKE FOR COUNTER, previous_a_in={previous_a_in}")
+                    else:
+                        previous_a_in = previous_a_in  # no spike
 
         return previous_a_in, previous_u, previous_v
 
     def perform_generic_neuron_property_asserts(
         self, previous_a_in, previouw_u, sample_neuron, tested_neuron
     ):
-        print(f"previous_a_in={previous_a_in}")
         # u[t=x+1]=u[t=x]*(1-du)+a_in
         self.assertEqual(
             tested_neuron.u.get(),
