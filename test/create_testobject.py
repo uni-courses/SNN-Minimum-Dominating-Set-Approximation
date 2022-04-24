@@ -87,6 +87,7 @@ def create_test_object(test_object, G, plot_input_graph=False, plot_snn_graph=Fa
     )
     if plot_snn_graph:
         plot_coordinated_graph(test_object.get_degree)
+    # raise Exception("stop")
 
     ## Convert the snn networkx graph into a Loihi implementation.
     (

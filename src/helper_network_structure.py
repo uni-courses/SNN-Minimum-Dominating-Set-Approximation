@@ -125,26 +125,34 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
             ],
             weight=0,
         )
+    for node in G.nodes:
+        for neighbour in nx.all_neighbors(G, node):
+            if node != neighbour:
+                for other_node in G.nodes:
+                    if G.has_edge(neighbour, other_node):
+                        get_degree.add_edges_from(
+                            [
+                                (
+                                    f"spike_once_{other_node}",
+                                    f"degree_receiver_{node}_{neighbour}",
+                                )
+                            ],
+                            weight=rand_ceil,
+                        )
+                        print(
+                            f'"spike_once_{other_node} to: degree_receiver_{node}_{neighbour}'
+                        )
+
+    #    for node in G.nodes:
+    #        print(f'node={node},neighbours={list(nx.all_neighbors(G, node))}')
+    #        for other_node in G.nodes:
+    #        #for neighbour in nx.all_neighbors(G, node):
+    #            if node != other_node and G.has_edge(node, other_node):
+    #                # This is a degree receiver in form:degree_receiver_{node}_{neighbour}
+    #
 
     # Then create all edges between the nodes.
     for circuit in G.nodes:
-        # For each neighbour of node, named degree_receiver:
-        for neighbour_a in G.nodes:
-            if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
-                for neighbour_b in nx.all_neighbors(G, circuit):
-                    if circuit != neighbour_b and neighbour_a != neighbour_b:
-
-                        # Check if there is an edge from neighbour_a to neighbour_b.
-                        if neighbour_a in nx.all_neighbors(G, neighbour_b):
-                            get_degree.add_edges_from(
-                                [
-                                    (
-                                        f"spike_once_{circuit}",
-                                        f"degree_receiver_{neighbour_a}_{neighbour_b}",
-                                    )
-                                ],
-                                weight=rand_ceil,
-                            )
 
         # Add synapse between random node and degree receiver nodes.
         for circuit_target in G.nodes:
