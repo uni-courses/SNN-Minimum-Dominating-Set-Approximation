@@ -110,7 +110,7 @@ class Test_counter(unittest.TestCase):
         ) = get_counter_previous_property_dicts(self, sorted_counter_neurons)
 
         # Simulate SNN and assert values inbetween timesteps.
-        for t in range(1, 250):
+        for t in range(1, 30):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
@@ -136,7 +136,7 @@ class Test_counter(unittest.TestCase):
             )
         # Terminate Loihi simulation.
         starter_neuron.stop()
-        # raise Exception("Stop")
+        raise Exception("Stop")
         return sorted_degree_receiver_neurons
 
     def verify_neuron_behaviour(
@@ -320,6 +320,7 @@ class Test_counter(unittest.TestCase):
             previous_a_in, previous_u, sample_selector_neuron, selector_neuron
         )
 
+        # TODO: disentangle u[t-1] and previous_a_in.
         # Compute what the a_in for selector_x will be in next round(/time this function is called).
         # Get degree_receiver neurons from wta circuits.
         wta_degree_receiver_neurons = get_degree_reciever_neurons_per_wta_circuit(
@@ -352,12 +353,16 @@ class Test_counter(unittest.TestCase):
         t,
         wta_circuit,
     ):
-        self.assertTrue(True)
 
         # Compute expected counter neuron properties based on a_in previous.
         self.perform_generic_neuron_property_asserts(
             previous_a_in, previous_u, sample_counter_neuron, counter_neuron
         )
+
+        # the current u[t-1] which was included in previous_a_in for the
+        # selector neuron, is leaked for counter neurons, so a_in is
+        # a_in without what a_in was in the previous round.
+        previous_a_in = 0
 
         for node in self.G.nodes:
             # Get degree_receiver neurons from wta circuits.
@@ -399,7 +404,7 @@ class Test_counter(unittest.TestCase):
         )
 
         # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
-        if sample_neuron.bias + tested_neuron.u.get() > 1:
+        if sample_neuron.bias + tested_neuron.u.get() > sample_neuron.vth:
             expected_voltage = 0  # It spikes
         else:
             expected_voltage = sample_neuron.bias + tested_neuron.u.get()  # no spike

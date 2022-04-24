@@ -248,10 +248,10 @@ class Counter_neuron:
 
     def __init__(self):
         self.first_name = "counter_0"
-        self.bias = 2
-        self.du = 0
-        self.dv = 0
-        self.vth = 1
+        self.bias = 0
+        self.du = 1
+        self.dv = 1
+        self.vth = 0
 
 
 class Degree_receiver:
