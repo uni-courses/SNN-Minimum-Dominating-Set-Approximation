@@ -31,8 +31,9 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
 
     ## Generate the graph on which the algorithm is ran.
     #  Generate a fully connected graph with n=4.
-    # test_object.G = nx.complete_graph(4)
-    test_object.G = create_manual_graph_with_4_nodes()
+    # test_object.G = G
+    test_object.G = nx.complete_graph(4)
+    # test_object.G = create_manual_graph_with_4_nodes()
     if plot_input_graph:
         plot_unstructured_graph(test_object.G)
 
@@ -61,14 +62,14 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     # always starts negative. The a_in of the degree_receiver_x_y neuron is
     # : the incoming spike_once_x weights+rand_x neurons+selector_excitation
     # - There are at most n incoming spike signals.
-    # - Each spike_once should have a weight of at least random_ceiling.
+    # - Each spike_once should have a weight of at least random_ceiling+1.
     # That is because the random value should map to 0<rand<1 with respect
     # to the difference of 1 spike_once more or less.
     # - The random_ceiling is specified.
     # - The excitatory neuron comes in at +1, a buffer of 1 yields+2.
     # Hence, the inhibition is computed as:
     test_object.inhibition = (
-        len(test_object.G) * test_object.rand_ceil + test_object.rand_ceil + 2
+        len(test_object.G) * (test_object.rand_ceil + 1) + test_object.rand_ceil + 2
     )
     test_object.rand_nrs = [x - test_object.inhibition for x in test_object.rand_nrs]
     print(
