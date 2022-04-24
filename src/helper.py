@@ -298,6 +298,7 @@ def get_a_in_for_degree_receiver(
     previous_u,
     previous_v,
     rand_nrs,
+    spike_once_weight,
     sample_degree_receiver_neuron,
     t,
     x,
@@ -309,7 +310,6 @@ def get_a_in_for_degree_receiver(
         verbose = False
     a_in = 0
     for circuit in G.nodes:
-        # For each neighbour of node, named degree_receiver:
         for neighbour_a in G.nodes:
             if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
                 for neighbour_b in nx.all_neighbors(G, circuit):
@@ -320,7 +320,13 @@ def get_a_in_for_degree_receiver(
                             # Spike_once to degree_receiver
                             # f"spike_once_{circuit}", to: f"degree_receiver_{neighbour_a}_{neighbour_b}",
                             a_in = a_in + add_spike_weight_to_degree_receiver(
-                                neighbour_a, neighbour_b, 1, t, x, y, verbose
+                                neighbour_a,
+                                neighbour_b,
+                                spike_once_weight,
+                                t,
+                                x,
+                                y,
+                                verbose,
                             )
 
         # Add synapse between random node and degree receiver nodes.

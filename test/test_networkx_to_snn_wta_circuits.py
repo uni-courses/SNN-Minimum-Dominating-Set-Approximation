@@ -28,6 +28,7 @@ from test.helper_tests import (
 
 class Test_networkx_to_snn_degree_receiver_rand_neurons(unittest.TestCase):
     """
+    TODO: rewrite this test to create_testobject.. format in e.g. test_counter.py.
     Tests whether the networks that are fed into networkx_to_snn are generating
     the correct snn networks.
     """

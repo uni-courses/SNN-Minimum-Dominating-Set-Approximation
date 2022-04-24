@@ -44,7 +44,8 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     test_object.rand_nrs = generate_list_of_n_random_nrs(
         test_object.G, max=test_object.rand_ceil, seed=42
     )
-    print(f"before={test_object.rand_nrs}")
+    print(f"before delta={test_object.rand_nrs}")
+
     # Make the random numbers differ with at least delta>=2. This is to
     # prevent multiple degree_receiver_x_y neurons (that differ less than
     # delta) in a single WTA circuit to spike before they are inhibited by
@@ -55,6 +56,7 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     # circuit.
     test_object.rand_nrs = [x * test_object.delta for x in test_object.rand_nrs]
     print(f"after_delta={test_object.rand_nrs}")
+    print(f"test_object.rand_ceil={test_object.rand_ceil}")
     # Add inhibition to rand_nrs to ensure the degree_receiver current u[1]
     # always starts negative. The a_in of the degree_receiver_x_y neuron is
     # : the incoming spike_once_x weights+rand_x neurons+selector_excitation
@@ -72,11 +74,15 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     print(
         f"After inhibition of:{test_object.inhibition}, rand_nrs={test_object.rand_nrs}"
     )
-
     ## Convert the fully connected graph into a networkx graph that
     # stores the snn properties.
+    # rand_ceil+1 because the maximum random number is rand_ceil which should map
+    # to range 0<rand<1 when divided by the synaptic weight of spike_once neurons.
+    # (and not to range 0<rand<=1 as it would without the +1)
     test_object.get_degree = get_degree_graph_with_separate_wta_circuits(
-        test_object.G, test_object.rand_nrs
+        test_object.G,
+        test_object.rand_nrs,
+        test_object.rand_ceil * test_object.delta + 1,
     )
     if plot_snn_graph:
         plot_coordinated_graph(test_object.get_degree)

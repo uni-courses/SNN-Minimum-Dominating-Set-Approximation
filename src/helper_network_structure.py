@@ -23,7 +23,7 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
     return G
 
 
-def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
+def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -119,7 +119,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
                                         f"degree_receiver_{neighbour_a}_{neighbour_b}",
                                     )
                                 ],
-                                weight=+1,
+                                weight=rand_ceil,
                             )
 
         # Add synapse between random node and degree receiver nodes.
