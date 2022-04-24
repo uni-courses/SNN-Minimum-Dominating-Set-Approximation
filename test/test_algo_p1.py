@@ -57,7 +57,7 @@ class Test_counter(unittest.TestCase):
         for G in graphs:
 
             # Initialise paramers used for testing.
-            test_object = create_test_object(self, G)
+            test_object = create_test_object(self, G, True, True)
             # test_object = create_test_object(self,G,True,True)
 
             # Run default tests on neurons
@@ -70,7 +70,13 @@ class Test_counter(unittest.TestCase):
             )
 
             # Compute degree count using Alipour algorithm
-            G_alipour = partial_alipour(G, test_object.rand_ceil, test_object.rand_nrs)
+            G_alipour = partial_alipour(
+                test_object.delta,
+                test_object.inhibition,
+                G,
+                test_object.rand_ceil,
+                test_object.rand_nrs,
+            )
 
             # Compare the counts per node and assert they are equal.
             for node in G.nodes:
@@ -127,7 +133,8 @@ class Test_counter(unittest.TestCase):
         ) = get_counter_previous_property_dicts(test_object, sorted_counter_neurons)
 
         # Simulate SNN and assert values inbetween timesteps.
-        for t in range(1, 30):
+        # Simulate till extraction time+10 sec.
+        for t in range(1, test_object.inhibition + 1 + 10):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())

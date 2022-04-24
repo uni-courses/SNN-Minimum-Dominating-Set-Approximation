@@ -257,3 +257,4 @@ def plot_coordinated_graph(G):
 
     plt.show()
     plt.clf()
+    plt.close()

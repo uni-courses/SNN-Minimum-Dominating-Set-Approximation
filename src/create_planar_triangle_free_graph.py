@@ -157,3 +157,4 @@ def plot_basic_graph(G):
     nx.draw_networkx(G, pos=pos, **options)
     plt.show()
     plt.clf()
+    plt.close()
