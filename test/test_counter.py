@@ -28,6 +28,7 @@ from test.create_testobject import (
     get_selector_neurons,
     get_selector_previous_property_dicts,
 )
+from test.helper_tests import perform_generic_neuron_property_asserts
 
 
 class Test_counter(unittest.TestCase):
@@ -297,8 +298,8 @@ class Test_counter(unittest.TestCase):
             y,
         )
 
-        self.perform_generic_neuron_property_asserts(
-            a_in, previous_u, sample_neuron, degree_receiver_neuron
+        perform_generic_neuron_property_asserts(
+            self, a_in, previous_u, sample_neuron, degree_receiver_neuron
         )
         return degree_receiver_neuron.u.get(), degree_receiver_neuron.v.get()
 
@@ -316,8 +317,8 @@ class Test_counter(unittest.TestCase):
         self.assertTrue(True)
 
         # Compute expected selector neuron properties based on a_in previous.
-        self.perform_generic_neuron_property_asserts(
-            previous_a_in, previous_u, sample_selector_neuron, selector_neuron
+        perform_generic_neuron_property_asserts(
+            self, previous_a_in, previous_u, sample_selector_neuron, selector_neuron
         )
 
         # TODO: disentangle u[t-1] and previous_a_in.
@@ -355,8 +356,8 @@ class Test_counter(unittest.TestCase):
     ):
 
         # Compute expected counter neuron properties based on a_in previous.
-        self.perform_generic_neuron_property_asserts(
-            previous_a_in, previous_u, sample_counter_neuron, counter_neuron
+        perform_generic_neuron_property_asserts(
+            self, previous_a_in, previous_u, sample_counter_neuron, counter_neuron
         )
 
         # the current u[t-1] which was included in previous_a_in for the
@@ -393,24 +394,3 @@ class Test_counter(unittest.TestCase):
                         previous_a_in = previous_a_in  # no spike
 
         return previous_a_in, previous_u, previous_v
-
-    def perform_generic_neuron_property_asserts(
-        self, previous_a_in, previouw_u, sample_neuron, tested_neuron
-    ):
-        # u[t=x+1]=u[t=x]*(1-du)+a_in
-        self.assertEqual(
-            tested_neuron.u.get(),
-            previouw_u * (1 - tested_neuron.du.get()) + previous_a_in,
-        )
-
-        # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
-        if sample_neuron.bias + tested_neuron.u.get() > sample_neuron.vth:
-            expected_voltage = 0  # It spikes
-        else:
-            expected_voltage = sample_neuron.bias + tested_neuron.u.get()  # no spike
-        self.assertEqual(tested_neuron.v.get(), expected_voltage)
-
-        self.assertEqual(tested_neuron.du.get(), sample_neuron.du)  # Custom Value.
-        self.assertEqual(tested_neuron.dv.get(), sample_neuron.dv)  # Custom value.
-        self.assertEqual(tested_neuron.bias.get(), sample_neuron.bias)  # Custom value.
-        self.assertEqual(tested_neuron.vth.get(), sample_neuron.vth)  # Default value.

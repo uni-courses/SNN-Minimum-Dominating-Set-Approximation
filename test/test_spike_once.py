@@ -16,6 +16,7 @@ from test.contains_neurons_of_type_x import (
 
 
 from test.create_testobject import create_test_object
+from test.helper_tests import perform_generic_neuron_property_asserts
 
 
 class Test_spike_once(unittest.TestCase):
@@ -142,31 +143,11 @@ class Test_spike_once(unittest.TestCase):
         """Assert the values of the spike_once_neuron neuron on t=4."""
 
         a_in = get_a_in_for_spike_once(t)
-
-        # The current stays constant indefinitely.
-        # u[t=x+1]=u[t=x]*(1-du)+a_in
-        # TODO: Include the u(t-1)
-        self.assertEqual(
-            spike_once_neuron.u.get(),
-            previous_u * (1 - spike_once_neuron.du.get()) + a_in,
+        perform_generic_neuron_property_asserts(
+            self,
+            a_in,
+            previous_u,
+            self.sample_spike_once_neuron,
+            spike_once_neuron,
         )
-        # The voltage stays constant indefinitely because the current
-        # stays constant indefinitely whilst cancelling out the bias.
-        # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
-        if sample_neuron.bias + spike_once_neuron.u.get() > 1:
-            expected_voltage = 0  # It spikes
-        else:
-            expected_voltage = (
-                sample_neuron.bias + spike_once_neuron.u.get()
-            )  # no spike
-        self.assertEqual(spike_once_neuron.v.get(), expected_voltage)
-
-        self.assertEqual(spike_once_neuron.du.get(), sample_neuron.du)  # Custom Value.
-        self.assertEqual(spike_once_neuron.dv.get(), sample_neuron.dv)  # Custom value.
-        self.assertEqual(
-            spike_once_neuron.bias.get(), sample_neuron.bias
-        )  # Custom value.
-        self.assertEqual(
-            spike_once_neuron.vth.get(), sample_neuron.vth
-        )  # Default value.
         return spike_once_neuron.u.get(), spike_once_neuron.v.get()

@@ -20,6 +20,7 @@ from test.contains_neurons_of_type_x import (
 
 
 from test.create_testobject import create_test_object
+from test.helper_tests import perform_generic_neuron_property_asserts
 
 
 class Test_degree_receiver(unittest.TestCase):
@@ -91,7 +92,7 @@ class Test_degree_receiver(unittest.TestCase):
         # previous_vs = [0] * len(degree_receiver_neurons)
 
         # Simulate SNN and assert values inbetween timesteps.
-        for t in range(1, 25):
+        for t in range(1, 250):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
@@ -171,32 +172,13 @@ class Test_degree_receiver(unittest.TestCase):
             wta_circuit,
             y,
         )
-
-        # u[t=x+1]=u[t=x]*(1-du)+a_in
-        self.assertEqual(
-            degree_receiver_neuron.u.get(),
-            previous_u * (1 - degree_receiver_neuron.du.get()) + a_in,
+        # Compute expected selector neuron properties based on a_in previous.
+        perform_generic_neuron_property_asserts(
+            self,
+            a_in,
+            previous_u,
+            self.sample_degree_receiver_neuron,
+            degree_receiver_neuron,
         )
 
-        # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
-        if sample_neuron.bias + degree_receiver_neuron.u.get() > 1:
-            expected_voltage = 0  # It spikes
-        else:
-            expected_voltage = (
-                sample_neuron.bias + degree_receiver_neuron.u.get()
-            )  # no spike
-        self.assertEqual(degree_receiver_neuron.v.get(), expected_voltage)
-
-        self.assertEqual(
-            degree_receiver_neuron.du.get(), sample_neuron.du
-        )  # Custom Value.
-        self.assertEqual(
-            degree_receiver_neuron.dv.get(), sample_neuron.dv
-        )  # Custom value.
-        self.assertEqual(
-            degree_receiver_neuron.bias.get(), sample_neuron.bias
-        )  # Custom value.
-        self.assertEqual(
-            degree_receiver_neuron.vth.get(), sample_neuron.vth
-        )  # Default value.
         return degree_receiver_neuron.u.get(), degree_receiver_neuron.v.get()

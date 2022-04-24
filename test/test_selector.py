@@ -26,6 +26,7 @@ from test.create_testobject import (
     get_selector_neurons,
     get_selector_previous_property_dicts,
 )
+from test.helper_tests import perform_generic_neuron_property_asserts
 
 
 class Test_selector(unittest.TestCase):
@@ -236,33 +237,14 @@ class Test_selector(unittest.TestCase):
             y,
         )
 
-        # u[t=x+1]=u[t=x]*(1-du)+a_in
-        self.assertEqual(
-            degree_receiver_neuron.u.get(),
-            previous_u * (1 - degree_receiver_neuron.du.get()) + a_in,
+        # Compute expected selector neuron properties based on a_in previous.
+        perform_generic_neuron_property_asserts(
+            self,
+            a_in,
+            previous_u,
+            self.sample_degree_receiver_neuron,
+            degree_receiver_neuron,
         )
-
-        # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
-        if sample_neuron.bias + degree_receiver_neuron.u.get() > 1:
-            expected_voltage = 0  # It spikes
-        else:
-            expected_voltage = (
-                sample_neuron.bias + degree_receiver_neuron.u.get()
-            )  # no spike
-        self.assertEqual(degree_receiver_neuron.v.get(), expected_voltage)
-
-        self.assertEqual(
-            degree_receiver_neuron.du.get(), sample_neuron.du
-        )  # Custom Value.
-        self.assertEqual(
-            degree_receiver_neuron.dv.get(), sample_neuron.dv
-        )  # Custom value.
-        self.assertEqual(
-            degree_receiver_neuron.bias.get(), sample_neuron.bias
-        )  # Custom value.
-        self.assertEqual(
-            degree_receiver_neuron.vth.get(), sample_neuron.vth
-        )  # Default value.
         return degree_receiver_neuron.u.get(), degree_receiver_neuron.v.get()
 
     def assert_selector_neuron_behaviour(
@@ -279,7 +261,7 @@ class Test_selector(unittest.TestCase):
         self.assertTrue(True)
 
         # Compute expected selector neuron properties based on a_in previous.
-        perform_selector_asserts(
+        perform_generic_neuron_property_asserts(
             self, previous_a_in, previous_u, sample_selector_neuron, selector_neuron
         )
 
@@ -304,26 +286,3 @@ class Test_selector(unittest.TestCase):
                 previous_a_in = previous_a_in  # no spike
 
         return previous_a_in, previous_u, previous_v
-
-
-def perform_selector_asserts(
-    self, previous_a_in, previouw_u, sample_neuron, selector_neuron
-):
-    print(f"previous_a_in={previous_a_in}")
-    # u[t=x+1]=u[t=x]*(1-du)+a_in
-    self.assertEqual(
-        selector_neuron.u.get(),
-        previouw_u * (1 - selector_neuron.du.get()) + previous_a_in,
-    )
-
-    # v[t=x+1] = v[t=x] * (1-dv) + u[t=2] + bias
-    if sample_neuron.bias + selector_neuron.u.get() > 1:
-        expected_voltage = 0  # It spikes
-    else:
-        expected_voltage = sample_neuron.bias + selector_neuron.u.get()  # no spike
-    self.assertEqual(selector_neuron.v.get(), expected_voltage)
-
-    self.assertEqual(selector_neuron.du.get(), sample_neuron.du)  # Custom Value.
-    self.assertEqual(selector_neuron.dv.get(), sample_neuron.dv)  # Custom value.
-    self.assertEqual(selector_neuron.bias.get(), sample_neuron.bias)  # Custom value.
-    self.assertEqual(selector_neuron.vth.get(), sample_neuron.vth)  # Default value.
