@@ -75,7 +75,9 @@ def create_test_object(
     # - The excitatory neuron comes in at +1, a buffer of 1 yields+2.
     # Hence, the inhibition is computed as:
     test_object.inhibition = (
-        len(test_object.G) * (test_object.rand_ceil + 1) + test_object.rand_ceil + 2
+        len(test_object.G) * (test_object.rand_ceil * test_object.delta + 1)
+        + (test_object.rand_ceil) * test_object.delta
+        + 1
     )
     test_object.rand_nrs = [x - test_object.inhibition for x in test_object.rand_nrs]
     print(
