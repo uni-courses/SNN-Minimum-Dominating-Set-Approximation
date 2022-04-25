@@ -16,7 +16,9 @@ from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
 from test.contains_neurons_of_type_x import get_n_neurons
 
 
-def create_test_object(G, plot_input_graph=False, plot_snn_graph=False, export=True):
+def create_test_object(
+    G, iteration, plot_input_graph=False, plot_snn_graph=False, export=True
+):
     test_object = Test_properties()
     ## Specify the expected neuron properties.
     # TODO: change this to make it a function of
@@ -36,7 +38,7 @@ def create_test_object(G, plot_input_graph=False, plot_snn_graph=False, export=T
     # test_object.G = nx.complete_graph(4)
     # test_object.G = create_manual_graph_with_4_nodes()
     if plot_input_graph or export:
-        plot_unstructured_graph(test_object.G, len(G), plot_input_graph)
+        plot_unstructured_graph(test_object.G, iteration, len(G), plot_input_graph)
 
     ## Generate the maximum random ceiling
     # +2 to allow selecting a larger range of numbers than the number of
@@ -87,7 +89,9 @@ def create_test_object(G, plot_input_graph=False, plot_snn_graph=False, export=T
         test_object.rand_ceil * test_object.delta + 1,
     )
     if plot_snn_graph or export:
-        plot_coordinated_graph(test_object.get_degree, len(G), plot_snn_graph)
+        plot_coordinated_graph(
+            test_object.get_degree, iteration, len(G), plot_snn_graph
+        )
     # raise Exception("stop")
 
     ## Convert the snn networkx graph into a Loihi implementation.

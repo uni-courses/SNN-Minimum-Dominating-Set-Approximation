@@ -233,7 +233,7 @@ def get_weight_receiver_synapse_paths(G):
     return G
 
 
-def plot_unstructured_graph(G, size, show=False):
+def plot_unstructured_graph(G, iteration, size, show=False):
     # nx.draw(G, pos=graphviz_layout(G),with_labels = True)
     #
     # edge_labels = nx.get_edge_attributes(G,'weight')
@@ -252,12 +252,12 @@ def plot_unstructured_graph(G, size, show=False):
     # plt.savefig('this.png')
     if show:
         plt.show()
-    plt.savefig(f"G_{size}.png")
+    plt.savefig(f"G_{size}_{iteration}.png")
     plt.clf()
     plt.close()
 
 
-def plot_coordinated_graph(G, size, show=False):
+def plot_coordinated_graph(G, iteration, size, show=False):
     nx.draw(G, nx.get_node_attributes(G, "pos"), with_labels=True, node_size=1)
     node_labels = nx.get_node_attributes(G, "")
     pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
@@ -267,6 +267,6 @@ def plot_coordinated_graph(G, size, show=False):
 
     if show:
         plt.show()
-    plt.savefig(f"snn_{size}.png")
+    plt.savefig(f"snn_{size}_{iteration}.png")
     plt.clf()
     plt.close()
