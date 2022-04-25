@@ -53,9 +53,9 @@ class Test_counter(unittest.TestCase):
 
         for retry in range(0, 2, 1):
             graphs = []
-            for size in range(4, 7, 1):
-                graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
-
+            # for size in range(4, 7, 1):
+            #    graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
+            graphs.append(create_manual_graph_with_4_nodes())
             # for G in get_graphs():
             for G in graphs:
                 # Initialise paramers used for testing.
