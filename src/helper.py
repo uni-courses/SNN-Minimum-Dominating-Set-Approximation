@@ -109,7 +109,6 @@ def get_a_in_with_random_neurons_and_excitation(
 
 
 def get_node_and_neighbour_from_degree(get_degree_neuron):
-    print(f"get_degree_neuron={get_degree_neuron}")
     parts = get_degree_neuron.split("_")
     node_index = int(parts[2])
     neighbour_index = int(parts[3])
@@ -298,6 +297,7 @@ def get_a_in_for_degree_receiver(
     previous_u,
     previous_v,
     rand_nrs,
+    spike_once_weight,
     sample_degree_receiver_neuron,
     t,
     x,
@@ -308,21 +308,44 @@ def get_a_in_for_degree_receiver(
     else:
         verbose = False
     a_in = 0
+    # for circuit in G.nodes:
+    #    for neighbour_a in G.nodes:
+    #        if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
+    #            for neighbour_b in nx.all_neighbors(G, circuit):
+    #                if circuit != neighbour_b and neighbour_a != neighbour_b:
+    #
+    #                    # Check if there is an edge from neighbour_a to neighbour_b.
+    #                    if neighbour_a in nx.all_neighbors(G, neighbour_b):
+    #                        # Spike_once to degree_receiver
+    #                        # f"spike_once_{circuit}", to: f"degree_receiver_{neighbour_a}_{neighbour_b}",
+    #                        a_in = a_in + add_spike_weight_to_degree_receiver(
+    #                            neighbour_a,
+    #                            neighbour_b,
+    #                            spike_once_weight,
+    #                            t,
+    #                            x,
+    #                            y,
+    #                            verbose,
+    #                        )
+
+    for node in G.nodes:
+        for neighbour in nx.all_neighbors(G, node):
+            if node != neighbour:
+                for other_node in G.nodes:
+                    if (
+                        G.has_edge(neighbour, other_node)
+                        and x == node
+                        and y == neighbour
+                        and t == 2
+                    ):
+
+                        a_in = a_in + spike_once_weight
+                        # print(f'node={node},neighbour={neighbour},other_node={other_node},a_in={a_in}')
+                        print(
+                            f'"spike_once_{other_node} to: degree_receiver_{node}_{neighbour}, a_in={a_in}'
+                        )
+
     for circuit in G.nodes:
-        # For each neighbour of node, named degree_receiver:
-        for neighbour_a in G.nodes:
-            if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
-                for neighbour_b in nx.all_neighbors(G, circuit):
-                    if circuit != neighbour_b and neighbour_a != neighbour_b:
-
-                        # Check if there is an edge from neighbour_a to neighbour_b.
-                        if neighbour_a in nx.all_neighbors(G, neighbour_b):
-                            # Spike_once to degree_receiver
-                            # f"spike_once_{circuit}", to: f"degree_receiver_{neighbour_a}_{neighbour_b}",
-                            a_in = a_in + add_spike_weight_to_degree_receiver(
-                                neighbour_a, neighbour_b, 1, t, x, y, verbose
-                            )
-
         # Add synapse between random node and degree receiver nodes.
         for circuit_target in G.nodes:
             if circuit != circuit_target:

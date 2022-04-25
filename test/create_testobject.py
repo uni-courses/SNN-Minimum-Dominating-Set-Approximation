@@ -16,7 +16,10 @@ from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
 from test.contains_neurons_of_type_x import get_n_neurons
 
 
-def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False):
+def create_test_object(
+    G, iteration, plot_input_graph=False, plot_snn_graph=False, export=True
+):
+    test_object = Test_properties()
     ## Specify the expected neuron properties.
     # TODO: change this to make it a function of
     test_object.sample_selector_neuron = Selector_neuron()
@@ -31,10 +34,14 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
 
     ## Generate the graph on which the algorithm is ran.
     #  Generate a fully connected graph with n=4.
+    test_object.G = G
     # test_object.G = nx.complete_graph(4)
-    test_object.G = create_manual_graph_with_4_nodes()
-    if plot_input_graph:
-        plot_unstructured_graph(test_object.G)
+    # test_object.G = create_manual_graph_with_4_nodes()
+    try:
+        if plot_input_graph or export:
+            plot_unstructured_graph(test_object.G, iteration, len(G), plot_input_graph)
+    except:
+        pass
 
     ## Generate the maximum random ceiling
     # +2 to allow selecting a larger range of numbers than the number of
@@ -44,7 +51,8 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     test_object.rand_nrs = generate_list_of_n_random_nrs(
         test_object.G, max=test_object.rand_ceil, seed=42
     )
-    print(f"before={test_object.rand_nrs}")
+    print(f"before delta={test_object.rand_nrs}")
+
     # Make the random numbers differ with at least delta>=2. This is to
     # prevent multiple degree_receiver_x_y neurons (that differ less than
     # delta) in a single WTA circuit to spike before they are inhibited by
@@ -55,31 +63,45 @@ def create_test_object(test_object, plot_input_graph=False, plot_snn_graph=False
     # circuit.
     test_object.rand_nrs = [x * test_object.delta for x in test_object.rand_nrs]
     print(f"after_delta={test_object.rand_nrs}")
+    print(f"test_object.rand_ceil={test_object.rand_ceil}")
     # Add inhibition to rand_nrs to ensure the degree_receiver current u[1]
     # always starts negative. The a_in of the degree_receiver_x_y neuron is
     # : the incoming spike_once_x weights+rand_x neurons+selector_excitation
     # - There are at most n incoming spike signals.
-    # - Each spike_once should have a weight of at least random_ceiling.
+    # - Each spike_once should have a weight of at least random_ceiling+1.
     # That is because the random value should map to 0<rand<1 with respect
     # to the difference of 1 spike_once more or less.
     # - The random_ceiling is specified.
     # - The excitatory neuron comes in at +1, a buffer of 1 yields+2.
     # Hence, the inhibition is computed as:
     test_object.inhibition = (
-        len(test_object.G) * test_object.rand_ceil + test_object.rand_ceil + 2
+        len(test_object.G) * (test_object.rand_ceil * test_object.delta + 1)
+        + (test_object.rand_ceil) * test_object.delta
+        + 1
     )
     test_object.rand_nrs = [x - test_object.inhibition for x in test_object.rand_nrs]
     print(
         f"After inhibition of:{test_object.inhibition}, rand_nrs={test_object.rand_nrs}"
     )
-
     ## Convert the fully connected graph into a networkx graph that
     # stores the snn properties.
+    # rand_ceil+1 because the maximum random number is rand_ceil which should map
+    # to range 0<rand<1 when divided by the synaptic weight of spike_once neurons.
+    # (and not to range 0<rand<=1 as it would without the +1)
     test_object.get_degree = get_degree_graph_with_separate_wta_circuits(
-        test_object.G, test_object.rand_nrs
+        test_object.G,
+        test_object.rand_nrs,
+        test_object.rand_ceil * test_object.delta + 1,
     )
-    if plot_snn_graph:
-        plot_coordinated_graph(test_object.get_degree)
+
+    try:
+        if plot_snn_graph or export:
+            plot_coordinated_graph(
+                test_object.get_degree, iteration, len(G), plot_snn_graph
+            )
+    except:
+        pass
+    # raise Exception("stop")
 
     ## Convert the snn networkx graph into a Loihi implementation.
     (
@@ -263,3 +285,10 @@ class Degree_receiver:
         self.du = 0
         self.dv = 1
         self.vth = 1
+
+
+class Test_properties:
+    """Contains test parameters"""
+
+    def __init__(self):
+        pass

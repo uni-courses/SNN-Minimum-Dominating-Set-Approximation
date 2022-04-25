@@ -1,8 +1,6 @@
 import unittest
 import networkx as nx
-from src.create_planar_triangle_free_graph import (
-    create_triangle_free_planar_graph,
-)
+from src.create_planar_triangle_free_graph import create_triangle_free_planar_graph
 
 from ..src.graph_properties import is_planar, is_triangle_free
 

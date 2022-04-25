@@ -76,7 +76,9 @@ def get_n_neurons(
 ):
     """Verifies at least n neurons exist with the sample_neuron properties."""
     expected_neurons = []
+
     for neuron in neurons:
+        # print(neuron_dict[neuron])
 
         # Check if neuron has the correct properties.
         if in_simulation:

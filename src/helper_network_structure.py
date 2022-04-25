@@ -23,7 +23,7 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
     return G
 
 
-def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
+def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -36,6 +36,18 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
     to each of the degree_receiver that represents a neighbour of node A.
     """
     get_degree = nx.DiGraph()
+
+    # Create a node to make the graph connected. (Otherwise, recurrent snn builder can not span/cross the network.)
+    get_degree.add_node(
+        f"connecting_node",
+        id=len(G.nodes),
+        du=0,
+        dv=0,
+        bias=0,
+        vth=1,
+        pos=(float(-0.25), float(0.25)),
+    )
+
     # First create all the nodes in the get_degree graph.
     for node in G.nodes:
 
@@ -102,25 +114,45 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs):
             pos=(float(1.5), float(node)),
         )
 
+    # Ensure SNN graph is connected(Otherwise, recurrent snn builder can not span/cross the network.)
+    for circuit in G.nodes:
+        get_degree.add_edges_from(
+            [
+                (
+                    f"connecting_node",
+                    f"spike_once_{circuit}",
+                )
+            ],
+            weight=0,
+        )
+    for node in G.nodes:
+        for neighbour in nx.all_neighbors(G, node):
+            if node != neighbour:
+                for other_node in G.nodes:
+                    if G.has_edge(neighbour, other_node):
+                        get_degree.add_edges_from(
+                            [
+                                (
+                                    f"spike_once_{other_node}",
+                                    f"degree_receiver_{node}_{neighbour}",
+                                )
+                            ],
+                            weight=rand_ceil,
+                        )
+                        print(
+                            f'"spike_once_{other_node} to: degree_receiver_{node}_{neighbour}'
+                        )
+
+    #    for node in G.nodes:
+    #        print(f'node={node},neighbours={list(nx.all_neighbors(G, node))}')
+    #        for other_node in G.nodes:
+    #        #for neighbour in nx.all_neighbors(G, node):
+    #            if node != other_node and G.has_edge(node, other_node):
+    #                # This is a degree receiver in form:degree_receiver_{node}_{neighbour}
+    #
+
     # Then create all edges between the nodes.
     for circuit in G.nodes:
-        # For each neighbour of node, named degree_receiver:
-        for neighbour_a in G.nodes:
-            if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
-                for neighbour_b in nx.all_neighbors(G, circuit):
-                    if circuit != neighbour_b and neighbour_a != neighbour_b:
-
-                        # Check if there is an edge from neighbour_a to neighbour_b.
-                        if neighbour_a in nx.all_neighbors(G, neighbour_b):
-                            get_degree.add_edges_from(
-                                [
-                                    (
-                                        f"spike_once_{circuit}",
-                                        f"degree_receiver_{neighbour_a}_{neighbour_b}",
-                                    )
-                                ],
-                                weight=+1,
-                            )
 
         # Add synapse between random node and degree receiver nodes.
         for circuit_target in G.nodes:
@@ -201,7 +233,7 @@ def get_weight_receiver_synapse_paths(G):
     return G
 
 
-def plot_unstructured_graph(G):
+def plot_unstructured_graph(G, iteration, size, show=False):
     # nx.draw(G, pos=graphviz_layout(G),with_labels = True)
     #
     # edge_labels = nx.get_edge_attributes(G,'weight')
@@ -218,12 +250,14 @@ def plot_unstructured_graph(G):
     edge_labels = nx.get_edge_attributes(G, "weight")
     nx.draw_networkx_edge_labels(G, graphviz_layout(G), edge_labels)
     # plt.savefig('this.png')
-
-    plt.show()
+    if show:
+        plt.show()
+    plt.savefig(f"G_{size}_{iteration}.png")
     plt.clf()
+    plt.close()
 
 
-def plot_coordinated_graph(G):
+def plot_coordinated_graph(G, iteration, size, show=False):
     nx.draw(G, nx.get_node_attributes(G, "pos"), with_labels=True, node_size=1)
     node_labels = nx.get_node_attributes(G, "")
     pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
@@ -231,5 +265,8 @@ def plot_coordinated_graph(G):
     edge_labels = nx.get_edge_attributes(G, "weight")
     nx.draw_networkx_edge_labels(G, pos, edge_labels)
 
-    plt.show()
+    if show:
+        plt.show()
+    plt.savefig(f"snn_{size}_{iteration}.png")
     plt.clf()
+    plt.close()

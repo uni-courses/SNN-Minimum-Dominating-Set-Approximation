@@ -82,3 +82,44 @@ def compute_mtds(input_graph, m=0):
             dset.append(n[0])
 
     return dset
+
+
+def partial_alipour(delta, inhibition, G, rand_ceil, rand_nrs):
+    """
+    This code implements the alipour algorithm as described in the paper https://doi.org/10.48550/arXiv.2012.04883
+    The algorithm is implemented on a single computer instead of an actual network of nodes.
+    """
+    # Reverse engineer actual rand nrs:
+    uninhibited_rand_nrs = [x + inhibition for x in rand_nrs]
+    print(f"uninhibited_rand_nrs={uninhibited_rand_nrs}")
+
+    for node in G.nodes:
+        G.nodes[node]["marks"] = 0
+        G.nodes[node]["random_number"] = 1 * uninhibited_rand_nrs[node]
+        # *(rand_ceil+1) because the spike_weights are multiplied with that value.
+        # Because the random weights should map to 0<random_weight<spike_weight.
+        G.nodes[node]["weight"] = (
+            G.degree(node) * (rand_ceil + 1) * delta + G.nodes[node]["random_number"]
+        )
+        G.nodes[node]["neg_rand"] = rand_nrs[node]
+        G.nodes[node]["expected_weight"] = (
+            rand_nrs[node] + G.degree(node) * (rand_ceil + 1) * delta
+        )
+
+    for node in G.nodes:
+        max_weight = max(G.nodes[n]["weight"] for n in nx.all_neighbors(G, node))
+
+        print(f"node={node},max_weight={max_weight}")
+        for neighbour in sorted(list(nx.all_neighbors(G, node))):
+            print(f'{node}_{neighbour}:weight={G.nodes[neighbour]["weight"]}')
+            print(f'{node}_{neighbour}:neg_rand={G.nodes[neighbour]["neg_rand"]}')
+            print(
+                f'{node}_{neighbour}:expected_weight={G.nodes[neighbour]["expected_weight"]}'
+            )
+        print(f"")
+        for n in nx.all_neighbors(G, node):
+            if (
+                G.nodes[n]["weight"] == max_weight
+            ):  # should all max weight neurons be marked or only one of them?
+                G.nodes[n]["marks"] += 1
+    return G
