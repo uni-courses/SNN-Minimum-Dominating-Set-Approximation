@@ -1,3 +1,4 @@
+import copy
 import unittest
 import networkx as nx
 from numpy import sort
@@ -50,14 +51,13 @@ class Test_counter(unittest.TestCase):
 
         # Get list of planer triangle free graphs.
         graphs = []
-        for size in range(5, 45, 5):
+        for size in range(4, 15, 1):
             graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
 
         # for G in get_graphs():
         for G in graphs:
-
             # Initialise paramers used for testing.
-            test_object = create_test_object(self, G, True, True)
+            test_object = create_test_object(G, False, False)
             # test_object = create_test_object(self,G,True,True)
 
             # Run default tests on neurons
@@ -65,8 +65,8 @@ class Test_counter(unittest.TestCase):
             (
                 counter_neurons,
                 starter_neuron,
-            ) = test_object.run_test_degree_receiver_neurons_over_time(
-                extraction_time=test_object.inhibition + 1
+            ) = self.run_test_degree_receiver_neurons_over_time(
+                test_object, extraction_time=test_object.inhibition + 1
             )
 
             # Compute degree count using Alipour algorithm
@@ -85,13 +85,15 @@ class Test_counter(unittest.TestCase):
                     f"counter_neuron={test_object.neuron_dict[counter_neurons[node]]}"
                 )
 
-                test_object.assertEqual(
+                self.assertEqual(
                     G_alipour.nodes[node]["marks"], counter_neurons[node].u.get()
                 )
             # Terminate Loihi simulation.
             starter_neuron.stop()
 
-    def run_test_degree_receiver_neurons_over_time(test_object, extraction_time=None):
+    def run_test_degree_receiver_neurons_over_time(
+        self, test_object, extraction_time=None
+    ):
         """Verifies the neuron properties over time."""
 
         # Collect the neurons of a particular type and get a starter neuron for
@@ -142,20 +144,27 @@ class Test_counter(unittest.TestCase):
             # Print the values coming into the timestep.
             # Assert neuron values.
             # TODO: Get args from create object.
-            test_object.verify_neuron_behaviour(
-                degree_receiver_previous_us,
-                degree_receiver_previous_vs,
-                test_object.sample_degree_receiver_neuron,
-                counter_previous_a_in,
-                counter_previous_us,
-                counter_previous_vs,
-                selector_previous_a_in,
-                selector_previous_us,
-                selector_previous_vs,
+            ###test_object.verify_neuron_behaviour(
+            ###    degree_receiver_previous_us,
+            ###    degree_receiver_previous_vs,
+            ###    test_object.sample_degree_receiver_neuron,
+            ###    counter_previous_a_in,
+            ###    counter_previous_us,
+            ###    counter_previous_vs,
+            ###    selector_previous_a_in,
+            ###    selector_previous_us,
+            ###    selector_previous_vs,
+            ###    sorted_counter_neurons,
+            ###    sorted_degree_receiver_neurons,
+            ###    sorted_selector_neurons,
+            ###    starter_neuron,
+            ###    t,
+            ###)
+            self.print_neuron_properties(
+                test_object,
                 sorted_counter_neurons,
                 sorted_degree_receiver_neurons,
                 sorted_selector_neurons,
-                starter_neuron,
                 t,
             )
             if not extraction_time is None and t == extraction_time:
@@ -166,6 +175,25 @@ class Test_counter(unittest.TestCase):
             return extracted_neurons, starter_neuron
         else:
             return sorted_counter_neurons, starter_neuron
+
+    def print_neuron_properties(
+        self,
+        test_object,
+        sorted_counter_neurons,
+        sorted_degree_receiver_neurons,
+        sorted_selector_neurons,
+        t,
+    ):
+        #
+        print_neurons_properties(
+            test_object.neuron_dict, sorted_degree_receiver_neurons, t, descriptions=[]
+        )
+        print_neurons_properties(
+            test_object.neuron_dict, sorted_selector_neurons, t, descriptions=[]
+        )
+        print_neurons_properties(
+            test_object.neuron_dict, sorted_counter_neurons, t, descriptions=[]
+        )
 
     def verify_neuron_behaviour(
         test_object,
@@ -187,16 +215,7 @@ class Test_counter(unittest.TestCase):
         """Gets the neurons that are being tested: degree_receiver neurons. Then
         prints those neuron properties and performs the neuron behaviour tests
         for the given timestep t."""
-        #
-        print_neurons_properties(
-            test_object.neuron_dict, sorted_degree_receiver_neurons, t, descriptions=[]
-        )
-        print_neurons_properties(
-            test_object.neuron_dict, sorted_selector_neurons, t, descriptions=[]
-        )
-        print_neurons_properties(
-            test_object.neuron_dict, sorted_counter_neurons, t, descriptions=[]
-        )
+
         # Run test on each degree_receiver neuron in the SNN.
         for degree_receiver_neuron in sorted_degree_receiver_neurons:
 
