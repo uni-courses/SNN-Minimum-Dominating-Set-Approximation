@@ -37,8 +37,11 @@ def create_test_object(
     test_object.G = G
     # test_object.G = nx.complete_graph(4)
     # test_object.G = create_manual_graph_with_4_nodes()
-    if plot_input_graph or export:
-        plot_unstructured_graph(test_object.G, iteration, len(G), plot_input_graph)
+    try:
+        if plot_input_graph or export:
+            plot_unstructured_graph(test_object.G, iteration, len(G), plot_input_graph)
+    except:
+        pass
 
     ## Generate the maximum random ceiling
     # +2 to allow selecting a larger range of numbers than the number of
@@ -88,10 +91,14 @@ def create_test_object(
         test_object.rand_nrs,
         test_object.rand_ceil * test_object.delta + 1,
     )
-    if plot_snn_graph or export:
-        plot_coordinated_graph(
-            test_object.get_degree, iteration, len(G), plot_snn_graph
-        )
+
+    try:
+        if plot_snn_graph or export:
+            plot_coordinated_graph(
+                test_object.get_degree, iteration, len(G), plot_snn_graph
+            )
+    except:
+        pass
     # raise Exception("stop")
 
     ## Convert the snn networkx graph into a Loihi implementation.

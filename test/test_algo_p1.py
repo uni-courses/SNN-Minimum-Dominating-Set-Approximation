@@ -51,7 +51,7 @@ class Test_counter(unittest.TestCase):
 
         # Get list of planer triangle free graphs.
 
-        for retry in range(0, 100, 1):
+        for retry in range(0, 2, 1):
             graphs = []
             for size in range(4, 7, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
@@ -146,22 +146,23 @@ class Test_counter(unittest.TestCase):
             # Print the values coming into the timestep.
             # Assert neuron values.
             # TODO: Get args from create object.
-            ###test_object.verify_neuron_behaviour(
-            ###    degree_receiver_previous_us,
-            ###    degree_receiver_previous_vs,
-            ###    test_object.sample_degree_receiver_neuron,
-            ###    counter_previous_a_in,
-            ###    counter_previous_us,
-            ###    counter_previous_vs,
-            ###    selector_previous_a_in,
-            ###    selector_previous_us,
-            ###    selector_previous_vs,
-            ###    sorted_counter_neurons,
-            ###    sorted_degree_receiver_neurons,
-            ###    sorted_selector_neurons,
-            ###    starter_neuron,
-            ###    t,
-            ###)
+            self.verify_neuron_behaviour(
+                test_object,
+                degree_receiver_previous_us,
+                degree_receiver_previous_vs,
+                test_object.sample_degree_receiver_neuron,
+                counter_previous_a_in,
+                counter_previous_us,
+                counter_previous_vs,
+                selector_previous_a_in,
+                selector_previous_us,
+                selector_previous_vs,
+                sorted_counter_neurons,
+                sorted_degree_receiver_neurons,
+                sorted_selector_neurons,
+                starter_neuron,
+                t,
+            )
             self.print_neuron_properties(
                 test_object,
                 sorted_counter_neurons,
@@ -198,6 +199,7 @@ class Test_counter(unittest.TestCase):
         )
 
     def verify_neuron_behaviour(
+        self,
         test_object,
         degree_receiver_previous_us,
         degree_receiver_previous_vs,
@@ -233,7 +235,8 @@ class Test_counter(unittest.TestCase):
             (
                 degree_receiver_previous_us[degree_receiver_neuron_name],
                 degree_receiver_previous_vs[degree_receiver_neuron_name],
-            ) = test_object.assert_degree_receiver_neuron_behaviour(
+            ) = self.assert_degree_receiver_neuron_behaviour(
+                test_object,
                 degree_receiver_previous_us[degree_receiver_neuron_name],
                 degree_receiver_previous_vs[degree_receiver_neuron_name],
                 sample_neuron,
@@ -243,7 +246,8 @@ class Test_counter(unittest.TestCase):
                 y,
             )
         # Verify selector neurons behave as expected.
-        test_object.run_test_on_selector_neurons(
+        self.run_test_on_selector_neurons(
+            test_object,
             test_object.sample_selector_neuron,
             selector_previous_a_in,
             selector_previous_us,
@@ -254,7 +258,8 @@ class Test_counter(unittest.TestCase):
         )
 
         # Verify counter neurons behave as expected.
-        test_object.run_test_on_counter_neurons(
+        self.run_test_on_counter_neurons(
+            test_object,
             test_object.sample_counter_neuron,
             counter_previous_a_in,
             counter_previous_us,
@@ -265,6 +270,7 @@ class Test_counter(unittest.TestCase):
         )
 
     def run_test_on_selector_neurons(
+        self,
         test_object,
         sample_selector_neuron,
         selector_previous_a_in,
@@ -283,7 +289,8 @@ class Test_counter(unittest.TestCase):
                 selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],
                 selector_previous_vs[selector_neuron_name],
-            ) = test_object.get_selector_a_in_and_call_asserts(
+            ) = self.get_selector_a_in_and_call_asserts(
+                test_object,
                 selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],
                 selector_previous_vs[selector_neuron_name],
@@ -295,6 +302,7 @@ class Test_counter(unittest.TestCase):
             )
 
     def run_test_on_counter_neurons(
+        self,
         test_object,
         sample_counter_neuron,
         counter_previous_a_in,
@@ -312,7 +320,8 @@ class Test_counter(unittest.TestCase):
                 counter_previous_a_in[counter_neuron_name],
                 counter_previous_us[counter_neuron_name],
                 counter_previous_vs[counter_neuron_name],
-            ) = test_object.assert_counter_neuron_behaviour(
+            ) = self.assert_counter_neuron_behaviour(
+                test_object,
                 counter_previous_a_in[counter_neuron_name],
                 counter_previous_us[counter_neuron_name],
                 counter_previous_vs[counter_neuron_name],
@@ -324,6 +333,7 @@ class Test_counter(unittest.TestCase):
             )
 
     def assert_degree_receiver_neuron_behaviour(
+        self,
         test_object,
         previous_u,
         previous_v,
@@ -350,11 +360,12 @@ class Test_counter(unittest.TestCase):
         )
 
         perform_generic_neuron_property_asserts(
-            test_object, a_in, previous_u, sample_neuron, degree_receiver_neuron
+            self, test_object, a_in, previous_u, sample_neuron, degree_receiver_neuron
         )
         return degree_receiver_neuron.u.get(), degree_receiver_neuron.v.get()
 
     def get_selector_a_in_and_call_asserts(
+        self,
         test_object,
         previous_a_in,
         previous_u,
@@ -365,10 +376,11 @@ class Test_counter(unittest.TestCase):
         t,
         wta_circuit,
     ):
-        test_object.assertTrue(True)
+        self.assertTrue(True)
 
         # Compute expected selector neuron properties based on a_in previous.
         perform_generic_neuron_property_asserts(
+            self,
             test_object,
             previous_a_in,
             previous_u,
@@ -399,6 +411,7 @@ class Test_counter(unittest.TestCase):
         return previous_a_in, previous_u, previous_v
 
     def assert_counter_neuron_behaviour(
+        self,
         test_object,
         previous_a_in,
         previous_u,
@@ -412,6 +425,7 @@ class Test_counter(unittest.TestCase):
 
         # Compute expected counter neuron properties based on a_in previous.
         perform_generic_neuron_property_asserts(
+            self,
             test_object,
             previous_a_in,
             previous_u,
