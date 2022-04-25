@@ -74,7 +74,6 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
                     vth=1,
                     pos=(float(1.0), get_y_position(G, node, neighbour)),
                 )
-            # print(f"created:degree_receiver_{node}_{neighbour}")
 
         # One neuron per node named: rand
         if len(rand_nrs) < len(G):
@@ -107,7 +106,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
         get_degree.add_node(
             f"counter_{node}",
             id=node,
-            du=1,
+            du=0,
             dv=1,
             bias=0,
             vth=0,
@@ -138,9 +137,6 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
                                 )
                             ],
                             weight=rand_ceil,
-                        )
-                        print(
-                            f'"spike_once_{other_node} to: degree_receiver_{node}_{neighbour}'
                         )
 
     #    for node in G.nodes:

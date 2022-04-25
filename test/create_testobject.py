@@ -1,3 +1,4 @@
+import copy
 import networkx as nx
 from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
 
@@ -187,13 +188,26 @@ def get_counter_neurons(test_object, sorted=True):
 def get_degree_receiver_previous_property_dicts(test_object, degree_receiver_neurons):
     degree_receiver_previous_us = {}
     degree_receiver_previous_vs = {}
-    degree_receiver_previous_us, degree_receiver_previous_vs = fill_dictionary(
+    degree_receiver_previous_has_spiked = {}
+    (
+        degree_receiver_previous_us,
+        degree_receiver_previous_vs,
+        degree_receiver_previous_has_spiked,
+    ) = fill_dictionary(
         test_object.neuron_dict,
         degree_receiver_neurons,
         degree_receiver_previous_us,
         degree_receiver_previous_vs,
+        previous_has_spiked=degree_receiver_previous_has_spiked,
     )
-    return degree_receiver_previous_us, degree_receiver_previous_vs
+    # degree_receiver_has_spiked = copy.deepcopy(degree_receiver_previous_us)
+    # degree_receiver_has_spiked =degree_receiver_has_spiked.fromkeys(degree_receiver_has_spiked, False)
+    # Print:
+    return (
+        degree_receiver_previous_has_spiked,
+        degree_receiver_previous_us,
+        degree_receiver_previous_vs,
+    )
 
 
 def get_selector_previous_property_dicts(test_object, selector_neurons):
@@ -271,7 +285,7 @@ class Counter_neuron:
     def __init__(self):
         self.first_name = "counter_0"
         self.bias = 0
-        self.du = 1
+        self.du = 0
         self.dv = 1
         self.vth = 0
 
