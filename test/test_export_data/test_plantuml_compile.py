@@ -6,9 +6,7 @@ import pytest
 from src.export_data.Hardcoded_data import Hardcoded_data
 from ...src.export_data.plantuml_generate import create_trivial_gantt
 from ...src.export_data.plantuml_generate import output_diagram_text_file
-from ...src.export_data.plantuml_compile import (
-    compile_diagrams_in_dir_relative_to_root,
-)
+from ...src.export_data.plantuml_compile import compile_diagrams_in_dir_relative_to_root
 from ...src.export_data.helper_dir_file_edit import (
     create_dir_relative_to_root_if_not_exists,
 )

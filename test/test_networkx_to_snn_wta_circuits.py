@@ -17,9 +17,7 @@ from src.helper_network_structure import (
     plot_unstructured_graph,
 )
 from src.helper_snns import print_neuron_properties
-from src.networkx_to_snn import (
-    convert_networkx_graph_to_snn_with_one_neuron,
-)
+from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
 from test.helper_tests import (
     compute_expected_number_of_degree_receivers,
     neurons_contain_n_degree_receiver_neurons,

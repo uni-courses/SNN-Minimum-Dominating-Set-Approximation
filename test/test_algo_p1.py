@@ -50,9 +50,10 @@ class Test_counter(unittest.TestCase):
     def test_multiple_tests(self):
 
         # Get list of planer triangle free graphs.
-        graphs = []
+
         for retry in range(0, 100, 1):
-            for size in range(4, 6, 1):
+            graphs = []
+            for size in range(4, 7, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
 
             # for G in get_graphs():
