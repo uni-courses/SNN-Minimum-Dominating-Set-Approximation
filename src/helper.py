@@ -538,6 +538,7 @@ def degree_receiver_x_y_is_connected_to_counter_z(
     # raise Exception("Would have expected to find x and y.")
     return False
 
+
 def get_x_position(m):
     """Ensures the degree receiver nodes per node are aligned with
     continuous interval. for example for node 1, the positions 0,2,3 are

@@ -25,7 +25,7 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
     return G
 
 
-def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil,m=2):
+def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -64,21 +64,20 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil,m=2):
             pos=(float(0), float(node)),
         )
 
-        
         for neighbour in nx.all_neighbors(G, node):
             if node != neighbour:
                 # One neuron per node named: degree_receiver_0-n.
                 get_degree.add_node(
-                f"degree_receiver_{node}_{neighbour}",
-                id=node,
-                du=0,
-                dv=1,
-                bias=0,
-                vth=1,
-                pos=(float(1.0), get_y_position(G, node, neighbour)),
-            )
+                    f"degree_receiver_{node}_{neighbour}",
+                    id=node,
+                    du=0,
+                    dv=1,
+                    bias=0,
+                    vth=1,
+                    pos=(float(1.0), get_y_position(G, node, neighbour)),
+                )
 
-            for loop in range(1,m):
+            for loop in range(1, m):
                 get_degree.add_node(
                     f"degree_receiver_{node}_{neighbour}_{loop}",
                     id=node,
@@ -86,7 +85,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil,m=2):
                     dv=1,
                     bias=0,
                     vth=1,
-                    pos=(float(1.5+loop*1.5), get_y_position(G, node, neighbour)),
+                    pos=(float(1.0 + loop * 1.5), get_y_position(G, node, neighbour)),
                 )
 
         # One neuron per node named: rand
@@ -105,16 +104,16 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil,m=2):
             pos=(float(0.25), float(node) + 0.5),
         )
 
-        for loop in range(1,m):
+        for loop in range(1, m):
             get_degree.add_node(
-            f"rand_{node}_{loop}",
-            id=node,
-            du=0,
-            dv=0,
-            bias=2,
-            vth=1,
-            pos=(float(0.25+loop*1.5), float(node) + 0.5),
-        )
+                f"rand_{node}_{loop}",
+                id=node,
+                du=0,
+                dv=0,
+                bias=2,
+                vth=1,
+                pos=(float(0.25 + loop * 1.5), float(node) + 0.5),
+            )
 
         # Add winner selector node
         get_degree.add_node(
@@ -127,16 +126,16 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil,m=2):
             pos=(float(1.25), float(node)),
         )
 
-        for loop in range(1,m):
+        for loop in range(1, m):
             get_degree.add_node(
-            f"selector_{node}_{loop}",
-            id=node,
-            du=0,
-            dv=0,
-            bias=2,
-            vth=1,
-            pos=(float(1.25+loop*1.5), float(node) + 0.5),
-        )
+                f"selector_{node}_{loop}",
+                id=node,
+                du=0,
+                dv=0,
+                bias=2,
+                vth=1,
+                pos=(float(1.25 + loop * 1.5), float(node) + 0.5),
+            )
 
         # Add winner selector node
         get_degree.add_node(
@@ -149,29 +148,59 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil,m=2):
             pos=(float(1.5), float(node)),
         )
 
-        for loop in range(1,m):
+        for loop in range(1, m):
             get_degree.add_node(
-            f"counter_{node}_{loop}",
-            id=node,
-            du=0,
-            dv=0,
-            bias=2,
-            vth=1,
-            pos=(float(1.5+loop*1.5), float(node) + 0.5),
-        )
+                f"counter_{node}_{loop}",
+                id=node,
+                du=0,
+                dv=0,
+                bias=2,
+                vth=1,
+                pos=(float(1.5 + loop * 1.5), float(node) + 0.5),
+            )
 
+        for loop in range(0, m):
+            get_degree.add_node(
+                f"depleter_{node}_{loop}",
+                id=node,
+                du=1,
+                dv=1,
+                bias=0,
+                vth=0,
+                pos=(float(1.5 + loop * 1.5), float(node) + 0.25),
+            )
 
         # Create next round connector neurons.
-        for loop in range(1,m):
+        for loop in range(0, m):
             get_degree.add_node(
-            f"next_round_{loop}",
-            id=node,
-            du=0,
-            dv=1,
-            bias=0,
-            vth=len(G.nodes)-1,
-            pos=(float(1.25+loop*1.5), float(node) + 0.5),
-        )
+                f"next_round_{loop}",
+                id=node,
+                du=0,
+                dv=1,
+                bias=0,
+                vth=len(G.nodes) - 1,
+                pos=(float(1.25 + loop * 1.5), -0.25),
+            )
+
+            get_degree.add_node(
+                f"delay_charger_{loop}",
+                id=node,
+                du=0,
+                dv=1,
+                bias=0,
+                vth=0,
+                pos=(float(1.5 + loop * 1.5), -0.25),
+            )
+
+            get_degree.add_node(
+                f"delay_{loop}",
+                id=node,
+                du=0,
+                dv=1,
+                bias=0,
+                vth=0,
+                pos=(float(1.5 + loop * 1.5), -0.25),
+            )
 
     # Ensure SNN graph is connected(Otherwise, recurrent snn builder can not span/cross the network.)
     for circuit in G.nodes:
@@ -306,12 +335,12 @@ def plot_unstructured_graph(G, iteration, size, show=False):
     edge_labels = nx.get_edge_attributes(G, "weight")
     nx.draw_networkx_edge_labels(G, graphviz_layout(G), edge_labels)
     # plotting a line plot after changing it's width and height
-    #f = plt.figure()
-    #f.set_figwidth(10)
-    #f.set_figheight(10)
+    # f = plt.figure()
+    # f.set_figwidth(10)
+    # f.set_figheight(10)
     plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
     # plt.savefig('this.png')
-    if True:
+    if show:
         plt.show()
     # plt.savefig()
     plot_export = Plot_to_tex()
@@ -328,10 +357,14 @@ def plot_coordinated_graph(G, iteration, size, show=False):
     edge_labels = nx.get_edge_attributes(G, "weight")
     nx.draw_networkx_edge_labels(G, pos, edge_labels)
 
-    #f = plt.figure()
-    #f.set_figwidth(10)
-    #f.set_figheight(10)
-    plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
+    plt.axis("off")
+    axis = plt.gca()
+    axis.set_xlim([1.2 * x for x in axis.get_xlim()])
+    axis.set_ylim([1.2 * y for y in axis.get_ylim()])
+    # f = plt.figure()
+    # f.set_figwidth(10)
+    # f.set_figheight(10)
+    # plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
     if show:
         plt.show()
 
