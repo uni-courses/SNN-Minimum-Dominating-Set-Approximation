@@ -54,7 +54,7 @@ class Test_counter(unittest.TestCase):
 
         # Get list of planer triangle free graphs.
 
-        for retry in range(0, 2, 1):
+        for retry in range(0, 1, 1):
             graphs = []
             for size in range(4, 6, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
@@ -62,7 +62,7 @@ class Test_counter(unittest.TestCase):
                 # G=create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
                 test_object = create_test_object(G, retry, False, False)
-                raise Exception("STOP")
+                # raise Exception("STOP")
                 # test_object = create_test_object(self,G,True,True)
 
                 # Run default tests on neurons

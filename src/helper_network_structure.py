@@ -25,7 +25,7 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
     return G
 
 
-def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
+def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -189,7 +189,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                 dv=1,
                 bias=0,
                 vth=0,
-                pos=(float(2.25 + loop * 2.25), -0.45),
+                pos=(float(2.25 + loop * 2.25), -0.5),
             )
 
             get_degree.add_node(
@@ -199,7 +199,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                 dv=1,
                 bias=0,
                 vth=0,
-                pos=(float(2.75 + loop * 2.25), -0.40),
+                pos=(float(3 + loop * 2.25), -0.5),
             )
 
     # Ensure SNN graph is connected(Otherwise, recurrent snn builder can not span/cross the network.)
@@ -253,9 +253,39 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                         ],
                         weight=rand_nrs[circuit],
                     )
-                    # print(
-                    #    f"edge: rand_{circuit_target}, degree_receiver_{circuit_target}_{circuit}, weight={rand_nrs[circuit]}"
-                    # )
+
+                    # for loop in range(0, m):
+                    # TODO: change to degree_receiver_x_y_z and update synapses for loop from 1,m to 0,m.
+                    get_degree.add_edges_from(
+                        [
+                            (
+                                f"degree_receiver_{circuit_target}_{circuit}",
+                                f"next_round_{0}",
+                            )
+                        ],
+                        weight=1,
+                    )
+                    for loop in range(1, m):
+                        get_degree.add_edges_from(
+                            [
+                                (
+                                    f"degree_receiver_{circuit_target}_{circuit}_{loop}",
+                                    f"next_round_{loop}",
+                                )
+                            ],
+                            weight=1,
+                        )
+
+            for loop in range(0, m):
+                get_degree.add_edges_from(
+                    [
+                        (
+                            f"next_round_{loop}",
+                            f"depleter_{node}_{loop}",
+                        )
+                    ],
+                    weight=-1,
+                )
 
         # Add synapse from degree_selector to selector node.
         for neighbour_b in nx.all_neighbors(G, circuit):
