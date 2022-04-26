@@ -25,7 +25,7 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
     return G
 
 
-def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
+def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
     d = 0.25 * m  # specify grid distance size
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
@@ -110,46 +110,26 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
             )
 
         # Add winner selector node
-        get_degree.add_node(
-            f"selector_{node}",
-            id=node,
-            du=0,
-            dv=1,
-            bias=5,  # Always spike unless inhibitied by u[t]
-            vth=4,
-            pos=(float(7 * d), float(node * 4 * d + d)),
-        )
-
-        for loop in range(1, m):
+        for loop in range(0, m):
             get_degree.add_node(
                 f"selector_{node}_{loop}",
                 id=node,
                 du=0,
-                dv=0,
-                bias=2,
-                vth=1,
+                dv=1,
+                bias=5,
+                vth=4,
                 pos=(float(7 * d + loop * 9 * d), float(node * 4 * d + d)),
             )
 
         # Add winner selector node
-        get_degree.add_node(
-            f"counter_{node}",
-            id=node,
-            du=0,
-            dv=1,
-            bias=0,
-            vth=0,
-            pos=(float(9 * d), float(node * 4 * d)),
-        )
-
-        for loop in range(1, m):
+        for loop in range(0, m):
             get_degree.add_node(
                 f"counter_{node}_{loop}",
                 id=node,
                 du=0,
-                dv=0,
-                bias=2,
-                vth=1,
+                dv=1,
+                bias=0,
+                vth=0,
                 pos=(float(9 * d + loop * 9 * d), float(node * 4 * d)),
             )
 
@@ -282,21 +262,22 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                         [
                             (
                                 f"degree_receiver_{circuit}_{neighbour_b}_{loop}",
-                                f"selector_{circuit}",
+                                f"selector_{circuit}_{loop}",
                             )
                         ],
                         weight=-5,  # to disable bias
                     )
-                # print(
-                #    f"edge: degree_receiver_{circuit}_{neighbour_b},selector_{circuit}, weight=-5"
-                # )
+
+                    print(
+                        f"edge: degree_receiver_{circuit}_{neighbour_b}_{loop},selector_{circuit}_{loop}, weight=-5"
+                    )
                 # TODO: UPDATE TO Go from degree_receiver_x_y to counter_y.
                 for loop in range(0, m):
                     get_degree.add_edges_from(
                         [
                             (
                                 f"degree_receiver_{circuit}_{neighbour_b}_{loop}",
-                                f"counter_{neighbour_b}",
+                                f"counter_{neighbour_b}_{loop}",
                             )
                         ],
                         weight=+1,  # to disable bias
@@ -312,7 +293,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                     get_degree.add_edges_from(
                         [
                             (
-                                f"selector_{circuit}",
+                                f"selector_{circuit}_{loop}",
                                 f"degree_receiver_{circuit}_{neighbour_b}_{loop}",
                             )
                         ],

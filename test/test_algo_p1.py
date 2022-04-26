@@ -50,19 +50,19 @@ class Test_counter(unittest.TestCase):
 
     def test_multiple_tests(self):
 
-        delete_dir_if_exists(f"latex/Images/graphs")
+        # delete_dir_if_exists(f"latex/Images/graphs")
 
         # Get list of planer triangle free graphs.
 
         for retry in range(0, 1, 1):
             graphs = []
-            for size in range(4, 6, 1):
+            for size in range(4, 5, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
                 # G=create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
                 test_object = create_test_object(G, retry, False, False)
-                raise Exception("STOP")
+                # raise Exception("STOP")
                 # test_object = create_test_object(self,G,True,True)
 
                 # Run default tests on neurons
@@ -291,8 +291,12 @@ class Test_counter(unittest.TestCase):
         # Run tests on selector.
         for selector_neuron in sorted_selector_neurons:
             selector_neuron_name = test_object.neuron_dict[selector_neuron]
-            wta_circuit = int(selector_neuron_name[9:])
-            # print(f"wta_circuit={wta_circuit}")
+            wta_circuit = int(selector_neuron_name.split("_")[1])
+            print(f"wta_circuit={wta_circuit}")
+            print(f"selector_neuron_name={selector_neuron_name}")
+            print(
+                f"selector_previous_a_in[selector_neuron_name]={selector_previous_a_in[selector_neuron_name]}"
+            )
             (
                 selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],
@@ -323,7 +327,7 @@ class Test_counter(unittest.TestCase):
         # Run tests on counter.
         for counter_neuron in sorted_counter_neurons:
             counter_neuron_name = test_object.neuron_dict[counter_neuron]
-            wta_circuit = int(counter_neuron_name[8:])
+            wta_circuit = int(counter_neuron_name.split("_")[1])
             (
                 counter_previous_a_in[counter_neuron_name],
                 counter_previous_us[counter_neuron_name],

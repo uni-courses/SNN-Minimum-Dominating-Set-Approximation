@@ -130,12 +130,12 @@ def compute_expected_number_of_degree_receivers(G):
 def perform_generic_neuron_property_asserts(
     pt, test_object, previous_a_in, previous_u, sample_neuron, tested_neuron
 ):
-    # u[t=x+1]=u[t=x]*(1-du)+a_in
     if test_object.neuron_dict[tested_neuron] == "counter_0":
         print(f"tested_neuron.u.get()={tested_neuron.u.get()}")
         print(f"previous_u={previous_u}")
         print(f"tested_neuron.du.get()={tested_neuron.du.get()}")
         print(f"previous_a_in={previous_a_in}")
+    # u[t=x+1]=u[t=x]*(1-du)+a_in
     pt.assertEqual(
         tested_neuron.u.get(),
         previous_u * (1 - tested_neuron.du.get()) + previous_a_in,
