@@ -5,6 +5,8 @@ import networkx as nx
 import pylab as plt
 from networkx.drawing.nx_agraph import graphviz_layout
 from src.create_planar_triangle_free_graph import plot_basic_graph
+from src.export_data.Plot_to_tex import Plot_to_tex
+from src.export_data.helper_tex_editing import export_python_export_code
 from src.helper import get_y_position
 
 
@@ -74,7 +76,6 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
                     vth=1,
                     pos=(float(1.0), get_y_position(G, node, neighbour)),
                 )
-            # print(f"created:degree_receiver_{node}_{neighbour}")
 
         # One neuron per node named: rand
         if len(rand_nrs) < len(G):
@@ -107,7 +108,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
         get_degree.add_node(
             f"counter_{node}",
             id=node,
-            du=1,
+            du=0,
             dv=1,
             bias=0,
             vth=0,
@@ -138,9 +139,6 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
                                 )
                             ],
                             weight=rand_ceil,
-                        )
-                        print(
-                            f'"spike_once_{other_node} to: degree_receiver_{node}_{neighbour}'
                         )
 
     #    for node in G.nodes:
@@ -252,7 +250,9 @@ def plot_unstructured_graph(G, iteration, size, show=False):
     # plt.savefig('this.png')
     if show:
         plt.show()
-    plt.savefig(f"G_{size}_{iteration}.png")
+    # plt.savefig()
+    plot_export = Plot_to_tex()
+    plot_export.export_plot(plt, f"G_{size}_{iteration}")
     plt.clf()
     plt.close()
 
@@ -267,6 +267,9 @@ def plot_coordinated_graph(G, iteration, size, show=False):
 
     if show:
         plt.show()
-    plt.savefig(f"snn_{size}_{iteration}.png")
+
+    plot_export = Plot_to_tex()
+    plot_export.export_plot(plt, f"snn_{size}_{iteration}")
+    # plt.savefig()
     plt.clf()
     plt.close()

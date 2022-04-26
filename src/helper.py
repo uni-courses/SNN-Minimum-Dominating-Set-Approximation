@@ -308,25 +308,6 @@ def get_a_in_for_degree_receiver(
     else:
         verbose = False
     a_in = 0
-    # for circuit in G.nodes:
-    #    for neighbour_a in G.nodes:
-    #        if neighbour_a in nx.all_neighbors(G, circuit) or neighbour_a == circuit:
-    #            for neighbour_b in nx.all_neighbors(G, circuit):
-    #                if circuit != neighbour_b and neighbour_a != neighbour_b:
-    #
-    #                    # Check if there is an edge from neighbour_a to neighbour_b.
-    #                    if neighbour_a in nx.all_neighbors(G, neighbour_b):
-    #                        # Spike_once to degree_receiver
-    #                        # f"spike_once_{circuit}", to: f"degree_receiver_{neighbour_a}_{neighbour_b}",
-    #                        a_in = a_in + add_spike_weight_to_degree_receiver(
-    #                            neighbour_a,
-    #                            neighbour_b,
-    #                            spike_once_weight,
-    #                            t,
-    #                            x,
-    #                            y,
-    #                            verbose,
-    #                        )
 
     for node in G.nodes:
         for neighbour in nx.all_neighbors(G, node):
@@ -495,7 +476,12 @@ def sort_neurons(neurons, neuron_dict):
 
 
 def fill_dictionary(
-    neuron_dict, neurons, previous_us, previous_vs, previous_selector=None
+    neuron_dict,
+    neurons,
+    previous_us,
+    previous_vs,
+    previous_selector=None,
+    previous_has_spiked=None,
 ):
     sorted_neurons = sort_neurons(neurons, neuron_dict)
     for neuron in sorted_neurons:
@@ -504,10 +490,20 @@ def fill_dictionary(
         previous_vs[neuron_name] = 0
         if not previous_selector is None:
             previous_selector[neuron_name] = 0
+        if not previous_has_spiked is None:
+            previous_has_spiked[neuron_name] = False
 
     if not previous_selector is None:
-        return previous_us, previous_vs, previous_selector
-    return previous_us, previous_vs
+        if not previous_has_spiked is None:
+            return previous_us, previous_vs, previous_selector, previous_has_spiked
+        else:
+            return previous_us, previous_vs, previous_selector
+    else:
+        if not previous_has_spiked is None:
+            return previous_us, previous_vs, previous_has_spiked
+        else:
+            return previous_us, previous_vs
+    raise Exception("Expected to have returned the correct set.")
 
 
 def get_degree_reciever_neurons_per_wta_circuit(

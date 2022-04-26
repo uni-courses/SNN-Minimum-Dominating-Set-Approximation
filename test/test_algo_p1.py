@@ -8,6 +8,7 @@ from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_4_nodes,
     create_triangle_free_planar_graph,
 )
+from src.export_data.helper_dir_file_edit import delete_dir_if_exists
 from src.helper import (
     degree_receiver_x_y_is_connected_to_counter_z,
     get_a_in_for_degree_receiver,
@@ -49,15 +50,16 @@ class Test_counter(unittest.TestCase):
 
     def test_multiple_tests(self):
 
+        delete_dir_if_exists(f"latex/Images/graphs")
+
         # Get list of planer triangle free graphs.
 
         for retry in range(0, 2, 1):
             graphs = []
-            for size in range(4, 7, 1):
-               graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
-            #graphs.append(create_manual_graph_with_4_nodes())
-            # for G in get_graphs():
+            for size in range(4, 6, 1):
+                graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
+                # G=create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
                 test_object = create_test_object(G, retry, False, False)
                 # test_object = create_test_object(self,G,True,True)
@@ -119,6 +121,7 @@ class Test_counter(unittest.TestCase):
         # TODO: Move into create object.
         # Create storage lists for previous neuron currents and voltages.
         (
+            degree_receiver_has_spiked,
             degree_receiver_previous_us,
             degree_receiver_previous_vs,
         ) = get_degree_receiver_previous_property_dicts(
@@ -148,6 +151,7 @@ class Test_counter(unittest.TestCase):
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(
                 test_object,
+                degree_receiver_has_spiked,
                 degree_receiver_previous_us,
                 degree_receiver_previous_vs,
                 test_object.sample_degree_receiver_neuron,
@@ -201,6 +205,7 @@ class Test_counter(unittest.TestCase):
     def verify_neuron_behaviour(
         self,
         test_object,
+        degree_receiver_has_spiked,
         degree_receiver_previous_us,
         degree_receiver_previous_vs,
         sample_neuron,
@@ -233,10 +238,12 @@ class Test_counter(unittest.TestCase):
 
             # Perform test on degree_receiver neuron behaviour.
             (
+                degree_receiver_has_spiked[degree_receiver_neuron_name],
                 degree_receiver_previous_us[degree_receiver_neuron_name],
                 degree_receiver_previous_vs[degree_receiver_neuron_name],
             ) = self.assert_degree_receiver_neuron_behaviour(
                 test_object,
+                degree_receiver_has_spiked[degree_receiver_neuron_name],
                 degree_receiver_previous_us[degree_receiver_neuron_name],
                 degree_receiver_previous_vs[degree_receiver_neuron_name],
                 sample_neuron,
@@ -335,6 +342,7 @@ class Test_counter(unittest.TestCase):
     def assert_degree_receiver_neuron_behaviour(
         self,
         test_object,
+        previous_has_spiked,
         previous_u,
         previous_v,
         sample_neuron,
@@ -344,6 +352,7 @@ class Test_counter(unittest.TestCase):
         y,
     ):
         """Assert the values of the degree_receiver_neuron neuron on t=4."""
+
         a_in = get_a_in_for_degree_receiver(
             test_object.G,
             test_object.found_winner,
@@ -358,11 +367,27 @@ class Test_counter(unittest.TestCase):
             wta_circuit,
             y,
         )
+        # print(f'before previous_has_spiked={previous_has_spiked}')
+        if previous_has_spiked:
+            a_in = a_in - 2
+        if (
+            test_object.sample_degree_receiver_neuron.bias
+            + degree_receiver_neuron.u.get()
+            > test_object.sample_degree_receiver_neuron.vth
+        ):
+            previous_has_spiked = True
+        else:
+            previous_has_spiked = False
+        # print(f'after previous_has_spiked={previous_has_spiked}')
 
         perform_generic_neuron_property_asserts(
             self, test_object, a_in, previous_u, sample_neuron, degree_receiver_neuron
         )
-        return degree_receiver_neuron.u.get(), degree_receiver_neuron.v.get()
+        return (
+            previous_has_spiked,
+            degree_receiver_neuron.u.get(),
+            degree_receiver_neuron.v.get(),
+        )
 
     def get_selector_a_in_and_call_asserts(
         self,
@@ -424,6 +449,8 @@ class Test_counter(unittest.TestCase):
     ):
 
         # Compute expected counter neuron properties based on a_in previous.
+        print(f"t={t}")
+        print(f"testing:{test_object.neuron_dict[counter_neuron]}")
         perform_generic_neuron_property_asserts(
             self,
             test_object,
@@ -436,7 +463,7 @@ class Test_counter(unittest.TestCase):
         # the current u[t-1] which was included in previous_a_in for the
         # selector neuron, is leaked for counter neurons, so a_in is
         # a_in without what a_in was in the previous round.
-        previous_a_in = 0
+        current_a_in = 0
 
         for node in test_object.G.nodes:
             # Get degree_receiver neurons from wta circuits.
@@ -461,9 +488,9 @@ class Test_counter(unittest.TestCase):
                         test_object.G,
                         test_object.neuron_dict,
                     ):
-                        previous_a_in = previous_a_in + 1
-                        print(f"FOUND SPIKE FOR COUNTER, previous_a_in={previous_a_in}")
+                        current_a_in = current_a_in + 1
+                        print(f"FOUND SPIKE FOR COUNTER, current_a_in={current_a_in}")
                     else:
-                        previous_a_in = previous_a_in  # no spike
+                        current_a_in = current_a_in  # no spike
 
-        return previous_a_in, previous_u, previous_v
+        return current_a_in, counter_neuron.u.get(), counter_neuron.v.get()
