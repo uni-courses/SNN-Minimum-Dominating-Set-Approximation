@@ -216,6 +216,17 @@ class Plot_to_tex:
         """returns the directory of this script regardles of from which level the code is executed"""
         return os.path.dirname(__file__)
 
+    def export_plot(self, plt, filename):
+        self.create_target_dir_if_not_exists(f"latex/Images/", "graphs")
+        plt.savefig(f"latex/Images/" + "graphs/" + filename + ".png")
+
+    def create_target_dir_if_not_exists(self, path, new_dir_name):
+        if os.path.exists(path):
+            if not os.path.exists(f"{path}/{new_dir_name}"):
+                os.makedirs(f"{path}/{new_dir_name}")
+        else:
+            raise Exception(f"Error, path={path} did not exist.")
+
 
 if __name__ == "__main__":
     main = Plot_to_tex()

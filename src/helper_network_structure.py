@@ -5,6 +5,8 @@ import networkx as nx
 import pylab as plt
 from networkx.drawing.nx_agraph import graphviz_layout
 from src.create_planar_triangle_free_graph import plot_basic_graph
+from src.export_data.Plot_to_tex import Plot_to_tex
+from src.export_data.helper_tex_editing import export_python_export_code
 from src.helper import get_y_position
 
 
@@ -248,7 +250,9 @@ def plot_unstructured_graph(G, iteration, size, show=False):
     # plt.savefig('this.png')
     if show:
         plt.show()
-    plt.savefig(f"G_{size}_{iteration}.png")
+    # plt.savefig()
+    plot_export = Plot_to_tex()
+    plot_export.export_plot(plt, f"G_{size}_{iteration}")
     plt.clf()
     plt.close()
 
@@ -263,6 +267,9 @@ def plot_coordinated_graph(G, iteration, size, show=False):
 
     if show:
         plt.show()
-    plt.savefig(f"snn_{size}_{iteration}.png")
+
+    plot_export = Plot_to_tex()
+    plot_export.export_plot(plt, f"snn_{size}_{iteration}")
+    # plt.savefig()
     plt.clf()
     plt.close()

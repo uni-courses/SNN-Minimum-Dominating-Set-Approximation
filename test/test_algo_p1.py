@@ -8,6 +8,7 @@ from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_4_nodes,
     create_triangle_free_planar_graph,
 )
+from src.export_data.helper_dir_file_edit import delete_dir_if_exists
 from src.helper import (
     degree_receiver_x_y_is_connected_to_counter_z,
     get_a_in_for_degree_receiver,
@@ -49,16 +50,18 @@ class Test_counter(unittest.TestCase):
 
     def test_multiple_tests(self):
 
+        delete_dir_if_exists(f"latex/Images/graphs")
+
         # Get list of planer triangle free graphs.
 
-        for retry in range(0, 3, 1):
+        for retry in range(0, 2, 1):
             graphs = []
-            for size in range(4, 7, 1):
+            for size in range(4, 6, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
                 # G=create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
-                test_object = create_test_object(G, 99, False, False)
+                test_object = create_test_object(G, retry, False, False)
                 # test_object = create_test_object(self,G,True,True)
 
                 # Run default tests on neurons
