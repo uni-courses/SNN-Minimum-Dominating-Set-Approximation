@@ -26,7 +26,7 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
     return G
 
 
-def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
+def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
     m = m + 1
     d = 0.25 * m  # specify grid distance size
     """Returns a networkx graph that represents the snn that computes the

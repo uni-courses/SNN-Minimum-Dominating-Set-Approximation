@@ -123,3 +123,40 @@ def partial_alipour(delta, inhibition, G, rand_ceil, rand_nrs):
             ):  # should all max weight neurons be marked or only one of them?
                 G.nodes[n]["marks"] += 1
     return G
+
+
+def full_alipour(delta, inhibition, G, rand_ceil, rand_nrs, m):
+    # Reverse engineer actual rand nrs:
+    uninhibited_rand_nrs = [
+        (x + inhibition) / (rand_ceil * delta + 1) for x in rand_nrs
+    ]
+    print(f"uninhibited_rand_nrs={uninhibited_rand_nrs}")
+
+    for node in G.nodes:
+        G.nodes[node]["marks"] = 0
+        G.nodes[node]["random_number"] = random.random()
+        G.nodes[node]["weight"] = G.degree(node) + G.nodes[node]["random_number"]
+
+    for node in G.nodes:
+        max_weight = max(G.nodes[n]["weight"] for n in nx.all_neighbors(G, node))
+        for n in nx.all_neighbors(G, node):
+            if (
+                G.nodes[n]["weight"] == max_weight
+            ):  # should all max weight neurons be marked or only one of them?
+                G.nodes[n]["marks"] += 1
+
+    for _ in range(m):
+
+        for node in G.nodes:
+            G.nodes[node]["weight"] = (
+                G.nodes[node]["marks"] + G.nodes[node]["random_number"]
+            )
+            G.nodes[node]["marks"] = 0
+
+        for node in G.nodes:
+            max_weight = max(G.nodes[n]["weight"] for n in nx.all_neighbors(G, node))
+            for n in nx.all_neighbors(G, node):
+                if G.nodes[n]["weight"] == max_weight:
+                    G.nodes[n]["marks"] += 1
+
+    return G

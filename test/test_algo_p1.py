@@ -18,7 +18,7 @@ from src.helper import (
     get_y_from_degree_receiver_x_y,
     print_neurons_properties,
 )
-from src.neumann import partial_alipour
+from src.neumann import partial_alipour, full_alipour
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
     assert_neurons_of_expected_type_are_all_present_in_snn,
@@ -53,6 +53,7 @@ class Test_counter(unittest.TestCase):
         # delete_dir_if_exists(f"latex/Images/graphs")
 
         # Get list of planer triangle free graphs.
+        m = 0
 
         for retry in range(0, 1, 1):
             graphs = []
@@ -61,7 +62,7 @@ class Test_counter(unittest.TestCase):
             for G in graphs:
                 G = create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
-                test_object = create_test_object(G, retry, False, False)
+                test_object = create_test_object(G, retry, m, False, False)
                 # raise Exception("STOP")
                 # test_object = create_test_object(self,G,True,True)
 
@@ -75,12 +76,21 @@ class Test_counter(unittest.TestCase):
                 )
 
                 # Compute degree count using Alipour algorithm
-                G_alipour = partial_alipour(
+                # G_alipour = partial_alipour(
+                #     test_object.delta,
+                #     test_object.inhibition,
+                #     G,
+                #     test_object.rand_ceil,
+                #     test_object.rand_nrs,
+                # )
+
+                G_alipour = full_alipour(
                     test_object.delta,
                     test_object.inhibition,
                     G,
                     test_object.rand_ceil,
                     test_object.rand_nrs,
+                    test_object.m,
                 )
 
                 # Compare the counts per node and assert they are equal.
@@ -265,17 +275,17 @@ class Test_counter(unittest.TestCase):
             t,
         )
 
-        # Verify counter neurons behave as expected.
-        self.run_test_on_counter_neurons(
-            test_object,
-            test_object.sample_counter_neuron,
-            counter_previous_a_in,
-            counter_previous_us,
-            counter_previous_vs,
-            sorted_degree_receiver_neurons,
-            sorted_counter_neurons,
-            t,
-        )
+        # # Verify counter neurons behave as expected.
+        # self.run_test_on_counter_neurons(
+        #     test_object,
+        #     test_object.sample_counter_neuron,
+        #     counter_previous_a_in,
+        #     counter_previous_us,
+        #     counter_previous_vs,
+        #     sorted_degree_receiver_neurons,
+        #     sorted_counter_neurons,
+        #     t,
+        # )
 
     def run_test_on_selector_neurons(
         self,
