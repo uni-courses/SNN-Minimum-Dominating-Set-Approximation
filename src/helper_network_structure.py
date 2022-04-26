@@ -85,7 +85,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                     dv=1,
                     bias=0,
                     vth=1,
-                    pos=(float(1.0 + loop * 1.5), get_y_position(G, node, neighbour)),
+                    pos=(float(1.0 + loop * 2.25), get_y_position(G, node, neighbour)),
                 )
 
         # One neuron per node named: rand
@@ -112,7 +112,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                 dv=0,
                 bias=2,
                 vth=1,
-                pos=(float(0.25 + loop * 1.5), float(node) + 0.5),
+                pos=(float(0.25 + loop * 2.25), float(node) + 0.5),
             )
 
         # Add winner selector node
@@ -123,7 +123,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
             dv=1,
             bias=5,  # Always spike unless inhibitied by u[t]
             vth=4,
-            pos=(float(1.25), float(node)),
+            pos=(float(1.75), float(node)),
         )
 
         for loop in range(1, m):
@@ -134,7 +134,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                 dv=0,
                 bias=2,
                 vth=1,
-                pos=(float(1.25 + loop * 1.5), float(node) + 0.5),
+                pos=(float(1.75 + loop * 2.25), float(node) + 0.5),
             )
 
         # Add winner selector node
@@ -145,7 +145,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
             dv=1,
             bias=0,
             vth=0,
-            pos=(float(1.5), float(node)),
+            pos=(float(2.25), float(node)),
         )
 
         for loop in range(1, m):
@@ -156,7 +156,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                 dv=0,
                 bias=2,
                 vth=1,
-                pos=(float(1.5 + loop * 1.5), float(node) + 0.5),
+                pos=(float(2.25 + loop * 2.25), float(node) + 0.5),
             )
 
         for loop in range(0, m):
@@ -167,7 +167,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                 dv=1,
                 bias=0,
                 vth=0,
-                pos=(float(1.5 + loop * 1.5), float(node) + 0.25),
+                pos=(float(2.25 + loop * 2.25), float(node) - 0.25),
             )
 
         # Create next round connector neurons.
@@ -179,7 +179,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                 dv=1,
                 bias=0,
                 vth=len(G.nodes) - 1,
-                pos=(float(1.25 + loop * 1.5), -0.25),
+                pos=(float(1.5 + loop * 2.25), -0.5),
             )
 
             get_degree.add_node(
@@ -189,7 +189,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                 dv=1,
                 bias=0,
                 vth=0,
-                pos=(float(1.5 + loop * 1.5), -0.25),
+                pos=(float(2.25 + loop * 2.25), -0.45),
             )
 
             get_degree.add_node(
@@ -199,7 +199,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                 dv=1,
                 bias=0,
                 vth=0,
-                pos=(float(1.5 + loop * 1.5), -0.25),
+                pos=(float(2.75 + loop * 2.25), -0.40),
             )
 
     # Ensure SNN graph is connected(Otherwise, recurrent snn builder can not span/cross the network.)
@@ -350,12 +350,20 @@ def plot_unstructured_graph(G, iteration, size, show=False):
 
 
 def plot_coordinated_graph(G, iteration, size, show=False):
-    nx.draw(G, nx.get_node_attributes(G, "pos"), with_labels=True, node_size=1)
+    # Width=edge width.
+    nx.draw(
+        G,
+        nx.get_node_attributes(G, "pos"),
+        with_labels=True,
+        node_size=8,
+        font_size=5,
+        width=0.2,
+    )
     node_labels = nx.get_node_attributes(G, "")
     pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
     nx.draw_networkx_labels(G, pos, labels=node_labels)
     edge_labels = nx.get_edge_attributes(G, "weight")
-    nx.draw_networkx_edge_labels(G, pos, edge_labels)
+    nx.draw_networkx_edge_labels(G, pos, edge_labels, font_size=5)
 
     plt.axis("off")
     axis = plt.gca()
