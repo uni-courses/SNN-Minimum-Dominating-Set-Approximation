@@ -280,7 +280,7 @@ def get_a_in_for_spike_once(t):
         return 0
 
 
-def get_expected_amount_of_degree_receiver_neurons(G):
+def get_expected_amount_of_degree_receiver_neurons(G,):
     expected_amount = 0
     for node in G.nodes:
         for neighbour in nx.all_neighbors(G, node):
