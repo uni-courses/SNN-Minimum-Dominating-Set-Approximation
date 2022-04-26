@@ -284,7 +284,7 @@ class Counter_neuron:
 
     def __init__(self, G):
         self.first_name = "counter_0"
-        self.bias = -len(G)
+        self.bias = 0
         self.du = 0
         self.dv = 1
         self.vth = 0

@@ -128,16 +128,15 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
 
         # Add winner selector node
         # for loop in range(0, m):
-        #    get_degree.add_node(
-        #        f"counter_{node}_{loop}",
-        #        id=node,
-        #        du=0,
-        #        dv=1,
-        #        bias=-len(G),
-        #        vth=0,
-        #        pos=(float(9 * d + loop * 9 * d), float(node * 4 * d)),
-        #    )
-
+        get_degree.add_node(
+            f"counter_{node}_{m-1}",
+            id=node,
+            du=0,
+            dv=1,
+            bias=0,
+            vth=0,
+            pos=(float(9 * d + loop * 9 * d), float(node * 4 * d)),
+        )
         # for loop in range(0, m):
         #    get_degree.add_node(
         #        f"depleter_{node}_{loop}",
@@ -352,17 +351,16 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                     print(
                         f"edge: degree_receiver_{circuit}_{neighbour_b}_{loop},selector_{circuit}_{loop}, weight=-5"
                     )
-                # TODO: UPDATE TO Go from degree_receiver_x_y to counter_y.
-                for loop in range(0, m):
-                    # get_degree.add_edges_from(
-                    #    [
-                    #        (
-                    #            f"degree_receiver_{circuit}_{neighbour_b}_{loop}",
-                    #            f"counter_{neighbour_b}_{loop}",
-                    #        )
-                    #    ],
-                    #    weight=+1,  # to disable bias
-                    # )
+                    # TODO: UPDATE TO Go from degree_receiver_x_y to counter_y.
+                    get_degree.add_edges_from(
+                        [
+                            (
+                                f"degree_receiver_{circuit}_{neighbour_b}_{m-1}",
+                                f"counter_{neighbour_b}_{m-1}",
+                            )
+                        ],
+                        weight=+1,  # to disable bias
+                    )
                     # Create list of outgoing edges from a certain counter neuron.
                     if (
                         not f"degree_receiver_{circuit}_{neighbour_b}_{loop}"
@@ -393,8 +391,8 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
                         weight=1,  # To increase u(t) at every timestep.
                     )
             # print(f"selector_{circuit} degree_receiver_{circuit}_{neighbour_b}")
-    pprint(f"left={left}")
-    pprint(f"right={right}")
+    # pprint(f"left={left}")
+    # pprint(f"right={right}")
 
     # Create replacement synapses.
     for id in range(m - 1):

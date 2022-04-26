@@ -123,10 +123,10 @@ def is_correct_round(neuron, neuron_dict, neuron_identifier, m):
         else:
             return False
     elif neuron_identifier == "counter_":
-        if round == m:
-            return True
-        else:
-            return False
+        # if round == m:
+        return True
+        # else:
+        #    return False
 
     # For all neurons round is irrellevant.
     return True
