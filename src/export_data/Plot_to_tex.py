@@ -218,7 +218,7 @@ class Plot_to_tex:
 
     def export_plot(self, plt, filename):
         self.create_target_dir_if_not_exists(f"latex/Images/", "graphs")
-        plt.savefig(f"latex/Images/" + "graphs/" + filename + ".png")
+        plt.savefig(f"latex/Images/" + "graphs/" + filename + ".png",figsize=(8, 6),dpi=200)
 
     def create_target_dir_if_not_exists(self, path, new_dir_name):
         if os.path.exists(path):
