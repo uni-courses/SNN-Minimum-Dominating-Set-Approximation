@@ -59,7 +59,7 @@ class Test_counter(unittest.TestCase):
             for size in range(4, 5, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
-                # G=create_manual_graph_with_4_nodes()
+                G = create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
                 test_object = create_test_object(G, retry, False, False)
                 # raise Exception("STOP")
@@ -149,6 +149,13 @@ class Test_counter(unittest.TestCase):
 
             # Print the values coming into the timestep.
             # Assert neuron values.
+            self.print_neuron_properties(
+                test_object,
+                sorted_counter_neurons,
+                sorted_degree_receiver_neurons,
+                sorted_selector_neurons,
+                t,
+            )
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(
                 test_object,
@@ -166,13 +173,6 @@ class Test_counter(unittest.TestCase):
                 sorted_degree_receiver_neurons,
                 sorted_selector_neurons,
                 starter_neuron,
-                t,
-            )
-            self.print_neuron_properties(
-                test_object,
-                sorted_counter_neurons,
-                sorted_degree_receiver_neurons,
-                sorted_selector_neurons,
                 t,
             )
             if not extraction_time is None and t == extraction_time:
@@ -292,11 +292,11 @@ class Test_counter(unittest.TestCase):
         for selector_neuron in sorted_selector_neurons:
             selector_neuron_name = test_object.neuron_dict[selector_neuron]
             wta_circuit = int(selector_neuron_name.split("_")[1])
-            print(f"wta_circuit={wta_circuit}")
-            print(f"selector_neuron_name={selector_neuron_name}")
-            print(
-                f"selector_previous_a_in[selector_neuron_name]={selector_previous_a_in[selector_neuron_name]}"
-            )
+            # print(f"wta_circuit={wta_circuit}")
+            # print(f"selector_neuron_name={selector_neuron_name}")
+            # print(
+            #    f"selector_previous_a_in[selector_neuron_name]={selector_previous_a_in[selector_neuron_name]}"
+            # )
             (
                 selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],

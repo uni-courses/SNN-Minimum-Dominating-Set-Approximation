@@ -27,7 +27,7 @@ def create_test_object(
     test_object.sample_spike_once_neuron = Spike_once_neuron()
     test_object.sample_rand_neuron = Rand_neuron()
     test_object.sample_degree_receiver_neuron = Degree_receiver()
-    test_object.sample_counter_neuron = Counter_neuron()
+    test_object.sample_counter_neuron = Counter_neuron(G)
 
     ## Specify the expected synaptic weights
     # TODO: Specify per synapse group. (except for the random synapses)
@@ -282,9 +282,9 @@ class Rand_neuron:
 class Counter_neuron:
     """Creates expected properties of the counter neuron."""
 
-    def __init__(self):
+    def __init__(self, G):
         self.first_name = "counter_0"
-        self.bias = 0
+        self.bias = -len(G)
         self.du = 0
         self.dv = 1
         self.vth = 0
