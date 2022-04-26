@@ -62,7 +62,7 @@ class Test_counter(unittest.TestCase):
                 G = create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
                 test_object = create_test_object(G, retry, False, False)
-                # raise Exception("STOP")
+                raise Exception("STOP")
                 # test_object = create_test_object(self,G,True,True)
 
                 # Run default tests on neurons

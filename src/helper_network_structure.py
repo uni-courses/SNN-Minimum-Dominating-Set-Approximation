@@ -253,6 +253,17 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=2):
         )
 
     for circuit in G.nodes:
+        for loop in range(0, m-1):
+            # TODO
+            get_degree.add_edges_from(
+                [
+                    (
+                        f"delay_{loop}",
+                        f"selector_{circuit}_{loop+1}",
+                    )
+                ],
+                weight=1,  # TODO: doubt.
+            )
 
         # Add synapse between random node and degree receiver nodes.
         for circuit_target in G.nodes:
