@@ -72,7 +72,7 @@ def has_n_neurons_of_sample_type(
 
 
 def get_n_neurons(
-    n, neurons, neuron_dict, neuron_identifier, sample_neuron, in_simulation=False,m=0
+    n, neurons, neuron_dict, neuron_identifier, sample_neuron, in_simulation=False, m=0
 ):
     """Verifies at least n neurons exist with the sample_neuron properties."""
     expected_neurons = []
@@ -96,7 +96,7 @@ def get_n_neurons(
         ):
 
             # Check if correct round:
-            if is_correct_round(neuron,neuron_dict,neuron_identifier,m):
+            if is_correct_round(neuron, neuron_dict, neuron_identifier, m):
                 expected_neurons.append(neuron)
 
     if len(expected_neurons) == n:
@@ -104,21 +104,23 @@ def get_n_neurons(
     else:
         raise Exception(f"len(expected_neurons)={len(expected_neurons)}")
 
-def is_correct_round(neuron,neuron_dict,neuron_identifier,m):
-    if neuron_identifier=="degree_receiver_":
-        neuron_name=neuron_dict[neuron]
-        print(f'neuron_name={neuron_name}')
+
+def is_correct_round(neuron, neuron_dict, neuron_identifier, m):
+    if neuron_identifier == "degree_receiver_":
+        neuron_name = neuron_dict[neuron]
+        print(f"neuron_name={neuron_name}")
         parts = neuron_name.split("_")
         node_index = int(parts[2])
         neighbour_index = int(parts[3])
-        round=int(parts[-1])
-        print(f'round={round}')
-        if round==m:
+        round = int(parts[-1])
+        print(f"round={round}")
+        if round == m:
             return True
         else:
             return False
     # For all neurons round is irrellevant.
     return True
+
 
 def neuron_has_expected_name(neuron, neuron_dict, neuron_identifier):
     if neuron_dict[neuron][: len(neuron_identifier)] == neuron_identifier:

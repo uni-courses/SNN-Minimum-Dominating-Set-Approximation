@@ -26,6 +26,7 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
 
 
 def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
+    d = 0.25 * m  # specify grid distance size
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -47,7 +48,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
         dv=0,
         bias=0,
         vth=1,
-        pos=(float(-0.25), float(0.25)),
+        pos=(float(-d), float(d)),
     )
 
     # First create all the nodes in the get_degree graph.
@@ -61,13 +62,13 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
             dv=0,
             bias=2,
             vth=1,
-            pos=(float(0), float(node)),
+            pos=(float(0), float(node * 4 * d)),
         )
 
         for neighbour in nx.all_neighbors(G, node):
             if node != neighbour:
                 # One neuron per node named: degree_receiver_0-n.
-                #get_degree.add_node(
+                # get_degree.add_node(
                 #    f"degree_receiver_{node}_{neighbour}",
                 #    id=node,
                 #    du=0,
@@ -75,7 +76,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                 #    bias=0,
                 #    vth=1,
                 #    pos=(float(1.0), get_y_position(G, node, neighbour)),
-                #)
+                # )
 
                 for loop in range(0, m):
                     get_degree.add_node(
@@ -85,7 +86,10 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                         dv=1,
                         bias=0,
                         vth=1,
-                        pos=(float(1.0 + loop * 2.25), get_y_position(G, node, neighbour)),
+                        pos=(
+                            float(4 * d + loop * 9 * d),
+                            get_y_position(G, node, neighbour, d),
+                        ),
                     )
 
         # One neuron per node named: rand
@@ -94,17 +98,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                 "The range of random numbers does not allow for randomness collision prevention."
             )
 
-        get_degree.add_node(
-            f"rand_{node}",
-            id=node,
-            du=0,
-            dv=0,
-            bias=2,
-            vth=1,
-            pos=(float(0.25), float(node) + 0.5),
-        )
-
-        for loop in range(1, m):
+        for loop in range(0, m):
             get_degree.add_node(
                 f"rand_{node}_{loop}",
                 id=node,
@@ -112,7 +106,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                 dv=0,
                 bias=2,
                 vth=1,
-                pos=(float(0.25 + loop * 2.25), float(node) + 0.5),
+                pos=(float(d + loop * 9 * d), float(node * 4 * d) + d),
             )
 
         # Add winner selector node
@@ -123,7 +117,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
             dv=1,
             bias=5,  # Always spike unless inhibitied by u[t]
             vth=4,
-            pos=(float(1.75), float(node)),
+            pos=(float(7 * d), float(node * 4 * d + d)),
         )
 
         for loop in range(1, m):
@@ -134,7 +128,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                 dv=0,
                 bias=2,
                 vth=1,
-                pos=(float(1.75 + loop * 2.25), float(node) + 0.5),
+                pos=(float(7 * d + loop * 9 * d), float(node * 4 * d + d)),
             )
 
         # Add winner selector node
@@ -145,7 +139,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
             dv=1,
             bias=0,
             vth=0,
-            pos=(float(2.25), float(node)),
+            pos=(float(9 * d), float(node * 4 * d)),
         )
 
         for loop in range(1, m):
@@ -156,7 +150,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                 dv=0,
                 bias=2,
                 vth=1,
-                pos=(float(2.25 + loop * 2.25), float(node) + 0.5),
+                pos=(float(9 * d + loop * 9 * d), float(node * 4 * d)),
             )
 
         for loop in range(0, m):
@@ -167,7 +161,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                 dv=1,
                 bias=0,
                 vth=0,
-                pos=(float(2.25 + loop * 2.25), float(node) - 0.25),
+                pos=(float(9 * d + loop * 9 * d), float(node) - 0.25),
             )
 
         # Create next round connector neurons.
@@ -179,7 +173,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                 dv=1,
                 bias=0,
                 vth=len(G.nodes) - 1,
-                pos=(float(1.5 + loop * 2.25), -0.5),
+                pos=(float(6 * d + loop * 9 * d), -2 * d),
             )
 
             get_degree.add_node(
@@ -189,7 +183,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                 dv=1,
                 bias=0,
                 vth=0,
-                pos=(float(2.25 + loop * 2.25), -0.5),
+                pos=(float(9 * d + loop * 9 * d), -2 * d),
             )
 
             get_degree.add_node(
@@ -199,7 +193,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                 dv=1,
                 bias=0,
                 vth=0,
-                pos=(float(3 + loop * 2.25), -0.5),
+                pos=(float(12 * d + loop * 9 * d), -2 * d),
             )
 
     # Ensure SNN graph is connected(Otherwise, recurrent snn builder can not span/cross the network.)
@@ -218,7 +212,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
             if node != neighbour:
                 for other_node in G.nodes:
                     if G.has_edge(neighbour, other_node):
-                        
+
                         get_degree.add_edges_from(
                             [
                                 (
@@ -249,7 +243,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m=3):
                         get_degree.add_edges_from(
                             [
                                 (
-                                    f"rand_{circuit}",
+                                    f"rand_{circuit}_{loop}",
                                     f"degree_receiver_{circuit_target}_{circuit}_{loop}",
                                 )
                             ],
