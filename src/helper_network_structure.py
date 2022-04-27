@@ -149,7 +149,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
         #    )
 
         # Create next round connector neurons.
-        for loop in range(0, m):
+        for loop in range(1, m):
             get_degree.add_node(
                 f"next_round_{loop}",
                 id=node,
@@ -157,7 +157,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
                 dv=1,
                 bias=0,
                 vth=len(G.nodes) - 1,
-                pos=(float(6 * d + loop * 9 * d), -2 * d),
+                pos=(float(6 * d + (loop - 1) * 9 * d), -2 * d),
             )
 
             get_degree.add_node(
@@ -167,7 +167,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
                 dv=1,
                 bias=0,
                 vth=0,
-                pos=(float(9 * d + loop * 9 * d), -2 * d),
+                pos=(float(9 * d + (loop - 1) * 9 * d), -2 * d),
             )
 
             get_degree.add_node(
@@ -177,7 +177,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
                 dv=1,
                 bias=0,
                 vth=2 * (len(G)) - 1,
-                pos=(float(12 * d + loop * 9 * d), -2 * d),
+                pos=(float(12 * d + (loop - 1) * 9 * d), -2 * d),
             )
 
     # Ensure SNN graph is connected(Otherwise, recurrent snn builder can not span/cross the network.)
@@ -233,7 +233,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
     #
 
     # Then create all edges between the nodes.
-    for loop in range(0, m):
+    for loop in range(1, m):
         get_degree.add_edges_from(
             [
                 (
@@ -263,13 +263,13 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
         )
 
     for circuit in G.nodes:
-        for loop in range(0, m - 1):
+        for loop in range(1, m):
             # TODO
             get_degree.add_edges_from(
                 [
                     (
                         f"delay_{loop}",
-                        f"selector_{circuit}_{loop+1}",
+                        f"selector_{circuit}_{loop}",
                     )
                 ],
                 weight=1,  # TODO: doubt.
@@ -293,11 +293,11 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
 
                     # for loop in range(0, m):
                     # TODO: change to degree_receiver_x_y_z and update synapses for loop from 1,m to 0,m.
-                    for loop in range(0, m):
+                    for loop in range(1, m):
                         get_degree.add_edges_from(
                             [
                                 (
-                                    f"degree_receiver_{circuit_target}_{circuit}_{loop}",
+                                    f"degree_receiver_{circuit_target}_{circuit}_{loop-1}",
                                     f"next_round_{loop}",
                                 )
                             ],
@@ -430,30 +430,9 @@ def get_weight_receiver_synapse_paths(G):
 
 
 def plot_unstructured_graph(G, iteration, size, show=False):
-    # nx.draw(G, pos=graphviz_layout(G),with_labels = True)
-    #
-    # edge_labels = nx.get_edge_attributes(G,'weight')
-    # print(f'edge_labels={edge_labels}')
-    # pos = nx.spring_layout(G)
-    ##nx.draw_networkx_edge_labels(G, pos, labels=edge_labels)
-    # nx.draw_networkx_edge_labels(G,pos, edge_labels)
-    # pos = nx.spring_layout(G)
-    # pos = nx.graphviz_layout(G)
-    # nx.draw(G, pos)
-    nx.draw(G, pos=graphviz_layout(G), with_labels=True)
-    node_labels = nx.get_node_attributes(G, "")
-    nx.draw_networkx_labels(G, pos=graphviz_layout(G), labels=node_labels)
-    edge_labels = nx.get_edge_attributes(G, "weight")
-    nx.draw_networkx_edge_labels(G, graphviz_layout(G), edge_labels)
-    # plotting a line plot after changing it's width and height
-    # f = plt.figure()
-    # f.set_figwidth(10)
-    # f.set_figheight(10)
-    plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
-    # plt.savefig('this.png')
+    nx.draw(G, with_labels=True)
     if show:
         plt.show()
-    # plt.savefig()
     plot_export = Plot_to_tex()
     plot_export.export_plot(plt, f"G_{size}_{iteration}")
     plt.clf()
