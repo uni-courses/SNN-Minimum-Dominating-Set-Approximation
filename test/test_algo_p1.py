@@ -11,6 +11,7 @@ from src.create_planar_triangle_free_graph import (
 from src.export_data.helper_dir_file_edit import delete_dir_if_exists
 from src.helper import (
     degree_receiver_x_y_is_connected_to_counter_z,
+    delete_files_in_folder,
     get_a_in_for_degree_receiver,
     get_degree_reciever_neurons_per_wta_circuit,
     get_expected_amount_of_degree_receiver_neurons,
@@ -51,16 +52,17 @@ class Test_counter(unittest.TestCase):
     def test_multiple_tests(self):
 
         # delete_dir_if_exists(f"latex/Images/graphs")
+        delete_files_in_folder(f"latex/Images/graphs")
 
         # Get list of planer triangle free graphs.
         m = 0
 
-        for retry in range(0, 3, 1):
+        for retry in range(0, 1, 1):
             graphs = []
-            for size in range(3, 8, 1):
+            for size in range(3, 4, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
-                # G = create_manual_graph_with_4_nodes()
+                G = create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
                 test_object = create_test_object(G, retry, m, False, False)
 
@@ -150,7 +152,7 @@ class Test_counter(unittest.TestCase):
 
         # Simulate SNN and assert values inbetween timesteps.
         # Simulate till extraction time+10 sec.
-        for t in range(1, test_object.inhibition + 1 + 10):
+        for t in range(1, test_object.sim_time):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
@@ -202,13 +204,25 @@ class Test_counter(unittest.TestCase):
     ):
         #
         print_neurons_properties(
-            test_object.neuron_dict, sorted_degree_receiver_neurons, t, descriptions=[]
+            test_object,
+            test_object.neuron_dict,
+            sorted_degree_receiver_neurons,
+            t,
+            descriptions=[],
         )
         print_neurons_properties(
-            test_object.neuron_dict, sorted_selector_neurons, t, descriptions=[]
+            test_object,
+            test_object.neuron_dict,
+            sorted_selector_neurons,
+            t,
+            descriptions=[],
         )
         print_neurons_properties(
-            test_object.neuron_dict, sorted_counter_neurons, t, descriptions=[]
+            test_object,
+            test_object.neuron_dict,
+            sorted_counter_neurons,
+            t,
+            descriptions=[],
         )
 
     def verify_neuron_behaviour(

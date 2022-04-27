@@ -1,6 +1,8 @@
 import collections
 import itertools
+import os
 import random
+import shutil
 import networkx as nx
 
 from src.helper_snns import print_neuron_properties
@@ -202,19 +204,27 @@ def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
     raise Exception(f"Did not find neuron:{desired_neuron_name}!.")
 
 
-def print_neurons_properties(neuron_dict, neurons, t, descriptions=""):
+def print_neurons_properties(test_object, neuron_dict, neurons, t, descriptions=""):
     sorted_neurons = []
     # Sort by value.
     descriptions = ""
+    spikes = ""
     sorted_dict = dict(sorted(neuron_dict.items(), key=lambda item: item[1]))
     if descriptions == "":
         for neuron, neuron_name in sorted_dict.items():
             if neuron in neurons:
                 sorted_neurons.append(neuron)
                 descriptions = f"{descriptions} {neuron_name[-9:]}"
-
+                monitor = test_object.monitor_dict[neuron]
+                monitor_dict = monitor.get_data()
+                inner_dict = list(monitor_dict.values())[0]
+                spikelist = list(inner_dict.values())[0]
+                current_spike = spikelist[t - 1]
+                spikes = f"{spikes} {current_spike}"
     print(f"t={t}")
+
     print(descriptions[1:])
+    print(f"spikes={spikes[:]}")
     print_neuron_properties(sorted_neurons)
 
 
@@ -549,3 +559,16 @@ def get_x_position(m):
         return float(1.0)
     if m == 1:
         return float(1.75)
+
+
+def delete_files_in_folder(folder):
+
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print("Failed to delete %s. Reason: %s" % (file_path, e))
