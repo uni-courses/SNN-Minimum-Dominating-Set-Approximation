@@ -1,6 +1,8 @@
 import collections
 import itertools
+import os
 import random
+import shutil
 import networkx as nx
 
 from src.helper_snns import print_neuron_properties
@@ -557,3 +559,16 @@ def get_x_position(m):
         return float(1.0)
     if m == 1:
         return float(1.75)
+
+
+def delete_files_in_folder(folder):
+
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print("Failed to delete %s. Reason: %s" % (file_path, e))
