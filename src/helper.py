@@ -623,7 +623,7 @@ def print_neuron_behaviour(
     grouped_neurons,
     t,
 ):
-    for name, neurons in grouped_neurons[id].items():
+    for name, neurons in grouped_neurons.items():
         print_neurons_properties(
             test_object,
             test_object.neuron_dict,
