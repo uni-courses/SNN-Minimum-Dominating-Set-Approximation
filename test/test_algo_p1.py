@@ -53,11 +53,11 @@ class Test_counter(unittest.TestCase):
         # delete_dir_if_exists(f"latex/Images/graphs")
 
         # Get list of planer triangle free graphs.
-        m = 1
+        m = 0
 
-        for retry in range(0, 1, 1):
+        for retry in range(0, 3, 1):
             graphs = []
-            for size in range(5, 6, 1):
+            for size in range(3, 8, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
                 # G = create_manual_graph_with_4_nodes()
