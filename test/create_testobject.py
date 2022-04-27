@@ -1,6 +1,10 @@
 import copy
 import networkx as nx
+from pprint import pprint
+from lava.proc.monitor.process import Monitor
+
 from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nodes
+
 
 from src.helper import (
     fill_dictionary,
@@ -85,6 +89,8 @@ def create_test_object(
     print(
         f"After inhibition of:{test_object.inhibition}, rand_nrs={test_object.rand_nrs}"
     )
+
+    test_object.sim_time = test_object.inhibition + 11
     ## Convert the fully connected graph into a networkx graph that
     # stores the snn properties.
     # rand_ceil+1 because the maximum random number is rand_ceil which should map
@@ -117,6 +123,12 @@ def create_test_object(
         test_object.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
     )
 
+    # Create monitor dict
+    test_object.monitor_dict = {}
+    for neuron in test_object.neurons:
+        test_object.monitor_dict = add_monitor_to_dict(
+            neuron, test_object.monitor_dict, test_object.sim_time
+        )
     # Specify boolean array that stores whether a winner has been found in WTA
     # circuits.
     test_object.found_winner = [False] * len(test_object.G)
@@ -246,6 +258,16 @@ def get_counter_previous_property_dicts(test_object, counter_neurons):
         counter_previous_a_in,
     )
     return counter_previous_a_in, counter_previous_us, counter_previous_vs
+
+
+def add_monitor_to_dict(neuron, monitor_dict, sim_time):
+    """Creates a dictionary monitors that monitor the outgoing spikes of LIF
+    neurons."""
+    if type(neuron) != str:
+        monitor = Monitor()
+        monitor.probe(neuron.out_ports.s_out, sim_time)
+        monitor_dict[neuron] = monitor
+    return monitor_dict
 
 
 class Selector_neuron:
