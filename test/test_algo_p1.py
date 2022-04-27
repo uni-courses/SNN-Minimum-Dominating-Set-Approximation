@@ -154,7 +154,8 @@ class Test_counter(unittest.TestCase):
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
 
             # Print the values coming into the timestep.
-            print_neuron_behaviour(test_object, grouped_neurons, t)
+            if t>44 and t<49:
+                print_neuron_behaviour(test_object, grouped_neurons, t)
 
             # Terminate Loihi simulation.
             # starter_neuron.stop()
@@ -359,7 +360,7 @@ class Test_counter(unittest.TestCase):
         )
         # print(f'before previous_has_spiked={previous_has_spiked}')
         if previous_has_spiked:
-            a_in = a_in - 2
+            a_in = a_in - 20
         if (
             test_object.sample_degree_receiver_neuron.bias
             + degree_receiver_neuron.u.get()

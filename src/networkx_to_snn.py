@@ -161,10 +161,12 @@ def create_neuron_from_node(G, converted_nodes, neurons, node):
     if (
         node[0:11] == "spike_once_"
         or node[0:5] == "rand_"
-        or node[0:16] == "degree_receiver_"
+        
     ):
         neuron = create_recurrent_synapse(neuron, -2)
 
+    if  node[0:16] == "degree_receiver_":
+        neuron = create_recurrent_synapse(neuron, -20)
     # if node[0:6] == "count_":
     #    neuron = create_recurrent_synapse(neuron, -1)
     if node[0:6] == "delay_":
