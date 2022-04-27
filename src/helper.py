@@ -562,7 +562,7 @@ def get_x_position(m):
 
 
 def delete_files_in_folder(folder):
-
+    os.makedirs(folder, exist_ok=True)
     for filename in os.listdir(folder):
         file_path = os.path.join(folder, filename)
         try:
