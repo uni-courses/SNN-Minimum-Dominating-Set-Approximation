@@ -110,7 +110,6 @@ def is_correct_round(neuron, neuron_dict, neuron_identifier, m):
     neuron_name = neuron_dict[neuron]
     parts = neuron_name.split("_")
     round = int(parts[-1])
-    print(f"neuron_name={neuron_name}")
 
     if neuron_identifier == "degree_receiver_":
         if round == m:
