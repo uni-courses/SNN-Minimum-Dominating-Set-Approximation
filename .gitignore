@@ -1,5 +1,6 @@
 # Ignore PlantUML .jar file.
 src/export_data/plantuml.jar
+latex/Images/graphs/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
