@@ -208,7 +208,7 @@ def print_neurons_properties(test_object, neuron_dict, neurons, t, descriptions=
     sorted_neurons = []
     # Sort by value.
     descriptions = ""
-    spikes = ""
+    spikes = []
     sorted_dict = dict(sorted(neuron_dict.items(), key=lambda item: item[1]))
     if descriptions == "":
         for neuron, neuron_name in sorted_dict.items():
@@ -220,12 +220,11 @@ def print_neurons_properties(test_object, neuron_dict, neurons, t, descriptions=
                 inner_dict = list(monitor_dict.values())[0]
                 spikelist = list(inner_dict.values())[0]
                 current_spike = spikelist[t - 1]
-                spikes = f"{spikes} {current_spike}"
-    print(f"t={t}")
-
+                spikes.append(current_spike[0])
+    
     print(descriptions[1:])
-    print(f"spikes={spikes[:]}")
-    print_neuron_properties(sorted_neurons)
+    print(f"{spikes[:]}")
+    print_neuron_properties(sorted_neurons,spikes)
 
 
 def get_a_in_for_selector_neuron_retry(
@@ -623,6 +622,7 @@ def print_neuron_behaviour(
     grouped_neurons,
     t,
 ):
+    print(f"t={t}")
     for name, neurons in grouped_neurons.items():
         print_neurons_properties(
             test_object,
