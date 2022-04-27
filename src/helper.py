@@ -577,19 +577,23 @@ def delete_files_in_folder(folder):
 def get_neurons(neuron_identifier, m, test_object):
     if neuron_identifier == "degree_receiver_":
         expected_n = get_expected_amount_of_degree_receiver_neurons(test_object.G)
+        sample_neuron = test_object.sample_degree_receiver_neuron
     elif neuron_identifier == "selector_":
         expected_n = len(test_object.G)
+        sample_neuron = test_object.sample_selector_neuron
     elif neuron_identifier == "counter_":
         expected_n = len(test_object.G)
+        sample_neuron = test_object.sample_counter_neuron
     elif neuron_identifier == "spike_once_":
         expected_n = len(test_object.G)
+        sample_neuron = test_object.sample_spike_once_neuron
 
     neurons = get_n_neurons(
         expected_n,
         test_object.neurons,
         test_object.neuron_dict,
         neuron_identifier,
-        test_object.sample_degree_receiver_neuron,
+        sample_neuron,
         m=m,
     )
 
@@ -602,12 +606,13 @@ def get_neurons(neuron_identifier, m, test_object):
 def get_grouped_neurons(m, test_object):
     grouped_dict = {}
     for id in range(m + 1):
-        grouped_dict["degree_receiver_neurons_{id}"] = get_neurons(
+        grouped_dict[f"spike_once_x_{id}"] = get_neurons("spike_once_", id, test_object)
+        grouped_dict[f"degree_receiver_neurons_x_y_{id}"] = get_neurons(
             "degree_receiver_", id, test_object
         )
-        grouped_dict["selector_neurons_{id}"] = get_neurons(
+        grouped_dict[f"selector_neurons_x_{id}"] = get_neurons(
             "selector_", id, test_object
         )
-    grouped_dict["counter_neurons_{m}"] = get_neurons("counter_", m, test_object)
+    grouped_dict[f"counter_neurons_x_{m}"] = get_neurons("counter_", m, test_object)
 
     return grouped_dict

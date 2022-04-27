@@ -82,22 +82,11 @@ def get_n_neurons(
     found_neurons = []
 
     for neuron in neurons:
-        # print(neuron_dict[neuron])
-
-        # Check if neuron has the correct properties.
-        if in_simulation:
-            # Does not check u,v since these can change during simulation.
-            has_valid_properties = has_expected_custom_neuron_properties(
-                neuron, sample_neuron
-            )
-        else:
-            # Checks initialisation conditions, including u and v.
-            has_valid_properties = has_expected_neuron_properties(neuron, sample_neuron)
 
         # Check if the name of the neuron is correct.
-        if has_valid_properties and neuron_has_expected_name(
-            neuron, neuron_dict, neuron_identifier
-        ):
+        if has_expected_custom_neuron_properties(
+            neuron, sample_neuron
+        ) and neuron_has_expected_name(neuron, neuron_dict, neuron_identifier):
 
             # Check if correct round:
             if is_correct_round(neuron, neuron_dict, neuron_identifier, m):
@@ -116,9 +105,6 @@ def is_correct_round(neuron, neuron_dict, neuron_identifier, m):
     neuron_name = neuron_dict[neuron]
     parts = neuron_name.split("_")
     round = int(parts[-1])
-    print(
-        f"identifier={neuron_identifier} neuron_name={neuron_name},m={m}, round={round}"
-    )
     if neuron_identifier == "degree_receiver_":
         if round == m:
             return True
@@ -147,39 +133,6 @@ def neuron_has_expected_name(neuron, neuron_dict, neuron_identifier):
             f"neuron_dict[neuron][:len(neuron_identifier)]={neuron_dict[neuron][:len(neuron_identifier)]}"
         )
         return False
-
-
-def has_expected_neuron_properties(neuron, sample_neuron, verbose=False):
-    """Assert the values of the incoming neuron are those of the expected
-    neuron. Note sample_neuron does not have a sample_neuron.<property>.get()
-    because it is a basic object with the properties stored as ints instead
-    of with getters and setters."""
-    if neuron.u.get() == 0:  # Default initial value.
-        if neuron.du.get() == sample_neuron.du:  # Custom value.
-            if neuron.v.get() == 0:  # Default initial value.
-                if neuron.dv.get() == sample_neuron.dv:  # Default initial value.
-                    if neuron.bias.get() == sample_neuron.bias:  # Custom value.
-                        if neuron.vth.get() == sample_neuron.vth:  # Default value.
-                            return True
-                        elif verbose:
-                            print(
-                                f"neuron.vth.get()={neuron.vth.get()}, whereas expected vth={sample_neuron.vth}"
-                            )
-                    elif verbose:
-                        print(
-                            f"neuron.bias.get()={neuron.bias.get()}, whereas bias={sample_neuron.bias}"
-                        )
-                elif verbose:
-                    print(
-                        f"neuron.dv.get()={neuron.dv.get()}, whereas dv={sample_neuron.dv}"
-                    )
-            elif verbose:
-                print(f"neuron.v.get()={neuron.v.get()}, whereas v={sample_neuron.v}")
-        elif verbose:
-            print(f"neuron.du.get()={neuron.du.get()}, whereas du={sample_neuron.du}")
-    elif verbose:
-        print(f"neuron.u.get()={neuron.u.get()}, whereas u={0}")
-    return False
 
 
 def has_expected_custom_neuron_properties(neuron, sample_neuron, verbose=False):

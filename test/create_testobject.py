@@ -7,6 +7,7 @@ from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nod
 
 
 from src.helper import (
+    fill_dictionary,
     generate_list_of_n_random_nrs,
     get_expected_amount_of_degree_receiver_neurons,
     sort_neurons,

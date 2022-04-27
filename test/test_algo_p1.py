@@ -114,11 +114,10 @@ class Test_counter(unittest.TestCase):
         # SNN simulation.
         grouped_neurons = get_grouped_neurons(m, test_object)
         pprint(grouped_neurons)
-        raise Exception("StOP")
 
         # Get the first neuron in the SNN to start the simulation
         # TODO: update
-        starter_neuron = degree_receiver_neurons[0]
+        starter_neuron = grouped_neurons["spike_once_x_0"][0]
 
         # TODO: Move into create object.
         # Create storage lists for previous neuron currents and voltages.
@@ -127,19 +126,23 @@ class Test_counter(unittest.TestCase):
             degree_receiver_previous_us,
             degree_receiver_previous_vs,
         ) = get_degree_receiver_previous_property_dicts(
-            test_object, sorted_degree_receiver_neurons
+            test_object, grouped_neurons["degree_receiver_neurons_x_y_0"]
         )
         (
             selector_previous_a_in,
             selector_previous_us,
             selector_previous_vs,
-        ) = get_selector_previous_property_dicts(test_object, sorted_selector_neurons)
+        ) = get_selector_previous_property_dicts(
+            test_object, grouped_neurons["selector_neurons_x_0"]
+        )
 
         (
             counter_previous_a_in,
             counter_previous_us,
             counter_previous_vs,
-        ) = get_counter_previous_property_dicts(test_object, sorted_counter_neurons)
+        ) = get_counter_previous_property_dicts(
+            test_object, grouped_neurons[f"counter_neurons_x_{m}"]
+        )
 
         # Simulate SNN and assert values inbetween timesteps.
         # Simulate till extraction time+10 sec.
@@ -152,9 +155,9 @@ class Test_counter(unittest.TestCase):
             # Assert neuron values.
             self.print_neuron_properties(
                 test_object,
-                sorted_counter_neurons,
-                sorted_degree_receiver_neurons,
-                sorted_selector_neurons,
+                grouped_neurons[f"counter_neurons_x_{m}"],
+                grouped_neurons["degree_receiver_neurons_x_y_0"],
+                grouped_neurons["selector_neurons_x_0"],
                 t,
             )
             # TODO: Get args from create object.
@@ -170,20 +173,20 @@ class Test_counter(unittest.TestCase):
                 selector_previous_a_in,
                 selector_previous_us,
                 selector_previous_vs,
-                sorted_counter_neurons,
-                sorted_degree_receiver_neurons,
-                sorted_selector_neurons,
+                grouped_neurons[f"counter_neurons_x_{m}"],
+                grouped_neurons["degree_receiver_neurons_x_y_0"],
+                grouped_neurons["selector_neurons_x_0"],
                 starter_neuron,
                 t,
             )
             if not extraction_time is None and t == extraction_time:
-                extracted_neurons = sorted_counter_neurons
+                extracted_neurons = grouped_neurons[f"counter_neurons_x_{m}"]
 
         # raise Exception("Stop")
         if not extraction_time:
             return extracted_neurons, starter_neuron
         else:
-            return sorted_counter_neurons, starter_neuron
+            return grouped_neurons[f"counter_neurons_x_{m}"], starter_neuron
 
     def print_neuron_properties(
         self,
