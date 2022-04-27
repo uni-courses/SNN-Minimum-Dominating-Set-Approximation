@@ -70,7 +70,13 @@ def has_n_neurons_of_sample_type(
 
 
 def get_n_neurons(
-    n, neurons, neuron_dict, neuron_identifier, sample_neuron, in_simulation=False, m=0
+    n,
+    neurons,
+    neuron_dict,
+    neuron_identifier,
+    sample_neuron,
+    in_simulation=False,
+    m=None,
 ):
     """Verifies at least n neurons exist with the sample_neuron properties."""
     found_neurons = []
@@ -110,7 +116,9 @@ def is_correct_round(neuron, neuron_dict, neuron_identifier, m):
     neuron_name = neuron_dict[neuron]
     parts = neuron_name.split("_")
     round = int(parts[-1])
-
+    print(
+        f"identifier={neuron_identifier} neuron_name={neuron_name},m={m}, round={round}"
+    )
     if neuron_identifier == "degree_receiver_":
         if round == m:
             return True

@@ -572,3 +572,42 @@ def delete_files_in_folder(folder):
                 shutil.rmtree(file_path)
         except Exception as e:
             print("Failed to delete %s. Reason: %s" % (file_path, e))
+
+
+def get_neurons(neuron_identifier, m, test_object):
+    if neuron_identifier == "degree_receiver_":
+        expected_n = get_expected_amount_of_degree_receiver_neurons(test_object.G)
+    elif neuron_identifier == "selector_":
+        expected_n = len(test_object.G)
+    elif neuron_identifier == "counter_":
+        expected_n = len(test_object.G)
+    elif neuron_identifier == "spike_once_":
+        expected_n = len(test_object.G)
+
+    neurons = get_n_neurons(
+        expected_n,
+        test_object.neurons,
+        test_object.neuron_dict,
+        neuron_identifier,
+        test_object.sample_degree_receiver_neuron,
+        m=m,
+    )
+
+    # Sort the neurons by default before returning them.
+    if sorted:
+        sorted_neurons = sort_neurons(neurons, test_object.neuron_dict)
+    return sorted_neurons
+
+
+def get_grouped_neurons(m, test_object):
+    grouped_dict = {}
+    for id in range(m + 1):
+        grouped_dict["degree_receiver_neurons_{id}"] = get_neurons(
+            "degree_receiver_", id, test_object
+        )
+        grouped_dict["selector_neurons_{id}"] = get_neurons(
+            "selector_", id, test_object
+        )
+    grouped_dict["counter_neurons_{m}"] = get_neurons("counter_", m, test_object)
+
+    return grouped_dict

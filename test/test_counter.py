@@ -21,7 +21,6 @@ from test.contains_neurons_of_type_x import (
 
 from test.create_testobject import (
     create_test_object,
-    get_counter_neurons,
     get_counter_previous_property_dicts,
     get_degree_receiver_neurons,
     get_degree_receiver_previous_property_dicts,

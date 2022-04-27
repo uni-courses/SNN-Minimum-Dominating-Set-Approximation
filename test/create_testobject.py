@@ -7,7 +7,6 @@ from src.create_planar_triangle_free_graph import create_manual_graph_with_4_nod
 
 
 from src.helper import (
-    fill_dictionary,
     generate_list_of_n_random_nrs,
     get_expected_amount_of_degree_receiver_neurons,
     sort_neurons,
@@ -137,66 +136,6 @@ def create_test_object(
     test_object.found_winner_at_t = [2] * len(test_object.G)
 
     return test_object
-
-
-def get_degree_receiver_neurons(test_object, sorted=True):
-    degree_receiver_neurons = get_n_neurons(
-        get_expected_amount_of_degree_receiver_neurons(test_object.G),
-        test_object.neurons,
-        test_object.neuron_dict,
-        "degree_receiver_",
-        test_object.sample_degree_receiver_neuron,
-    )
-
-    # Sort the neurons by default before returning them.
-    if sorted:
-        sorted_degree_receiver_neurons = sort_neurons(
-            degree_receiver_neurons, test_object.neuron_dict
-        )
-
-    # Get the first neuron in the SNN to start the simulation
-    starter_neuron = degree_receiver_neurons[0]
-    return test_object, sorted_degree_receiver_neurons, starter_neuron
-
-
-def get_selector_neurons(test_object, sorted=True):
-    # TODO: create stripped down function that just gets the selector neurons.
-    selector_neurons = get_n_neurons(
-        len(test_object.G),
-        test_object.neurons,
-        test_object.neuron_dict,
-        "selector_",
-        test_object.sample_selector_neuron,
-    )
-
-    # Sort the neurons by default before returning them.
-    if sorted:
-        sorted_selector_neurons = sort_neurons(
-            selector_neurons, test_object.neuron_dict
-        )
-
-    # Get the first neuron in the SNN to start the simulation
-    starter_neuron = selector_neurons[0]
-    return test_object, sorted_selector_neurons, starter_neuron
-
-
-def get_counter_neurons(test_object, sorted=True):
-    # TODO: create stripped down function that just gets the counter neurons.
-    counter_neurons = get_n_neurons(
-        len(test_object.G),
-        test_object.neurons,
-        test_object.neuron_dict,
-        "counter_",
-        test_object.sample_counter_neuron,
-    )
-
-    # Sort the neurons by default before returning them.
-    if sorted:
-        sorted_counter_neurons = sort_neurons(counter_neurons, test_object.neuron_dict)
-
-    # Get the first neuron in the SNN to start the simulation
-    starter_neuron = counter_neurons[0]
-    return test_object, sorted_counter_neurons, starter_neuron
 
 
 def get_degree_receiver_previous_property_dicts(test_object, degree_receiver_neurons):
