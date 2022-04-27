@@ -21,6 +21,7 @@ from src.helper import (
     get_y_from_degree_receiver_x_y,
     print_neurons_properties,
 )
+from src.helper_snns import print_neuron_properties
 from src.neumann import partial_alipour, full_alipour
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
@@ -152,14 +153,12 @@ class Test_counter(unittest.TestCase):
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
 
             # Print the values coming into the timestep.
-            # Assert neuron values.
-            self.print_neuron_properties(
-                test_object,
-                grouped_neurons[f"counter_neurons_x_{m}"],
-                grouped_neurons["degree_receiver_neurons_x_y_0"],
-                grouped_neurons["selector_neurons_x_0"],
-                t,
-            )
+            print_neuron_properties(test_object, grouped_neurons, t)
+
+            # Terminate Loihi simulation.
+            starter_neuron.stop()
+            raise Exception("STOP")
+
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(
                 test_object,
@@ -187,37 +186,6 @@ class Test_counter(unittest.TestCase):
             return extracted_neurons, starter_neuron
         else:
             return grouped_neurons[f"counter_neurons_x_{m}"], starter_neuron
-
-    def print_neuron_properties(
-        self,
-        test_object,
-        sorted_counter_neurons,
-        sorted_degree_receiver_neurons,
-        sorted_selector_neurons,
-        t,
-    ):
-        #
-        print_neurons_properties(
-            test_object,
-            test_object.neuron_dict,
-            sorted_degree_receiver_neurons,
-            t,
-            descriptions=[],
-        )
-        print_neurons_properties(
-            test_object,
-            test_object.neuron_dict,
-            sorted_selector_neurons,
-            t,
-            descriptions=[],
-        )
-        print_neurons_properties(
-            test_object,
-            test_object.neuron_dict,
-            sorted_counter_neurons,
-            t,
-            descriptions=[],
-        )
 
     def verify_neuron_behaviour(
         self,

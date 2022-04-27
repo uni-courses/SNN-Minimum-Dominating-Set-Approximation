@@ -616,3 +616,18 @@ def get_grouped_neurons(m, test_object):
     grouped_dict[f"counter_neurons_x_{m}"] = get_neurons("counter_", m, test_object)
 
     return grouped_dict
+
+
+def print_neuron_properties(
+    test_object,
+    grouped_neurons,
+    t,
+):
+    for name, neurons in grouped_neurons[id].items():
+        print_neurons_properties(
+            test_object,
+            test_object.neuron_dict,
+            neurons,
+            t,
+            descriptions=[],
+        )
