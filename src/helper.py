@@ -221,10 +221,9 @@ def print_neurons_properties(test_object, neuron_dict, neurons, t, descriptions=
                 spikelist = list(inner_dict.values())[0]
                 current_spike = spikelist[t - 1]
                 spikes.append(current_spike[0])
-    
+
     print(descriptions[1:])
-    print(f"{spikes[:]}")
-    print_neuron_properties(sorted_neurons,spikes)
+    print_neuron_properties(sorted_neurons, spikes)
 
 
 def get_a_in_for_selector_neuron_retry(

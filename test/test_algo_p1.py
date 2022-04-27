@@ -157,8 +157,8 @@ class Test_counter(unittest.TestCase):
             print_neuron_behaviour(test_object, grouped_neurons, t)
 
             # Terminate Loihi simulation.
-            starter_neuron.stop()
-            raise Exception("STOP")
+            # starter_neuron.stop()
+            # raise Exception("STOP")
 
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(
