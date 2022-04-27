@@ -1,5 +1,6 @@
 import copy
 from gettext import npgettext
+from pprint import pprint
 import numpy as np
 import networkx as nx
 import pylab as plt
@@ -25,7 +26,9 @@ def get_weight_receiver_synapse_paths_fully_connected(G):
     return G
 
 
-def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
+def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
+    m = m + 1
+    d = 0.25 * m  # specify grid distance size
     """Returns a networkx graph that represents the snn that computes the
     spiking degree in the degree_receiver neurons.
     One node in the graph represents one neuron.
@@ -38,6 +41,9 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
     to each of the degree_receiver that represents a neighbour of node A.
     """
     get_degree = nx.DiGraph()
+    # Define list of m mappings for sets of tupples containing synapses
+    left = [{} for _ in range(m)]
+    right = [{} for _ in range(m)]
 
     # Create a node to make the graph connected. (Otherwise, recurrent snn builder can not span/cross the network.)
     get_degree.add_node(
@@ -47,7 +53,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
         dv=0,
         bias=0,
         vth=1,
-        pos=(float(-0.25), float(0.25)),
+        pos=(float(-d), float(d)),
     )
 
     # First create all the nodes in the get_degree graph.
@@ -61,21 +67,35 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
             dv=0,
             bias=2,
             vth=1,
-            pos=(float(0), float(node)),
+            pos=(float(0), float(node * 4 * d)),
         )
 
         for neighbour in nx.all_neighbors(G, node):
             if node != neighbour:
                 # One neuron per node named: degree_receiver_0-n.
-                get_degree.add_node(
-                    f"degree_receiver_{node}_{neighbour}",
-                    id=node,
-                    du=0,
-                    dv=1,
-                    bias=0,
-                    vth=1,
-                    pos=(float(1.0), get_y_position(G, node, neighbour)),
-                )
+                # get_degree.add_node(
+                #    f"degree_receiver_{node}_{neighbour}",
+                #    id=node,
+                #    du=0,
+                #    dv=1,
+                #    bias=0,
+                #    vth=1,
+                #    pos=(float(1.0), get_y_position(G, node, neighbour)),
+                # )
+
+                for loop in range(0, m):
+                    get_degree.add_node(
+                        f"degree_receiver_{node}_{neighbour}_{loop}",
+                        id=node,
+                        du=0,
+                        dv=1,
+                        bias=0,
+                        vth=1,
+                        pos=(
+                            float(4 * d + loop * 9 * d),
+                            get_y_position(G, node, neighbour, d),
+                        ),
+                    )
 
         # One neuron per node named: rand
         if len(rand_nrs) < len(G):
@@ -83,37 +103,82 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
                 "The range of random numbers does not allow for randomness collision prevention."
             )
 
-        get_degree.add_node(
-            f"rand_{node}",
-            id=node,
-            du=0,
-            dv=0,
-            bias=2,
-            vth=1,
-            pos=(float(0.25), float(node) + 0.5),
-        )
+        for loop in range(0, m):
+            get_degree.add_node(
+                f"rand_{node}_{loop}",
+                id=node,
+                du=0,
+                dv=0,
+                bias=2,
+                vth=1,
+                pos=(float(d + loop * 9 * d), float(node * 4 * d) + d),
+            )
 
         # Add winner selector node
-        get_degree.add_node(
-            f"selector_{node}",
-            id=node,
-            du=0,
-            dv=1,
-            bias=5,  # Always spike unless inhibitied by u[t]
-            vth=4,
-            pos=(float(1.25), float(node)),
-        )
+        for loop in range(0, m):
+            get_degree.add_node(
+                f"selector_{node}_{loop}",
+                id=node,
+                du=0,
+                dv=1,
+                bias=5,
+                vth=4,
+                pos=(float(7 * d + loop * 9 * d), float(node * 4 * d + d)),
+            )
 
         # Add winner selector node
+        # for loop in range(0, m):
         get_degree.add_node(
-            f"counter_{node}",
+            f"counter_{node}_{m-1}",
             id=node,
             du=0,
             dv=1,
             bias=0,
             vth=0,
-            pos=(float(1.5), float(node)),
+            pos=(float(9 * d + loop * 9 * d), float(node * 4 * d)),
         )
+        # for loop in range(0, m):
+        #    get_degree.add_node(
+        #        f"depleter_{node}_{loop}",
+        #        id=node,
+        #        du=1,
+        #        dv=1,
+        #        bias=0,
+        #        vth=0,
+        #        pos=(float(9 * d + loop * 9 * d), float(node * 4 * d) - d),
+        #    )
+
+        # Create next round connector neurons.
+        for loop in range(1, m):
+            get_degree.add_node(
+                f"next_round_{loop}",
+                id=node,
+                du=0,
+                dv=1,
+                bias=0,
+                vth=len(G.nodes) - 1,
+                pos=(float(6 * d + (loop - 1) * 9 * d), -2 * d),
+            )
+
+            get_degree.add_node(
+                f"d_charger_{loop}",
+                id=node,
+                du=0,
+                dv=1,
+                bias=0,
+                vth=0,
+                pos=(float(9 * d + (loop - 1) * 9 * d), -2 * d),
+            )
+
+            get_degree.add_node(
+                f"delay_{loop}",
+                id=node,
+                du=0,
+                dv=1,
+                bias=0,
+                vth=2 * (len(G)) - 1,
+                pos=(float(12 * d + (loop - 1) * 9 * d), -2 * d),
+            )
 
     # Ensure SNN graph is connected(Otherwise, recurrent snn builder can not span/cross the network.)
     for circuit in G.nodes:
@@ -131,15 +196,33 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
             if node != neighbour:
                 for other_node in G.nodes:
                     if G.has_edge(neighbour, other_node):
+
                         get_degree.add_edges_from(
                             [
                                 (
                                     f"spike_once_{other_node}",
-                                    f"degree_receiver_{node}_{neighbour}",
+                                    f"degree_receiver_{node}_{neighbour}_0",
                                 )
                             ],
                             weight=rand_ceil,
                         )
+
+                        for loop in range(0, m - 1):
+                            # get_degree.add_edges_from(
+                            #    [
+                            #        (
+                            #            f"counter_{other_node}_{loop}",
+                            #            f"degree_receiver_{node}_{neighbour}_{loop+1}",
+                            #        )
+                            #    ],
+                            #    weight=rand_ceil,
+                            # )
+                            # Create list of outgoing edges from a certain counter neuron.
+                            if not f"counter_{other_node}_{loop}" in right[loop]:
+                                right[loop][f"counter_{other_node}_{loop}"] = []
+                            right[loop][f"counter_{other_node}_{loop}"].append(
+                                f"degree_receiver_{node}_{neighbour}_{loop+1}"
+                            )
 
     #    for node in G.nodes:
     #        print(f'node={node},neighbours={list(nx.all_neighbors(G, node))}')
@@ -150,51 +233,146 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
     #
 
     # Then create all edges between the nodes.
+    for loop in range(1, m):
+        get_degree.add_edges_from(
+            [
+                (
+                    f"next_round_{loop}",
+                    f"d_charger_{loop}",
+                )
+            ],
+            weight=1,
+        )
+        get_degree.add_edges_from(
+            [
+                (
+                    f"delay_{loop}",
+                    f"d_charger_{loop}",
+                )
+            ],
+            weight=-1,
+        )
+        get_degree.add_edges_from(
+            [
+                (
+                    f"d_charger_{loop}",
+                    f"delay_{loop}",
+                )
+            ],
+            weight=+1,
+        )
+
     for circuit in G.nodes:
+        for loop in range(1, m):
+            # TODO
+            get_degree.add_edges_from(
+                [
+                    (
+                        f"delay_{loop}",
+                        f"selector_{circuit}_{loop}",
+                    )
+                ],
+                weight=1,  # TODO: doubt.
+            )
 
         # Add synapse between random node and degree receiver nodes.
         for circuit_target in G.nodes:
             if circuit != circuit_target:
                 # Check if there is an edge from neighbour_a to neighbour_b.
                 if circuit in nx.all_neighbors(G, circuit_target):
-                    get_degree.add_edges_from(
-                        [
-                            (
-                                f"rand_{circuit}",
-                                f"degree_receiver_{circuit_target}_{circuit}",
-                            )
-                        ],
-                        weight=rand_nrs[circuit],
-                    )
-                    # print(
-                    #    f"edge: rand_{circuit_target}, degree_receiver_{circuit_target}_{circuit}, weight={rand_nrs[circuit]}"
-                    # )
+                    for loop in range(0, m):
+                        get_degree.add_edges_from(
+                            [
+                                (
+                                    f"rand_{circuit}_{loop}",
+                                    f"degree_receiver_{circuit_target}_{circuit}_{loop}",
+                                )
+                            ],
+                            weight=rand_nrs[circuit],
+                        )
+
+                    # for loop in range(0, m):
+                    # TODO: change to degree_receiver_x_y_z and update synapses for loop from 1,m to 0,m.
+                    for loop in range(1, m):
+                        get_degree.add_edges_from(
+                            [
+                                (
+                                    f"degree_receiver_{circuit_target}_{circuit}_{loop-1}",
+                                    f"next_round_{loop}",
+                                )
+                            ],
+                            weight=1,
+                        )
+
+        # for loop in range(0, m):
+        #    get_degree.add_edges_from(
+        #        [
+        #            (
+        #                f"next_round_{loop}",
+        #                f"depleter_{circuit}_{loop}",
+        #            )
+        #        ],
+        #        weight=+1,
+        #    )
+        # for loop in range(0, m):
+        #    get_degree.add_edges_from(
+        #        [
+        #            (
+        #                f"counter_{circuit}_{loop}",
+        #                f"depleter_{circuit}_{loop}",
+        #            )
+        #        ],
+        #        weight=+1,
+        #    )
+        #    get_degree.add_edges_from(
+        #        [
+        #            (
+        #                f"depleter_{circuit}_{loop}",
+        #                f"counter_{circuit}_{loop}",
+        #            )
+        #        ],
+        #        weight=+len(G),
+        #    )
 
         # Add synapse from degree_selector to selector node.
         for neighbour_b in nx.all_neighbors(G, circuit):
             if circuit != neighbour_b:
-                get_degree.add_edges_from(
-                    [
-                        (
-                            f"degree_receiver_{circuit}_{neighbour_b}",
-                            f"selector_{circuit}",
-                        )
-                    ],
-                    weight=-5,  # to disable bias
-                )
-                # print(
-                #    f"edge: degree_receiver_{circuit}_{neighbour_b},selector_{circuit}, weight=-5"
-                # )
-                # TODO: UPDATE TO Go from degree_receiver_x_y to counter_y.
-                get_degree.add_edges_from(
-                    [
-                        (
-                            f"degree_receiver_{circuit}_{neighbour_b}",
-                            f"counter_{neighbour_b}",
-                        )
-                    ],
-                    weight=+1,  # to disable bias
-                )
+                for loop in range(0, m):
+                    get_degree.add_edges_from(
+                        [
+                            (
+                                f"degree_receiver_{circuit}_{neighbour_b}_{loop}",
+                                f"selector_{circuit}_{loop}",
+                            )
+                        ],
+                        weight=-5,  # to disable bias
+                    )
+
+                    print(
+                        f"edge: degree_receiver_{circuit}_{neighbour_b}_{loop},selector_{circuit}_{loop}, weight=-5"
+                    )
+                    # TODO: UPDATE TO Go from degree_receiver_x_y to counter_y.
+                    get_degree.add_edges_from(
+                        [
+                            (
+                                f"degree_receiver_{circuit}_{neighbour_b}_{m-1}",
+                                f"counter_{neighbour_b}_{m-1}",
+                            )
+                        ],
+                        weight=+1,  # to disable bias
+                    )
+                    # Create list of outgoing edges from a certain counter neuron.
+                    if (
+                        not f"degree_receiver_{circuit}_{neighbour_b}_{loop}"
+                        in left[loop]
+                    ):
+                        left[loop][
+                            f"degree_receiver_{circuit}_{neighbour_b}_{loop}"
+                        ] = []
+                    left[loop][
+                        f"degree_receiver_{circuit}_{neighbour_b}_{loop}"
+                    ].append(f"counter_{neighbour_b}_{loop}")
+
                 # print(
                 #    f"edge: degree_receiver_{circuit}_{neighbour_b}, selector_{circuit},weight=+1"
                 # )
@@ -202,16 +380,36 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil):
         # Add synapse from selector node back into degree selector.
         for neighbour_b in nx.all_neighbors(G, circuit):
             if circuit != neighbour_b:
-                get_degree.add_edges_from(
-                    [
-                        (
-                            f"selector_{circuit}",
-                            f"degree_receiver_{circuit}_{neighbour_b}",
-                        )
-                    ],
-                    weight=1,  # To increase u(t) at every timestep.
-                )
+                for loop in range(0, m):
+                    get_degree.add_edges_from(
+                        [
+                            (
+                                f"selector_{circuit}_{loop}",
+                                f"degree_receiver_{circuit}_{neighbour_b}_{loop}",
+                            )
+                        ],
+                        weight=1,  # To increase u(t) at every timestep.
+                    )
             # print(f"selector_{circuit} degree_receiver_{circuit}_{neighbour_b}")
+    # pprint(f"left={left}")
+    # pprint(f"right={right}")
+
+    # Create replacement synapses.
+    for id in range(m - 1):
+        for l_key, l_value in left[id].items():
+            for l_counter in l_value:
+                for r_key, r_value in right[id].items():
+                    for r_degree in r_value:
+                        if l_counter == r_key:
+                            get_degree.add_edges_from(
+                                [
+                                    (
+                                        l_key,
+                                        r_degree,
+                                    )
+                                ],
+                                weight=rand_ceil,  # To increase u(t) at every timestep.
+                            )
 
     return get_degree
 
@@ -232,25 +430,9 @@ def get_weight_receiver_synapse_paths(G):
 
 
 def plot_unstructured_graph(G, iteration, size, show=False):
-    # nx.draw(G, pos=graphviz_layout(G),with_labels = True)
-    #
-    # edge_labels = nx.get_edge_attributes(G,'weight')
-    # print(f'edge_labels={edge_labels}')
-    # pos = nx.spring_layout(G)
-    ##nx.draw_networkx_edge_labels(G, pos, labels=edge_labels)
-    # nx.draw_networkx_edge_labels(G,pos, edge_labels)
-    # pos = nx.spring_layout(G)
-    # pos = nx.graphviz_layout(G)
-    # nx.draw(G, pos)
-    nx.draw(G, pos=graphviz_layout(G), with_labels=True)
-    node_labels = nx.get_node_attributes(G, "")
-    nx.draw_networkx_labels(G, pos=graphviz_layout(G), labels=node_labels)
-    edge_labels = nx.get_edge_attributes(G, "weight")
-    nx.draw_networkx_edge_labels(G, graphviz_layout(G), edge_labels)
-    # plt.savefig('this.png')
+    nx.draw(G, with_labels=True)
     if show:
         plt.show()
-    # plt.savefig()
     plot_export = Plot_to_tex()
     plot_export.export_plot(plt, f"G_{size}_{iteration}")
     plt.clf()
@@ -258,13 +440,29 @@ def plot_unstructured_graph(G, iteration, size, show=False):
 
 
 def plot_coordinated_graph(G, iteration, size, show=False):
-    nx.draw(G, nx.get_node_attributes(G, "pos"), with_labels=True, node_size=1)
+    # Width=edge width.
+    nx.draw(
+        G,
+        nx.get_node_attributes(G, "pos"),
+        with_labels=True,
+        node_size=8,
+        font_size=5,
+        width=0.2,
+    )
     node_labels = nx.get_node_attributes(G, "")
     pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
     nx.draw_networkx_labels(G, pos, labels=node_labels)
     edge_labels = nx.get_edge_attributes(G, "weight")
-    nx.draw_networkx_edge_labels(G, pos, edge_labels)
+    nx.draw_networkx_edge_labels(G, pos, edge_labels, font_size=5)
 
+    plt.axis("off")
+    axis = plt.gca()
+    axis.set_xlim([1.2 * x for x in axis.get_xlim()])
+    axis.set_ylim([1.2 * y for y in axis.get_ylim()])
+    # f = plt.figure()
+    # f.set_figwidth(10)
+    # f.set_figheight(10)
+    # plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
     if show:
         plt.show()
 

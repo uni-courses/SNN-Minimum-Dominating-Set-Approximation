@@ -1,5 +1,3 @@
-import networkx as nx
-
 # TODO: move to separate ?test_?contains_neurons.py
 def assert_neurons_of_expected_type_are_all_present_in_snn(
     test_object,
@@ -72,10 +70,10 @@ def has_n_neurons_of_sample_type(
 
 
 def get_n_neurons(
-    n, neurons, neuron_dict, neuron_identifier, sample_neuron, in_simulation=False
+    n, neurons, neuron_dict, neuron_identifier, sample_neuron, in_simulation=False, m=0
 ):
     """Verifies at least n neurons exist with the sample_neuron properties."""
-    expected_neurons = []
+    found_neurons = []
 
     for neuron in neurons:
         # print(neuron_dict[neuron])
@@ -94,12 +92,44 @@ def get_n_neurons(
         if has_valid_properties and neuron_has_expected_name(
             neuron, neuron_dict, neuron_identifier
         ):
-            expected_neurons.append(neuron)
 
-    if len(expected_neurons) == n:
-        return expected_neurons
+            # Check if correct round:
+            if is_correct_round(neuron, neuron_dict, neuron_identifier, m):
+                found_neurons.append(neuron)
+
+    if len(found_neurons) == n:
+        return found_neurons
     else:
-        raise Exception(f"len(expected_neurons)={len(expected_neurons)}")
+        raise Exception(
+            f"{neuron_identifier}: found {len(found_neurons)}, whereas expected:{n} neurons"
+        )
+
+
+def is_correct_round(neuron, neuron_dict, neuron_identifier, m):
+
+    neuron_name = neuron_dict[neuron]
+    parts = neuron_name.split("_")
+    round = int(parts[-1])
+    print(f"neuron_name={neuron_name}")
+
+    if neuron_identifier == "degree_receiver_":
+        if round == m:
+            return True
+        else:
+            return False
+    elif neuron_identifier == "selector_":
+        if round == m:
+            return True
+        else:
+            return False
+    elif neuron_identifier == "counter_":
+        # if round == m:
+        return True
+        # else:
+        #    return False
+
+    # For all neurons round is irrellevant.
+    return True
 
 
 def neuron_has_expected_name(neuron, neuron_dict, neuron_identifier):

@@ -195,7 +195,7 @@ class Test_selector(unittest.TestCase):
         # Run tests on selector.
         for selector_neuron in sorted_selector_neurons:
             selector_neuron_name = self.neuron_dict[selector_neuron]
-            wta_circuit = int(selector_neuron_name[9:])
+            wta_circuit = int(selector_neuron_namecounter_neuron_name.split("_")[1])
             print(f"wta_circuit={wta_circuit}")
             (
                 selector_previous_a_in[selector_neuron_name],

@@ -1,5 +1,10 @@
 # run: conda env create --file environment.yml
 # include new packages: conda env update --file environment.yml
+
+# For first time usage on Ubuntu:
+# sudo apt upgrade
+# sudo apt full-upgrade
+# yes | sudo apt install gcc
 name: dnc
 channels:
   - conda-forge

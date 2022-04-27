@@ -163,13 +163,24 @@ def create_neuron_from_node(G, converted_nodes, neurons, node):
         or node[0:5] == "rand_"
         or node[0:16] == "degree_receiver_"
     ):
-        dense = create_weighted_synapse(-2)
+        neuron = create_recurrent_synapse(neuron, -2)
 
-        # Connect neuron to itself.
-        neuron = connect_synapse(neuron, neuron, dense)
+    if node[0:6] == "count_":
+        neuron = create_recurrent_synapse(neuron, -1)
+    if node[0:6] == "delay_":
+        neuron = create_recurrent_synapse(neuron, -(len(G) * 2 - 1) - 2)  # TODO: or -1?
+
     neurons.append(neuron)
     converted_nodes.append(node)
     return converted_nodes, neuron, neurons, node
+
+
+def create_recurrent_synapse(neuron, weight):
+    dense = create_weighted_synapse(weight)
+
+    # Connect neuron to itself.
+    neuron = connect_synapse(neuron, neuron, dense)
+    return neuron
 
 
 def node_is_converted(G, converted_nodes, neurons, node):

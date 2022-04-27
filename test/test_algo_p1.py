@@ -18,7 +18,7 @@ from src.helper import (
     get_y_from_degree_receiver_x_y,
     print_neurons_properties,
 )
-from src.neumann import partial_alipour
+from src.neumann import partial_alipour, full_alipour
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
     assert_neurons_of_expected_type_are_all_present_in_snn,
@@ -50,19 +50,19 @@ class Test_counter(unittest.TestCase):
 
     def test_multiple_tests(self):
 
-        delete_dir_if_exists(f"latex/Images/graphs")
+        # delete_dir_if_exists(f"latex/Images/graphs")
 
         # Get list of planer triangle free graphs.
+        m = 0
 
-        for retry in range(0, 2, 1):
+        for retry in range(0, 3, 1):
             graphs = []
-            for size in range(4, 6, 1):
+            for size in range(3, 8, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
-                # G=create_manual_graph_with_4_nodes()
+                # G = create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
-                test_object = create_test_object(G, retry, False, False)
-                # test_object = create_test_object(self,G,True,True)
+                test_object = create_test_object(G, retry, m, False, False)
 
                 # Run default tests on neurons
                 # and get counted degree from neurons after inhibition time.
@@ -74,23 +74,32 @@ class Test_counter(unittest.TestCase):
                 )
 
                 # Compute degree count using Alipour algorithm
-                G_alipour = partial_alipour(
+                # G_alipour = partial_alipour(
+                #     test_object.delta,
+                #     test_object.inhibition,
+                #     G,
+                #     test_object.rand_ceil,
+                #     test_object.rand_nrs,
+                # )
+
+                G_alipour = full_alipour(
                     test_object.delta,
                     test_object.inhibition,
                     G,
                     test_object.rand_ceil,
                     test_object.rand_nrs,
+                    test_object.m,
                 )
 
                 # Compare the counts per node and assert they are equal.
                 for node in G.nodes:
-                    print(f"node={node}")
                     print(
-                        f"counter_neuron={test_object.neuron_dict[counter_neurons[node]]}"
+                        "G_alipour countermarks", G_alipour.nodes[node]["countermarks"]
                     )
-
+                    print("SNN counter current", counter_neurons[node].u.get())
                     self.assertEqual(
-                        G_alipour.nodes[node]["marks"], counter_neurons[node].u.get()
+                        G_alipour.nodes[node]["countermarks"],
+                        counter_neurons[node].u.get(),
                     )
                 # Terminate Loihi simulation.
                 starter_neuron.stop()
@@ -148,6 +157,13 @@ class Test_counter(unittest.TestCase):
 
             # Print the values coming into the timestep.
             # Assert neuron values.
+            self.print_neuron_properties(
+                test_object,
+                sorted_counter_neurons,
+                sorted_degree_receiver_neurons,
+                sorted_selector_neurons,
+                t,
+            )
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(
                 test_object,
@@ -165,13 +181,6 @@ class Test_counter(unittest.TestCase):
                 sorted_degree_receiver_neurons,
                 sorted_selector_neurons,
                 starter_neuron,
-                t,
-            )
-            self.print_neuron_properties(
-                test_object,
-                sorted_counter_neurons,
-                sorted_degree_receiver_neurons,
-                sorted_selector_neurons,
                 t,
             )
             if not extraction_time is None and t == extraction_time:
@@ -264,17 +273,17 @@ class Test_counter(unittest.TestCase):
             t,
         )
 
-        # Verify counter neurons behave as expected.
-        self.run_test_on_counter_neurons(
-            test_object,
-            test_object.sample_counter_neuron,
-            counter_previous_a_in,
-            counter_previous_us,
-            counter_previous_vs,
-            sorted_degree_receiver_neurons,
-            sorted_counter_neurons,
-            t,
-        )
+        # # Verify counter neurons behave as expected.
+        # self.run_test_on_counter_neurons(
+        #     test_object,
+        #     test_object.sample_counter_neuron,
+        #     counter_previous_a_in,
+        #     counter_previous_us,
+        #     counter_previous_vs,
+        #     sorted_degree_receiver_neurons,
+        #     sorted_counter_neurons,
+        #     t,
+        # )
 
     def run_test_on_selector_neurons(
         self,
@@ -290,8 +299,12 @@ class Test_counter(unittest.TestCase):
         # Run tests on selector.
         for selector_neuron in sorted_selector_neurons:
             selector_neuron_name = test_object.neuron_dict[selector_neuron]
-            wta_circuit = int(selector_neuron_name[9:])
+            wta_circuit = int(selector_neuron_name.split("_")[1])
             # print(f"wta_circuit={wta_circuit}")
+            # print(f"selector_neuron_name={selector_neuron_name}")
+            # print(
+            #    f"selector_previous_a_in[selector_neuron_name]={selector_previous_a_in[selector_neuron_name]}"
+            # )
             (
                 selector_previous_a_in[selector_neuron_name],
                 selector_previous_us[selector_neuron_name],
@@ -322,7 +335,7 @@ class Test_counter(unittest.TestCase):
         # Run tests on counter.
         for counter_neuron in sorted_counter_neurons:
             counter_neuron_name = test_object.neuron_dict[counter_neuron]
-            wta_circuit = int(counter_neuron_name[8:])
+            wta_circuit = int(counter_neuron_name.split("_")[1])
             (
                 counter_previous_a_in[counter_neuron_name],
                 counter_previous_us[counter_neuron_name],

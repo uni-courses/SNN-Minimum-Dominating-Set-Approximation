@@ -18,7 +18,7 @@ from test.contains_neurons_of_type_x import get_n_neurons
 
 
 def create_test_object(
-    G, iteration, plot_input_graph=False, plot_snn_graph=False, export=True
+    G, iteration, m, plot_input_graph=False, plot_snn_graph=False, export=True
 ):
     test_object = Test_properties()
     ## Specify the expected neuron properties.
@@ -27,7 +27,8 @@ def create_test_object(
     test_object.sample_spike_once_neuron = Spike_once_neuron()
     test_object.sample_rand_neuron = Rand_neuron()
     test_object.sample_degree_receiver_neuron = Degree_receiver()
-    test_object.sample_counter_neuron = Counter_neuron()
+    test_object.sample_counter_neuron = Counter_neuron(G)
+    test_object.m = m
 
     ## Specify the expected synaptic weights
     # TODO: Specify per synapse group. (except for the random synapses)
@@ -93,6 +94,7 @@ def create_test_object(
         test_object.G,
         test_object.rand_nrs,
         test_object.rand_ceil * test_object.delta + 1,
+        m,
     )
 
     # try:
@@ -282,7 +284,7 @@ class Rand_neuron:
 class Counter_neuron:
     """Creates expected properties of the counter neuron."""
 
-    def __init__(self):
+    def __init__(self, G):
         self.first_name = "counter_0"
         self.bias = 0
         self.du = 0
