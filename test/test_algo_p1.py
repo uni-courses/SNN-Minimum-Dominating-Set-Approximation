@@ -19,6 +19,7 @@ from src.helper import (
     get_grouped_neurons,
     get_wta_circuit_from_neuron_name,
     get_y_from_degree_receiver_x_y,
+    print_neuron_behaviour,
     print_neurons_properties,
 )
 from src.helper_snns import print_neuron_properties
@@ -153,7 +154,7 @@ class Test_counter(unittest.TestCase):
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
 
             # Print the values coming into the timestep.
-            print_neuron_properties(test_object, grouped_neurons, t)
+            print_neuron_behaviour(test_object, grouped_neurons, t)
 
             # Terminate Loihi simulation.
             starter_neuron.stop()

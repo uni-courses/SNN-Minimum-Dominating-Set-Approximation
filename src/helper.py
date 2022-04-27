@@ -618,7 +618,7 @@ def get_grouped_neurons(m, test_object):
     return grouped_dict
 
 
-def print_neuron_properties(
+def print_neuron_behaviour(
     test_object,
     grouped_neurons,
     t,
