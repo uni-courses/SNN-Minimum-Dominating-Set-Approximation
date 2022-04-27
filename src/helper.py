@@ -213,17 +213,12 @@ def print_neurons_properties(test_object, neuron_dict, neurons, t, descriptions=
             if neuron in neurons:
                 sorted_neurons.append(neuron)
                 descriptions = f"{descriptions} {neuron_name[-9:]}"
-                spikes = (
-                    f"{spikes}"
-                    # + str(list(
-                    #    list(test_object.monitor_dict[neuron].get_data().values())[
-                    #        0
-                    #    ].values()
-                    # )[0][t])
-                    + str(
-                        list(list(test_object.monitor_dict[neuron].get_data().values()))
-                    )
-                )
+                monitor = test_object.monitor_dict[neuron]
+                monitor_dict = monitor.get_data()
+                inner_dict = list(monitor_dict.values())[0]
+                spikelist = list(inner_dict.values())[0]
+                current_spike = spikelist[t - 1]
+                spikes = f"{spikes} {current_spike}"
     print(f"t={t}")
 
     print(descriptions[1:])
