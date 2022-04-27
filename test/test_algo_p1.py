@@ -55,9 +55,9 @@ class Test_counter(unittest.TestCase):
         # Get list of planer triangle free graphs.
         m = 0
 
-        for retry in range(0, 3, 1):
+        for retry in range(0, 1, 1):
             graphs = []
-            for size in range(3, 8, 1):
+            for size in range(3, 4, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
                 # G = create_manual_graph_with_4_nodes()
@@ -150,7 +150,7 @@ class Test_counter(unittest.TestCase):
 
         # Simulate SNN and assert values inbetween timesteps.
         # Simulate till extraction time+10 sec.
-        for t in range(1, test_object.inhibition + 1 + 10):
+        for t in range(1, test_object.sim_time):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
@@ -202,13 +202,25 @@ class Test_counter(unittest.TestCase):
     ):
         #
         print_neurons_properties(
-            test_object.neuron_dict, sorted_degree_receiver_neurons, t, descriptions=[]
+            test_object,
+            test_object.neuron_dict,
+            sorted_degree_receiver_neurons,
+            t,
+            descriptions=[],
         )
         print_neurons_properties(
-            test_object.neuron_dict, sorted_selector_neurons, t, descriptions=[]
+            test_object,
+            test_object.neuron_dict,
+            sorted_selector_neurons,
+            t,
+            descriptions=[],
         )
         print_neurons_properties(
-            test_object.neuron_dict, sorted_counter_neurons, t, descriptions=[]
+            test_object,
+            test_object.neuron_dict,
+            sorted_counter_neurons,
+            t,
+            descriptions=[],
         )
 
     def verify_neuron_behaviour(

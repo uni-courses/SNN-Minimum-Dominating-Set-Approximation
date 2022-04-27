@@ -202,19 +202,32 @@ def get_degree_receiver_neuron(neuron_dict, desired_neuron_name):
     raise Exception(f"Did not find neuron:{desired_neuron_name}!.")
 
 
-def print_neurons_properties(neuron_dict, neurons, t, descriptions=""):
+def print_neurons_properties(test_object, neuron_dict, neurons, t, descriptions=""):
     sorted_neurons = []
     # Sort by value.
     descriptions = ""
+    spikes = ""
     sorted_dict = dict(sorted(neuron_dict.items(), key=lambda item: item[1]))
     if descriptions == "":
         for neuron, neuron_name in sorted_dict.items():
             if neuron in neurons:
                 sorted_neurons.append(neuron)
                 descriptions = f"{descriptions} {neuron_name[-9:]}"
-
+                spikes = (
+                    f"{spikes}"
+                    # + str(list(
+                    #    list(test_object.monitor_dict[neuron].get_data().values())[
+                    #        0
+                    #    ].values()
+                    # )[0][t])
+                    + str(
+                        list(list(test_object.monitor_dict[neuron].get_data().values()))
+                    )
+                )
     print(f"t={t}")
+
     print(descriptions[1:])
+    print(f"spikes={spikes[:]}")
     print_neuron_properties(sorted_neurons)
 
 
