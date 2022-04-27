@@ -165,8 +165,8 @@ def create_neuron_from_node(G, converted_nodes, neurons, node):
     ):
         neuron = create_recurrent_synapse(neuron, -2)
 
-    if node[0:6] == "count_":
-        neuron = create_recurrent_synapse(neuron, -1)
+    # if node[0:6] == "count_":
+    #    neuron = create_recurrent_synapse(neuron, -1)
     if node[0:6] == "delay_":
         neuron = create_recurrent_synapse(neuron, -(len(G) * 2 - 1) - 2)  # TODO: or -1?
 
