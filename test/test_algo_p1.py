@@ -53,7 +53,7 @@ class Test_counter(unittest.TestCase):
         # delete_dir_if_exists(f"latex/Images/graphs")
 
         # Get list of planer triangle free graphs.
-        m = 0
+        m = 1
 
         for retry in range(0, 1, 1):
             graphs = []
@@ -61,11 +61,8 @@ class Test_counter(unittest.TestCase):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
                 # G = create_manual_graph_with_4_nodes()
-                # raise Exception("Stop, sizecheck: ", len(G))
                 # Initialise paramers used for testing.
                 test_object = create_test_object(G, retry, m, False, False)
-                # raise Exception("STOP")
-                # test_object = create_test_object(self,G,True,True)
 
                 # Run default tests on neurons
                 # and get counted degree from neurons after inhibition time.
@@ -96,11 +93,10 @@ class Test_counter(unittest.TestCase):
 
                 # Compare the counts per node and assert they are equal.
                 for node in G.nodes:
-                    print(f"node={node}")
                     print(
-                        f"counter_neuron={test_object.neuron_dict[counter_neurons[node]]}"
+                        "G_alipour countermarks", G_alipour.nodes[node]["countermarks"]
                     )
-
+                    print("SNN counter current", counter_neurons[node].u.get())
                     self.assertEqual(
                         G_alipour.nodes[node]["countermarks"],
                         counter_neurons[node].u.get(),
