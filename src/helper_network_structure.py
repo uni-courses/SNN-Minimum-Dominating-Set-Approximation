@@ -389,7 +389,22 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
     # pprint(f"left={left}")
     # pprint(f"right={right}")
 
-    # Create replacement synapses.
+    ## Create replacement synapses.
+    if m <= 1:
+        get_degree = create_degree_synapses_for_m_is_zero(
+            get_degree, left, rand_ceil, right
+        )
+    else:
+        get_degree = retry_create_degree_synapses(G, get_degree, m, rand_ceil)
+
+    # Create spike dictionaries with [t] as key, and boolean spike as value for each node.
+    for node in get_degree.nodes:
+        get_degree.nodes[node]["spike"] = {}
+    return get_degree
+
+
+def create_degree_synapses_for_m_is_zero(get_degree, left, rand_ceil, right):
+    print(f"m={m},OLD")
     for id in range(m - 1):
         for l_key, l_value in left[id].items():
             for l_counter in l_value:
@@ -405,11 +420,30 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
                                 ],
                                 weight=rand_ceil,  # To increase u(t) at every timestep.
                             )
-
-    # Create spike dictionaries with [t] as key, and boolean spike as value for each node.
-    for node in get_degree.nodes:
-        get_degree.nodes[node]["spike"] = {}
     return get_degree
+
+
+def retry_create_degree_synapses(G, get_degree, m, rand_ceil):
+    print(f"m={m},RETRY")
+    for loop in range(0, m):
+        for x_l in G.nodes:
+            for y in G.nodes:
+                for x_r in G.nodes:
+                    if f"degree_receiver_{x_l}_{y}_{loop}" in get_degree.nodes:
+                        if f"degree_receiver_{x_r}_{y}_{loop+1}" in get_degree.nodes:
+                            # if not G.has_edge(x_l, v):
+                            print(
+                                f"degree_receiver_{x_l}_{y}_{loop} to: degree_receiver_{x_r}_{y}_{loop+1}"
+                            )
+                            get_degree.add_edges_from(
+                                [
+                                    (
+                                        f"degree_receiver_{x_l}_{y}_{loop}",
+                                        f"degree_receiver_{x_r}_{y}_{loop+1}",
+                                    )
+                                ],
+                                weight=rand_ceil,  # To increase u(t) at every timestep.
+                            )
 
 
 def get_weight_receiver_synapse_paths(G):
