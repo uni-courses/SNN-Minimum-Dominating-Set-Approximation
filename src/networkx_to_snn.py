@@ -158,14 +158,10 @@ def create_neuron_from_node(G, converted_nodes, neurons, node):
     neuron = LIF(bias=bias, du=du, dv=dv, vth=vth)
 
     # If spike_once_neuron, create recurrent synapse
-    if (
-        node[0:11] == "spike_once_"
-        or node[0:5] == "rand_"
-        
-    ):
+    if node[0:11] == "spike_once_" or node[0:5] == "rand_":
         neuron = create_recurrent_synapse(neuron, -2)
 
-    if  node[0:16] == "degree_receiver_":
+    if node[0:16] == "degree_receiver_":
         neuron = create_recurrent_synapse(neuron, -20)
     # if node[0:6] == "count_":
     #    neuron = create_recurrent_synapse(neuron, -1)

@@ -469,3 +469,36 @@ def plot_coordinated_graph(G, iteration, size, show=False):
     # plt.savefig()
     plt.clf()
     plt.close()
+
+def plot_neuron_behaviour_over_time(G, iteration, size,grouped_neurons,spike_dict,t, show=False):
+    # Width=edge width.
+    nx.draw(
+        G,
+        nx.get_node_attributes(G, "pos"),
+        with_labels=True,
+        node_size=8,
+        font_size=5,
+        width=0.2,
+    )
+    node_labels = nx.get_node_attributes(G, "")
+    pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
+    nx.draw_networkx_labels(G, pos, labels=node_labels)
+    edge_labels = nx.get_edge_attributes(G, "weight")
+    nx.draw_networkx_edge_labels(G, pos, edge_labels, font_size=5)
+
+    plt.axis("off")
+    axis = plt.gca()
+    axis.set_xlim([1.2 * x for x in axis.get_xlim()])
+    axis.set_ylim([1.2 * y for y in axis.get_ylim()])
+    # f = plt.figure()
+    # f.set_figwidth(10)
+    # f.set_figheight(10)
+    # plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
+    if show:
+        plt.show()
+
+    plot_export = Plot_to_tex()
+    plot_export.export_plot(plt, f"snn_{size}_{iteration}")
+    # plt.savefig()
+    plt.clf()
+    plt.close()

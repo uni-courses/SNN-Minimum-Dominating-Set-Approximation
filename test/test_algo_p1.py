@@ -115,8 +115,7 @@ class Test_counter(unittest.TestCase):
         # Collect the neurons of a particular type and get a starter neuron for
         # SNN simulation.
         grouped_neurons = get_grouped_neurons(m, test_object)
-        pprint(grouped_neurons)
-
+        
         # Get the first neuron in the SNN to start the simulation
         # TODO: update
         starter_neuron = grouped_neurons["spike_once_x_0"][0]
@@ -154,8 +153,8 @@ class Test_counter(unittest.TestCase):
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
 
             # Print the values coming into the timestep.
-            if t>44 and t<49:
-                print_neuron_behaviour(test_object, grouped_neurons, t)
+            #if t > 44 and t < 49:
+            spike_dict=print_neuron_behaviour(test_object, grouped_neurons, t)
 
             # Terminate Loihi simulation.
             # starter_neuron.stop()
