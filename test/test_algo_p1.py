@@ -1,4 +1,5 @@
 import copy
+from pprint import pprint
 import unittest
 import networkx as nx
 from numpy import sort
@@ -15,10 +16,14 @@ from src.helper import (
     get_a_in_for_degree_receiver,
     get_degree_reciever_neurons_per_wta_circuit,
     get_expected_amount_of_degree_receiver_neurons,
+    get_grouped_neurons,
     get_wta_circuit_from_neuron_name,
     get_y_from_degree_receiver_x_y,
+    print_neuron_behaviour,
     print_neurons_properties,
 )
+from src.helper_network_structure import get_node_names, plot_neuron_behaviour_over_time
+from src.helper_snns import print_neuron_properties
 from src.neumann import partial_alipour, full_alipour
 from test.contains_neurons_of_type_x import (
     get_n_neurons,
@@ -28,11 +33,8 @@ from test.contains_neurons_of_type_x import (
 
 from test.create_testobject import (
     create_test_object,
-    get_counter_neurons,
     get_counter_previous_property_dicts,
-    get_degree_receiver_neurons,
     get_degree_receiver_previous_property_dicts,
-    get_selector_neurons,
     get_selector_previous_property_dicts,
 )
 from test.helper_tests import perform_generic_neuron_property_asserts
@@ -55,7 +57,7 @@ class Test_counter(unittest.TestCase):
         delete_files_in_folder(f"latex/Images/graphs")
 
         # Get list of planer triangle free graphs.
-        m = 0
+        m = 1
 
         for retry in range(0, 1, 1):
             graphs = []
@@ -72,7 +74,7 @@ class Test_counter(unittest.TestCase):
                     counter_neurons,
                     starter_neuron,
                 ) = self.run_test_degree_receiver_neurons_over_time(
-                    test_object, extraction_time=test_object.inhibition + 1
+                    m, retry, test_object, extraction_time=test_object.inhibition + 1
                 )
 
                 # Compute degree count using Alipour algorithm
@@ -107,28 +109,18 @@ class Test_counter(unittest.TestCase):
                 starter_neuron.stop()
 
     def run_test_degree_receiver_neurons_over_time(
-        self, test_object, extraction_time=None
+        self, m, retry, test_object, extraction_time=None
     ):
         """Verifies the neuron properties over time."""
 
         # Collect the neurons of a particular type and get a starter neuron for
         # SNN simulation.
-        # TODO: Move into create object.
-        (
-            test_object,
-            sorted_degree_receiver_neurons,
-            starter_neuron,
-        ) = get_degree_receiver_neurons(test_object)
-        (
-            test_object,
-            sorted_selector_neurons,
-            selector_starter_neuron,
-        ) = get_selector_neurons(test_object)
-        (
-            test_object,
-            sorted_counter_neurons,
-            counter_starter_neuron,
-        ) = get_counter_neurons(test_object)
+        grouped_neurons = get_grouped_neurons(m, test_object)
+
+        # Get the first neuron in the SNN to start the simulation
+        # TODO: update
+        starter_neuron = grouped_neurons["spike_once_x_0"][0]
+
         # TODO: Move into create object.
         # Create storage lists for previous neuron currents and voltages.
         (
@@ -136,19 +128,23 @@ class Test_counter(unittest.TestCase):
             degree_receiver_previous_us,
             degree_receiver_previous_vs,
         ) = get_degree_receiver_previous_property_dicts(
-            test_object, sorted_degree_receiver_neurons
+            test_object, grouped_neurons["degree_receiver_neurons_x_y_0"]
         )
         (
             selector_previous_a_in,
             selector_previous_us,
             selector_previous_vs,
-        ) = get_selector_previous_property_dicts(test_object, sorted_selector_neurons)
+        ) = get_selector_previous_property_dicts(
+            test_object, grouped_neurons["selector_neurons_x_0"]
+        )
 
         (
             counter_previous_a_in,
             counter_previous_us,
             counter_previous_vs,
-        ) = get_counter_previous_property_dicts(test_object, sorted_counter_neurons)
+        ) = get_counter_previous_property_dicts(
+            test_object, grouped_neurons[f"counter_neurons_x_{m}"]
+        )
 
         # Simulate SNN and assert values inbetween timesteps.
         # Simulate till extraction time+10 sec.
@@ -158,14 +154,25 @@ class Test_counter(unittest.TestCase):
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
 
             # Print the values coming into the timestep.
-            # Assert neuron values.
-            self.print_neuron_properties(
-                test_object,
-                sorted_counter_neurons,
-                sorted_degree_receiver_neurons,
-                sorted_selector_neurons,
-                t,
+            # if t > 44 and t < 49:
+            spike_dict = print_neuron_behaviour(test_object, grouped_neurons, t)
+            test_object = get_node_names(
+                grouped_neurons, test_object.neuron_dict, spike_dict, t, test_object
             )
+            plot_neuron_behaviour_over_time(
+                test_object.get_degree,
+                retry,
+                len(test_object.G),
+                grouped_neurons,
+                spike_dict,
+                t,
+                show=False,
+            )
+
+            # Terminate Loihi simulation.
+            starter_neuron.stop()
+            raise Exception("STOP")
+
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(
                 test_object,
@@ -179,51 +186,20 @@ class Test_counter(unittest.TestCase):
                 selector_previous_a_in,
                 selector_previous_us,
                 selector_previous_vs,
-                sorted_counter_neurons,
-                sorted_degree_receiver_neurons,
-                sorted_selector_neurons,
+                grouped_neurons[f"counter_neurons_x_{m}"],
+                grouped_neurons["degree_receiver_neurons_x_y_0"],
+                grouped_neurons["selector_neurons_x_0"],
                 starter_neuron,
                 t,
             )
             if not extraction_time is None and t == extraction_time:
-                extracted_neurons = sorted_counter_neurons
+                extracted_neurons = grouped_neurons[f"counter_neurons_x_{m}"]
 
         # raise Exception("Stop")
         if not extraction_time:
             return extracted_neurons, starter_neuron
         else:
-            return sorted_counter_neurons, starter_neuron
-
-    def print_neuron_properties(
-        self,
-        test_object,
-        sorted_counter_neurons,
-        sorted_degree_receiver_neurons,
-        sorted_selector_neurons,
-        t,
-    ):
-        #
-        print_neurons_properties(
-            test_object,
-            test_object.neuron_dict,
-            sorted_degree_receiver_neurons,
-            t,
-            descriptions=[],
-        )
-        print_neurons_properties(
-            test_object,
-            test_object.neuron_dict,
-            sorted_selector_neurons,
-            t,
-            descriptions=[],
-        )
-        print_neurons_properties(
-            test_object,
-            test_object.neuron_dict,
-            sorted_counter_neurons,
-            t,
-            descriptions=[],
-        )
+            return grouped_neurons[f"counter_neurons_x_{m}"], starter_neuron
 
     def verify_neuron_behaviour(
         self,
@@ -396,7 +372,7 @@ class Test_counter(unittest.TestCase):
         )
         # print(f'before previous_has_spiked={previous_has_spiked}')
         if previous_has_spiked:
-            a_in = a_in - 2
+            a_in = a_in - 20
         if (
             test_object.sample_degree_receiver_neuron.bias
             + degree_receiver_neuron.u.get()

@@ -6,11 +6,12 @@ from lava.proc.dense.process import Dense
 from lava.proc.lif.process import LIF
 
 
-def print_neuron_properties(neurons, ids=None):
+def print_neuron_properties(neurons, spikes, ids=None):
     spacing = 4
     if not ids is None:
         [print(f"{str(x) : <{spacing+5}}", end=" ") for x in ids]
 
+    print(f""), [print(f"spk={x : <{spacing+1}}", end=" ") for x in spikes]
     print(f""), [print(f"u={str(x.u.get()) : <{spacing+3}}", end=" ") for x in neurons]
     print(f""), [
         print(f"du={str(x.du.get()) : <{spacing+2}}", end=" ") for x in neurons

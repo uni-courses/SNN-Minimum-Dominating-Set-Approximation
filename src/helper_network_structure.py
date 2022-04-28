@@ -337,6 +337,15 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
         # Add synapse from degree_selector to selector node.
         for neighbour_b in nx.all_neighbors(G, circuit):
             if circuit != neighbour_b:
+                get_degree.add_edges_from(
+                    [
+                        (
+                            f"degree_receiver_{circuit}_{neighbour_b}_{m-1}",
+                            f"counter_{neighbour_b}_{m-1}",
+                        )
+                    ],
+                    weight=+1,  # to disable bias
+                )
                 for loop in range(0, m):
                     get_degree.add_edges_from(
                         [
@@ -346,20 +355,6 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
                             )
                         ],
                         weight=-5,  # to disable bias
-                    )
-
-                    print(
-                        f"edge: degree_receiver_{circuit}_{neighbour_b}_{loop},selector_{circuit}_{loop}, weight=-5"
-                    )
-                    # TODO: UPDATE TO Go from degree_receiver_x_y to counter_y.
-                    get_degree.add_edges_from(
-                        [
-                            (
-                                f"degree_receiver_{circuit}_{neighbour_b}_{m-1}",
-                                f"counter_{neighbour_b}_{m-1}",
-                            )
-                        ],
-                        weight=+1,  # to disable bias
                     )
                     # Create list of outgoing edges from a certain counter neuron.
                     if (
@@ -411,6 +406,9 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
                                 weight=rand_ceil,  # To increase u(t) at every timestep.
                             )
 
+    # Create spike dictionaries with [t] as key, and boolean spike as value for each node.
+    for node in get_degree.nodes:
+        get_degree.nodes[node]["spike"] = {}
     return get_degree
 
 
@@ -471,3 +469,98 @@ def plot_coordinated_graph(G, iteration, size, show=False):
     # plt.savefig()
     plt.clf()
     plt.close()
+
+
+def plot_neuron_behaviour_over_time(
+    G, iteration, size, grouped_neurons, spike_dict, t, show=False
+):
+
+    # options = {"edgecolors": "red"}
+    options = {}
+    color_map, spiking_edges, unseen_edges = set_node_colours(G, t)
+    edge_color_map = set_edge_colours(G, spiking_edges)
+
+    nx.draw(
+        G,
+        nx.get_node_attributes(G, "pos"),
+        with_labels=True,
+        node_size=8,
+        font_size=5,
+        width=0.2,
+        node_color=color_map,
+        edge_color=edge_color_map,
+        **options,
+    )
+    node_labels = nx.get_node_attributes(G, "")
+    pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
+    nx.draw_networkx_labels(G, pos, labels=node_labels)
+    edge_labels = nx.get_edge_attributes(G, "weight")
+    nx.draw_networkx_edge_labels(G, pos, edge_labels, font_size=5)
+
+    plt.axis("off")
+    axis = plt.gca()
+    axis.set_xlim([1.2 * x for x in axis.get_xlim()])
+    axis.set_ylim([1.2 * y for y in axis.get_ylim()])
+    # f = plt.figure()
+    # f.set_figwidth(10)
+    # f.set_figheight(10)
+    # plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
+    if show:
+        plt.show()
+    for neuron_set, spikes in spike_dict.items():
+        print(f"{neuron_set},spikes={spikes}")
+
+    plot_export = Plot_to_tex()
+    plot_export.export_plot(plt, f"snn_t{t}_n{size}_iter{iteration}")
+    # plt.savefig()
+    plt.clf()
+    plt.close()
+
+
+def set_node_colours(G, t):
+    color_map = []
+    spiking_edges = []
+    unseen_edges = []
+    for node_name in G.nodes:
+        if G.nodes[node_name]["spike"] != {}:
+            # for node in G:
+            if G.nodes[node_name]["spike"][t] == 1:
+                color_map.append("green")
+                print(f"{node_name}:green")
+
+                for neighbour in nx.all_neighbors(G, node_name):
+                    spiking_edges.append((node_name, neighbour))
+                    print(f"Spiking Edge:{node_name,neighbour}")
+            else:
+                color_map.append("white")
+                print(f"{node_name}:white")
+        else:
+            color_map.append("yellow")
+            for neighbour in nx.all_neighbors(G, node_name):
+                unseen_edges.append((node_name, neighbour))
+    return color_map, spiking_edges, unseen_edges
+
+
+def set_edge_colours(G, spiking_edges):
+    edge_color_map = []
+    for edge in G.edges:
+
+        if edge in spiking_edges:
+            print(edge)
+            edge_color_map.append("green")
+        else:
+            edge_color_map.append("black")
+    return edge_color_map
+
+
+def get_node_names(grouped_neurons, neuron_dict, spike_dict, t, test_object):
+    for group_name, neurons in grouped_neurons.items():
+        spikes = spike_dict[group_name]
+        count = 0
+        for neuron in neurons:
+            neuron_name = neuron_dict[neuron]
+            for node_name in test_object.get_degree.nodes:
+                if node_name == neuron_name:
+                    test_object.get_degree.nodes[node_name]["spike"][t] = spikes[count]
+            count = count + 1
+    return test_object

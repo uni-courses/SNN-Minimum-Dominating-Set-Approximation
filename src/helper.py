@@ -4,6 +4,7 @@ import os
 import random
 import shutil
 import networkx as nx
+import traceback
 
 from src.helper_snns import print_neuron_properties
 from test.contains_neurons_of_type_x import get_n_neurons
@@ -208,7 +209,7 @@ def print_neurons_properties(test_object, neuron_dict, neurons, t, descriptions=
     sorted_neurons = []
     # Sort by value.
     descriptions = ""
-    spikes = ""
+    spikes = []
     sorted_dict = dict(sorted(neuron_dict.items(), key=lambda item: item[1]))
     if descriptions == "":
         for neuron, neuron_name in sorted_dict.items():
@@ -220,12 +221,11 @@ def print_neurons_properties(test_object, neuron_dict, neurons, t, descriptions=
                 inner_dict = list(monitor_dict.values())[0]
                 spikelist = list(inner_dict.values())[0]
                 current_spike = spikelist[t - 1]
-                spikes = f"{spikes} {current_spike}"
-    print(f"t={t}")
+                spikes.append(current_spike[0])
 
     print(descriptions[1:])
-    print(f"spikes={spikes[:]}")
-    print_neuron_properties(sorted_neurons)
+    print_neuron_properties(sorted_neurons, spikes)
+    return sorted_neurons, spikes
 
 
 def get_a_in_for_selector_neuron_retry(
@@ -562,13 +562,72 @@ def get_x_position(m):
 
 
 def delete_files_in_folder(folder):
+    os.makedirs(folder, exist_ok=True)
+    try:
+        shutil.rmtree(folder)
+    except Exception:
+        print(traceback.format_exc())
+    os.makedirs(folder, exist_ok=False)
 
-    for filename in os.listdir(folder):
-        file_path = os.path.join(folder, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print("Failed to delete %s. Reason: %s" % (file_path, e))
+
+def get_neurons(neuron_identifier, m, test_object):
+    if neuron_identifier == "degree_receiver_":
+        expected_n = get_expected_amount_of_degree_receiver_neurons(test_object.G)
+        sample_neuron = test_object.sample_degree_receiver_neuron
+    elif neuron_identifier == "selector_":
+        expected_n = len(test_object.G)
+        sample_neuron = test_object.sample_selector_neuron
+    elif neuron_identifier == "counter_":
+        expected_n = len(test_object.G)
+        sample_neuron = test_object.sample_counter_neuron
+    elif neuron_identifier == "spike_once_":
+        expected_n = len(test_object.G)
+        sample_neuron = test_object.sample_spike_once_neuron
+
+    neurons = get_n_neurons(
+        expected_n,
+        test_object.neurons,
+        test_object.neuron_dict,
+        neuron_identifier,
+        sample_neuron,
+        m=m,
+    )
+
+    # Sort the neurons by default before returning them.
+    if sorted:
+        sorted_neurons = sort_neurons(neurons, test_object.neuron_dict)
+    return sorted_neurons
+
+
+def get_grouped_neurons(m, test_object):
+    grouped_dict = {}
+    for id in range(m + 1):
+        grouped_dict[f"spike_once_x_{id}"] = get_neurons("spike_once_", id, test_object)
+        grouped_dict[f"degree_receiver_neurons_x_y_{id}"] = get_neurons(
+            "degree_receiver_", id, test_object
+        )
+        grouped_dict[f"selector_neurons_x_{id}"] = get_neurons(
+            "selector_", id, test_object
+        )
+    grouped_dict[f"counter_neurons_x_{m}"] = get_neurons("counter_", m, test_object)
+
+    return grouped_dict
+
+
+def print_neuron_behaviour(
+    test_object,
+    grouped_neurons,
+    t,
+):
+    spike_dict = {}
+    print(f"t={t}")
+    for name, neurons in grouped_neurons.items():
+        sorted_neurons, spikes = print_neurons_properties(
+            test_object,
+            test_object.neuron_dict,
+            neurons,
+            t,
+            descriptions=[],
+        )
+        spike_dict[name] = spikes
+    return spike_dict
