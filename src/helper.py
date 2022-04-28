@@ -225,7 +225,7 @@ def print_neurons_properties(test_object, neuron_dict, neurons, t, descriptions=
 
     print(descriptions[1:])
     print_neuron_properties(sorted_neurons, spikes)
-    return sorted_neurons,spikes
+    return sorted_neurons, spikes
 
 
 def get_a_in_for_selector_neuron_retry(
@@ -619,15 +619,15 @@ def print_neuron_behaviour(
     grouped_neurons,
     t,
 ):
-    spike_dict={}
+    spike_dict = {}
     print(f"t={t}")
     for name, neurons in grouped_neurons.items():
-        sorted_neurons,spikes=print_neurons_properties(
+        sorted_neurons, spikes = print_neurons_properties(
             test_object,
             test_object.neuron_dict,
             neurons,
             t,
             descriptions=[],
         )
-        spike_dict[name]= spikes
+        spike_dict[name] = spikes
     return spike_dict

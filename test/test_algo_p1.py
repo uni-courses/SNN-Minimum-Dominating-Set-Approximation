@@ -22,6 +22,7 @@ from src.helper import (
     print_neuron_behaviour,
     print_neurons_properties,
 )
+from src.helper_network_structure import plot_neuron_behaviour_over_time
 from src.helper_snns import print_neuron_properties
 from src.neumann import partial_alipour, full_alipour
 from test.contains_neurons_of_type_x import (
@@ -73,7 +74,7 @@ class Test_counter(unittest.TestCase):
                     counter_neurons,
                     starter_neuron,
                 ) = self.run_test_degree_receiver_neurons_over_time(
-                    m, test_object, extraction_time=test_object.inhibition + 1
+                    m, retry, test_object, extraction_time=test_object.inhibition + 1
                 )
 
                 # Compute degree count using Alipour algorithm
@@ -108,14 +109,14 @@ class Test_counter(unittest.TestCase):
                 starter_neuron.stop()
 
     def run_test_degree_receiver_neurons_over_time(
-        self, m, test_object, extraction_time=None
+        self, m, retry, test_object, extraction_time=None
     ):
         """Verifies the neuron properties over time."""
 
         # Collect the neurons of a particular type and get a starter neuron for
         # SNN simulation.
         grouped_neurons = get_grouped_neurons(m, test_object)
-        
+
         # Get the first neuron in the SNN to start the simulation
         # TODO: update
         starter_neuron = grouped_neurons["spike_once_x_0"][0]
@@ -153,12 +154,21 @@ class Test_counter(unittest.TestCase):
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
 
             # Print the values coming into the timestep.
-            #if t > 44 and t < 49:
-            spike_dict=print_neuron_behaviour(test_object, grouped_neurons, t)
+            # if t > 44 and t < 49:
+            spike_dict = print_neuron_behaviour(test_object, grouped_neurons, t)
+            plot_neuron_behaviour_over_time(
+                test_object.get_degree,
+                retry,
+                len(test_object.G),
+                grouped_neurons,
+                spike_dict,
+                t,
+                show=False,
+            )
 
             # Terminate Loihi simulation.
-            # starter_neuron.stop()
-            # raise Exception("STOP")
+            starter_neuron.stop()
+            raise Exception("STOP")
 
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(

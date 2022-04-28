@@ -470,7 +470,10 @@ def plot_coordinated_graph(G, iteration, size, show=False):
     plt.clf()
     plt.close()
 
-def plot_neuron_behaviour_over_time(G, iteration, size,grouped_neurons,spike_dict,t, show=False):
+
+def plot_neuron_behaviour_over_time(
+    G, iteration, size, grouped_neurons, spike_dict, t, show=False
+):
     # Width=edge width.
     nx.draw(
         G,
@@ -498,7 +501,7 @@ def plot_neuron_behaviour_over_time(G, iteration, size,grouped_neurons,spike_dic
         plt.show()
 
     plot_export = Plot_to_tex()
-    plot_export.export_plot(plt, f"snn_{size}_{iteration}")
+    plot_export.export_plot(plt, f"snn_t{t}_n{size}_iter{iteration}")
     # plt.savefig()
     plt.clf()
     plt.close()
