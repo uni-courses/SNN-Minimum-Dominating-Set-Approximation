@@ -4,6 +4,7 @@ import os
 import random
 import shutil
 import networkx as nx
+import traceback
 
 from src.helper_snns import print_neuron_properties
 from test.contains_neurons_of_type_x import get_n_neurons
@@ -560,16 +561,12 @@ def get_x_position(m):
 
 
 def delete_files_in_folder(folder):
-
-    for filename in os.listdir(folder):
-        file_path = os.path.join(folder, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print("Failed to delete %s. Reason: %s" % (file_path, e))
+    os.makedirs(folder, exist_ok=True)
+    try:
+        shutil.rmtree(folder)
+    except Exception:
+        print(traceback.format_exc())
+    os.makedirs(folder, exist_ok=False)
 
 
 def get_neurons(neuron_identifier, m, test_object):
