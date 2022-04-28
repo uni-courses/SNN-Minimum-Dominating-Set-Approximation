@@ -22,7 +22,7 @@ from src.helper import (
     print_neuron_behaviour,
     print_neurons_properties,
 )
-from src.helper_network_structure import plot_neuron_behaviour_over_time
+from src.helper_network_structure import get_node_names, plot_neuron_behaviour_over_time
 from src.helper_snns import print_neuron_properties
 from src.neumann import partial_alipour, full_alipour
 from test.contains_neurons_of_type_x import (
@@ -156,6 +156,9 @@ class Test_counter(unittest.TestCase):
             # Print the values coming into the timestep.
             # if t > 44 and t < 49:
             spike_dict = print_neuron_behaviour(test_object, grouped_neurons, t)
+            test_object = get_node_names(
+                grouped_neurons, test_object.neuron_dict, spike_dict, t, test_object
+            )
             plot_neuron_behaviour_over_time(
                 test_object.get_degree,
                 retry,

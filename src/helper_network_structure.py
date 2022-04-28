@@ -409,6 +409,9 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
                                 weight=rand_ceil,  # To increase u(t) at every timestep.
                             )
 
+    # Create spike dictionaries with [t] as key, and boolean spike as value for each node.
+    for node in get_degree.nodes:
+        get_degree.nodes[node]["spike"] = {}
     return get_degree
 
 
@@ -474,6 +477,28 @@ def plot_coordinated_graph(G, iteration, size, show=False):
 def plot_neuron_behaviour_over_time(
     G, iteration, size, grouped_neurons, spike_dict, t, show=False
 ):
+
+    # options = {"edgecolors": "red"}
+    options = {}
+    color_map = []
+    from pprint import pprint
+
+    print(f"DICT")
+    for node_name in G.nodes:
+        # pprint(G.nodes[node_name]["spike"])
+        if G.nodes[node_name]["spike"] != {}:
+            # for node in G:
+            if G.nodes[node_name]["spike"][t] == 1:
+                color_map.append("red")
+                print(f"{node_name}:red")
+            else:
+                color_map.append("white")
+                print(f"{node_name}:white")
+        else:
+            color_map.append("orange")
+            print(f"{node_name}:orange")
+    # nx.draw_networkx(G, node_color=color_map, **options)
+
     # Width=edge width.
     nx.draw(
         G,
@@ -482,6 +507,8 @@ def plot_neuron_behaviour_over_time(
         node_size=8,
         font_size=5,
         width=0.2,
+        node_color=color_map,
+        **options,
     )
     node_labels = nx.get_node_attributes(G, "")
     pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
@@ -499,9 +526,60 @@ def plot_neuron_behaviour_over_time(
     # plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
     if show:
         plt.show()
+    for neuron_set, spikes in spike_dict.items():
+        print(f"{neuron_set},spikes={spikes}")
 
     plot_export = Plot_to_tex()
     plot_export.export_plot(plt, f"snn_t{t}_n{size}_iter{iteration}")
     # plt.savefig()
     plt.clf()
     plt.close()
+
+
+def get_node_names(grouped_neurons, neuron_dict, spike_dict, t, test_object):
+    for group_name, neurons in grouped_neurons.items():
+        spikes = spike_dict[group_name]
+        count = 0
+        for neuron in neurons:
+            neuron_name = neuron_dict[neuron]
+            print(f"name:{neuron_name},count={count},spike={spikes[count]}")
+
+            for node_name in test_object.get_degree.nodes:
+                if node_name == neuron_name:
+                    test_object.get_degree.nodes[node_name]["spike"][t] = spikes[count]
+                    print(
+                        f'Spike or not={test_object.get_degree.nodes[node_name]["spike"][t]}'
+                    )
+            count = count + 1
+    return test_object
+
+
+def color_nodes():
+    import matplotlib.pyplot as plt
+    import networkx as nx
+
+    GExample = nx.Graph()
+    GExample.add_nodes_from(["a", "b", "c", "d", "e", "f", "g"])
+    GExample.add_edges_from(
+        [
+            ("a", "b"),
+            ("b", "a"),
+            ("a", "c"),
+            ("b", "c"),
+            ("b", "d"),
+            ("c", "d"),
+            ("d", "e"),
+            ("b", "e"),
+            ("b", "f"),
+            ("f", "g"),
+        ]
+    )
+    options = {"with_labels": True, "edgecolors": "blue"}
+    color_map = []
+    for node in GExample:
+        if node == "a":
+            color_map.append("blue")
+        else:
+            color_map.append("white")
+    nx.draw_networkx(GExample, node_color=color_map, **options)
+    plt.show()
