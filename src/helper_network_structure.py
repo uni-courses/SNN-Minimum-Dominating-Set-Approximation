@@ -554,32 +554,3 @@ def get_node_names(grouped_neurons, neuron_dict, spike_dict, t, test_object):
     return test_object
 
 
-def color_nodes():
-    import matplotlib.pyplot as plt
-    import networkx as nx
-
-    GExample = nx.Graph()
-    GExample.add_nodes_from(["a", "b", "c", "d", "e", "f", "g"])
-    GExample.add_edges_from(
-        [
-            ("a", "b"),
-            ("b", "a"),
-            ("a", "c"),
-            ("b", "c"),
-            ("b", "d"),
-            ("c", "d"),
-            ("d", "e"),
-            ("b", "e"),
-            ("b", "f"),
-            ("f", "g"),
-        ]
-    )
-    options = {"with_labels": True, "edgecolors": "blue"}
-    color_map = []
-    for node in GExample:
-        if node == "a":
-            color_map.append("blue")
-        else:
-            color_map.append("white")
-    nx.draw_networkx(GExample, node_color=color_map, **options)
-    plt.show()
