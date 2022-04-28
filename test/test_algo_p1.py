@@ -114,6 +114,7 @@ class Test_counter(unittest.TestCase):
                 starter_neuron.stop()
 
     def run_test_degree_receiver_neurons_over_time(
+
         self, m, plot_neuron_behaviour, retry, test_object, extraction_time=None
     ):
         """Verifies the neuron properties over time."""
@@ -161,6 +162,7 @@ class Test_counter(unittest.TestCase):
             # Print the values coming into the timestep.
             # if t > 44 and t < 49:
 
+
             if plot_neuron_behaviour:
                 spike_dict = print_neuron_behaviour(test_object, grouped_neurons, t)
                 test_object = get_node_names(
@@ -176,7 +178,7 @@ class Test_counter(unittest.TestCase):
                     show=False,
                 )
 
-            # Terminate Loihi simulation.
+            
 
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(
