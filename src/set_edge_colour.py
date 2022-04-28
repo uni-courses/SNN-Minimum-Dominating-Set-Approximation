@@ -25,18 +25,20 @@ def color_nodes():
             color_map.append("blue")
         else:
             color_map.append("white")
-        
-    edge_color_map=[]
+
+    edge_color_map = []
     for edge in GExample.edges:
-        
-        if edge==("a","c"):
+
+        if edge == ("a", "c"):
             print(edge)
             edge_color_map.append("red")
         else:
             edge_color_map.append("yellow")
 
-
-    nx.draw_networkx(GExample, node_color=color_map,edge_color=edge_color_map, **options)
+    nx.draw_networkx(
+        GExample, node_color=color_map, edge_color=edge_color_map, **options
+    )
     plt.show()
+
 
 color_nodes()

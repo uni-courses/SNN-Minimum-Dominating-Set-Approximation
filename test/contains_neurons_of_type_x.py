@@ -129,9 +129,6 @@ def neuron_has_expected_name(neuron, neuron_dict, neuron_identifier):
     if neuron_dict[neuron][: len(neuron_identifier)] == neuron_identifier:
         return True
     else:
-        print(
-            f"neuron_dict[neuron][:len(neuron_identifier)]={neuron_dict[neuron][:len(neuron_identifier)]}"
-        )
         return False
 
 
