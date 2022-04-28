@@ -57,14 +57,15 @@ class Test_counter(unittest.TestCase):
         delete_files_in_folder(f"latex/Images/graphs")
 
         # Get list of planer triangle free graphs.
-        m = 1
+        m = 3
+        plot_neuron_behaviour = False
 
-        for retry in range(0, 1, 1):
+        for retry in range(0, 3, 1):
             graphs = []
-            for size in range(3, 4, 1):
+            for size in range(3, 6, 1):
                 graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
             for G in graphs:
-                G = create_manual_graph_with_4_nodes()
+                # G = create_manual_graph_with_4_nodes()
                 # Initialise paramers used for testing.
                 test_object = create_test_object(G, retry, m, False, False)
 
@@ -74,7 +75,11 @@ class Test_counter(unittest.TestCase):
                     counter_neurons,
                     starter_neuron,
                 ) = self.run_test_degree_receiver_neurons_over_time(
-                    m, retry, test_object, extraction_time=test_object.inhibition + 1
+                    m,
+                    plot_neuron_behaviour,
+                    retry,
+                    test_object,
+                    extraction_time=test_object.inhibition + 1,
                 )
 
                 # Compute degree count using Alipour algorithm
@@ -109,7 +114,7 @@ class Test_counter(unittest.TestCase):
                 starter_neuron.stop()
 
     def run_test_degree_receiver_neurons_over_time(
-        self, m, retry, test_object, extraction_time=None
+        self, m, plot_neuron_behaviour, retry, test_object, extraction_time=None
     ):
         """Verifies the neuron properties over time."""
 
@@ -155,23 +160,23 @@ class Test_counter(unittest.TestCase):
 
             # Print the values coming into the timestep.
             # if t > 44 and t < 49:
-            spike_dict = print_neuron_behaviour(test_object, grouped_neurons, t)
-            test_object = get_node_names(
-                grouped_neurons, test_object.neuron_dict, spike_dict, t, test_object
-            )
-            plot_neuron_behaviour_over_time(
-                test_object.get_degree,
-                retry,
-                len(test_object.G),
-                grouped_neurons,
-                spike_dict,
-                t,
-                show=False,
-            )
+
+            if plot_neuron_behaviour:
+                spike_dict = print_neuron_behaviour(test_object, grouped_neurons, t)
+                test_object = get_node_names(
+                    grouped_neurons, test_object.neuron_dict, spike_dict, t, test_object
+                )
+                plot_neuron_behaviour_over_time(
+                    test_object.get_degree,
+                    retry,
+                    len(test_object.G),
+                    grouped_neurons,
+                    spike_dict,
+                    t,
+                    show=False,
+                )
 
             # Terminate Loihi simulation.
-            starter_neuron.stop()
-            raise Exception("STOP")
 
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(

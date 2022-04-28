@@ -444,6 +444,7 @@ def retry_create_degree_synapses(G, get_degree, m, rand_ceil):
                                 ],
                                 weight=rand_ceil,  # To increase u(t) at every timestep.
                             )
+    return get_degree
 
 
 def get_weight_receiver_synapse_paths(G):
