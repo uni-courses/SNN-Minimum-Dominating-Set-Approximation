@@ -644,9 +644,9 @@ def get_counter_neurons_from_dict(neuron_dict, expected_nr_of_neurons):
     neuron_names = list(neuron_dict.values())
     for neuron_name in neuron_names:
         if neuron_name[:8] == "counter_":
-            counter_neurons.append[
+            counter_neurons.append(
                 get_neuron_from_dict(neuron_dict, neurons, neuron_name)
-            ]
+            )
 
     if expected_nr_of_neurons != len(counter_neurons):
         raise Exception(
