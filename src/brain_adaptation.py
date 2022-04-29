@@ -1,5 +1,7 @@
 import copy
 from src.helper_network_structure import plot_coordinated_graph
+from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
+from test.create_testobject import add_monitor_to_dict
 
 
 def implement_adaptation_mechanism(G, get_degree, m, retry, size, test_object):
@@ -33,7 +35,7 @@ def implement_adaptation_mechanism(G, get_degree, m, retry, size, test_object):
         # Add recurrent self inhibitory synapse for some redundant nodes.
 
     # Visualise new graph.
-    plot_coordinated_graph(get_degree, retry, size, show=True)
+    plot_coordinated_graph(get_degree, retry, size, show=False)
     return get_degree
 
 
@@ -98,3 +100,22 @@ def add_inhibitory_synapse(get_degree, node_name):
     # prevent all neurons from spiking.
     get_degree.add_edges_from([(node_name, f"red_{node_name}")], weight=-100)
     # TODO: set edge weight
+
+
+def convert_new_graph_to_snn(test_object):
+    ## Convert the snn networkx graph into a Loihi implementation.
+    (
+        test_object.converted_nodes,
+        test_object.lhs_neuron,
+        test_object.neurons,
+        test_object.lhs_node,
+        test_object.neuron_dict,
+    ) = convert_networkx_graph_to_snn_with_one_neuron(test_object.get_degree)
+
+    # Create monitor dict
+    test_object.monitor_dict = {}
+    for neuron in test_object.neurons:
+        test_object.monitor_dict = add_monitor_to_dict(
+            neuron, test_object.monitor_dict, test_object.sim_time
+        )
+    return test_object

@@ -5,7 +5,10 @@ import networkx as nx
 from numpy import sort
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
-from src.brain_adaptation import implement_adaptation_mechanism
+from src.brain_adaptation import (
+    convert_new_graph_to_snn,
+    implement_adaptation_mechanism,
+)
 from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_4_nodes,
     create_manual_graph_with_5_nodes,
@@ -13,6 +16,7 @@ from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_6_nodes_y_shape,
     create_triangle_free_planar_graph,
 )
+from src.get_neuron_properties import create_neuron_monitors
 from src.helper import (
     degree_receiver_x_y_is_connected_to_counter_z,
     delete_files_in_folder,
@@ -106,7 +110,9 @@ class Test_counter(unittest.TestCase):
                     )
 
                     # Create monitors to probe if neuron spiked or not.
-                    monitors
+                    monitors = convert_new_graph_to_snn(test_object)
+                    raise Exception("DONE")
+                    monitors = create_neuron_monitors(test_object.get_degree)
 
                     # Run default tests on neurons and get counted degree from
                     # neurons after inhibition time.

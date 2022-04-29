@@ -119,9 +119,7 @@ def create_test_object(
         test_object.neurons,
         test_object.lhs_node,
         test_object.neuron_dict,
-    ) = convert_networkx_graph_to_snn_with_one_neuron(
-        test_object.get_degree, True, bias=0, du=0, dv=0, weight=1, vth=1
-    )
+    ) = convert_networkx_graph_to_snn_with_one_neuron(test_object.get_degree)
 
     # Create monitor dict
     test_object.monitor_dict = {}

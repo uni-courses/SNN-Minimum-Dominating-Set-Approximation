@@ -1,3 +1,7 @@
+from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
+from test.create_testobject import add_monitor_to_dict
+
+
 def neuron_spikes_at_t(get_degree, t, node_name):
     # Initialise new a_in for a time step.
 
@@ -20,3 +24,7 @@ def neuron_spikes_at_t(get_degree, t, node_name):
         # If input neuron spiked, compute the synaptic/edge weight and add it to a_in
 
     # Store the spike in a dictionary with t as keys in the node.
+
+
+def create_neuron_monitors(G, test_object):
+    pass
