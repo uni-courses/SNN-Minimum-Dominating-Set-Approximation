@@ -1,4 +1,5 @@
 import copy
+from src.helper import print_time
 from src.helper_network_structure import plot_coordinated_graph
 from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
 from test.create_testobject import add_monitor_to_dict
@@ -119,3 +120,15 @@ def convert_new_graph_to_snn(test_object):
             neuron, test_object.monitor_dict, test_object.sim_time
         )
     return test_object
+
+
+def inject_adaptation_mechanism_to_networkx_and_snn(G,test_object,m,retry,size):
+    # Implement brain adaptation on networkx graph.
+    implement_adaptation_mechanism(
+        G, test_object.get_degree, m, retry, size, test_object
+    )
+    latest_time = print_time("Get adapted networkx Graph.", latest_time)
+
+    # Convert the graph with brain adaptation to an SNN.
+    test_object = convert_new_graph_to_snn(test_object)
+    latest_time = print_time("Got adapted SNN.", latest_time)

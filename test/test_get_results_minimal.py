@@ -9,6 +9,7 @@ from lava.magma.core.run_configs import Loihi1SimCfg
 from src.brain_adaptation import (
     convert_new_graph_to_snn,
     implement_adaptation_mechanism,
+    inject_adaptation_mechanism_to_networkx_and_snn,
 )
 from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_4_nodes,
@@ -68,12 +69,12 @@ class Test_counter(unittest.TestCase):
             # G = create_manual_graph_with_6_nodes_y_shape()  # Y
         return G
 
-    def test_multiple_tests(self):
+    def test_snn_algorithm(self,adaptation=False):
 
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
 
-        for m in range(0, 1):
+        for m in range(1, 2):
             plot_neuron_behaviour = True
             for retry in range(0, 1, 1):
                 for size in range(3, 4, 1):
@@ -82,29 +83,21 @@ class Test_counter(unittest.TestCase):
                     latest_time = print_time("Create object.", datetime.now())
                     # Initialise paramers used for testing.
                     test_object = create_test_object(G, retry, m, False, False)
-                    # sim_time=test_object.inhibition + 1
-                    sim_time = 4
+                    sim_time=test_object.inhibition + 10
+                    #sim_time = 4
                     latest_time = print_time("Created object.", latest_time)
 
-                    # Implement brain adaptation on networkx graph.
-                    implement_adaptation_mechanism(
-                        G, test_object.get_degree, m, retry, size, test_object
-                    )
-                    latest_time = print_time("Get adapted networkx Graph.", latest_time)
+                    if adaptation:
+                        inject_adaptation_mechanism_to_networkx_and_snn(G,test_object,m,retry,size)
 
-                    # Convert the graph with brain adaptation to an SNN.
-                    test_object = convert_new_graph_to_snn(test_object)
-                    latest_time = print_time("Got adapted SNN.", latest_time)
-                    
-                    # monitors = create_neuron_monitors(test_object, test_object.sim_time)
-                    # latest_time = print_time("Got neuron monitors.", latest_time)
+                    monitors = create_neuron_monitors(test_object, test_object.sim_time)
+                    latest_time = print_time("Got neuron monitors.", latest_time)
 
                     # Run default tests on neurons and get counted degree from
                     # neurons after inhibition time.
                     neurons = list(test_object.neuron_dict.keys())
                     (
-                        starter_neuron,
-                        neurons,
+                        latest_time, neurons,starter_neuron
                     ) = self.run_test_degree_receiver_neurons_over_time(
                         latest_time,
                         neurons,
@@ -127,7 +120,9 @@ class Test_counter(unittest.TestCase):
                     # Terminate loihi simulation for this run.
                     starter_neuron.stop()
 
-    def run_test_degree_receiver_neurons_over_time(self, latest_time,neurons, sim_time):
+    def run_test_degree_receiver_neurons_over_time(
+        self, latest_time, neurons, sim_time
+    ):
         """Verifies the neuron properties over time."""
 
         # Get the first neuron in the SNN to start the simulation
@@ -143,7 +138,7 @@ class Test_counter(unittest.TestCase):
             latest_time = print_time(f"Simulated SNN for t={t}.", latest_time)
 
         # raise Exception("Stop")
-        return starter_neuron, neurons
+        return latest_time, neurons,starter_neuron
 
     def perform_integration_test_on_end_result(
         self, counter_neurons, G, m, retry, test_object
