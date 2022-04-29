@@ -655,15 +655,14 @@ def get_counter_neurons_from_dict(neuron_dict, expected_nr_of_neurons):
     return counter_neurons
 
 
-def print_time(status, previous_time):
+def print_time(status, previous_time, previous_millis):
     now = datetime.now()
-    durationTime = (now - previous_time).total_seconds()
-    print(f"{str(now.time())[:8]}, Duration:{int(durationTime)}, status:{status}")
-    return now
+    # durationTime = (now - previous_time).total_seconds()
+    durationTime = now - previous_time
+    import time
 
+    now_millis = int(round(time.time() * 1000))
 
-def getDifference(then, now=datetime.now(), interval="secs"):
-
-    duration = now - then
-    duration_in_s = duration.total_seconds()
-    print(f"duration_in_s={duration_in_s}")
+    duration_millis = now_millis - previous_millis
+    print(f"{str(now.time())[:8]}, Duration:{duration_millis} [ms], status:{status}")
+    return now, now_millis
