@@ -26,5 +26,5 @@ def neuron_spikes_at_t(get_degree, t, node_name):
     # Store the spike in a dictionary with t as keys in the node.
 
 
-def create_neuron_monitors(G, test_object):
+def create_neuron_monitors(test_object):
     pass
