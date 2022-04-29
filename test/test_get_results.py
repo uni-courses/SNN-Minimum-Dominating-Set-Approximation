@@ -5,6 +5,7 @@ import networkx as nx
 from numpy import sort
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
+from src.brain_adaptation import implement_adaptation_mechanism
 from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_4_nodes,
     create_manual_graph_with_5_nodes,
@@ -98,6 +99,11 @@ class Test_counter(unittest.TestCase):
 
                     # Initialise paramers used for testing.
                     test_object = create_test_object(G, retry, m, False, False)
+
+                    # Implement brain adaptation
+                    implement_adaptation_mechanism(
+                        G, test_object.get_degree, m, retry, size, test_object
+                    )
 
                     # Run default tests on neurons and get counted degree from
                     # neurons after inhibition time.

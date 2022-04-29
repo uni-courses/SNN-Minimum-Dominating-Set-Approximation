@@ -320,9 +320,6 @@ def get_a_in_for_degree_receiver(
 
                         a_in = a_in + spike_once_weight
                         # print(f'node={node},neighbour={neighbour},other_node={other_node},a_in={a_in}')
-                        print(
-                            f'"spike_once_{other_node} to: degree_receiver_{node}_{neighbour}, a_in={a_in}'
-                        )
 
     for circuit in G.nodes:
         # Add synapse between random node and degree receiver nodes.

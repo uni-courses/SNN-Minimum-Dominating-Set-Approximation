@@ -424,7 +424,6 @@ def create_degree_synapses_for_m_is_zero(get_degree, left, m, rand_ceil, right):
 
 
 def retry_create_degree_synapses(G, get_degree, m, rand_ceil):
-    print(f"m={m},RETRY")
     for loop in range(0, m):
         for x_l in G.nodes:
             for y in G.nodes:
@@ -432,9 +431,6 @@ def retry_create_degree_synapses(G, get_degree, m, rand_ceil):
                     if f"degree_receiver_{x_l}_{y}_{loop}" in get_degree.nodes:
                         if f"degree_receiver_{x_r}_{y}_{loop+1}" in get_degree.nodes:
                             # if not G.has_edge(x_l, v):
-                            print(
-                                f"degree_receiver_{x_l}_{y}_{loop} to: degree_receiver_{x_r}_{y}_{loop+1}"
-                            )
                             get_degree.add_edges_from(
                                 [
                                     (
