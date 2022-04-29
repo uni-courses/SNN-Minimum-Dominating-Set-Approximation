@@ -106,6 +106,7 @@ class Test_counter(unittest.TestCase):
                         starter_neuron,
                         neurons,
                     ) = self.run_test_degree_receiver_neurons_over_time(
+                        latest_time,
                         neurons,
                         sim_time,
                     )
@@ -126,7 +127,7 @@ class Test_counter(unittest.TestCase):
                     # Terminate loihi simulation for this run.
                     starter_neuron.stop()
 
-    def run_test_degree_receiver_neurons_over_time(self, neurons, sim_time):
+    def run_test_degree_receiver_neurons_over_time(self, latest_time,neurons, sim_time):
         """Verifies the neuron properties over time."""
 
         # Get the first neuron in the SNN to start the simulation
