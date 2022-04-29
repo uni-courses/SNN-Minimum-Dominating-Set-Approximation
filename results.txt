@@ -122,3 +122,21 @@ G_alipour countermarks-SNN counter current0-[0.]
 0-[0.]
 
 
+2022-04-29 16:57:12
+m=1
+len(G)=6
+edges
+(0, 2)
+(1, 2)
+(2, 3)
+(3, 4)
+(4, 5)
+retry=0
+G_alipour countermarks-SNN counter current0-[0.]
+0-[0.]
+3-[3.]
+2-[2.]
+1-[1.]
+0-[0.]
+
+

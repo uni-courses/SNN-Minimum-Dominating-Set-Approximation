@@ -34,7 +34,6 @@ def implement_adaptation_mechanism(G, get_degree, m, retry, size, test_object):
 
     # Visualise new graph.
     plot_coordinated_graph(get_degree, retry, size, show=True)
-    raise Exception("STOP")
     return get_degree
 
 
@@ -55,7 +54,7 @@ def store_output_synapses(get_degree, node_name):
 
 
 def create_redundant_node(d, get_degree, node_name):
-    """ Create neuron and set coordinate position. """
+    """Create neuron and set coordinate position."""
     get_degree.add_node(
         f"red_{node_name}",
         du=get_degree.nodes[node_name]["du"],
@@ -66,6 +65,7 @@ def create_redundant_node(d, get_degree, node_name):
             float(get_degree.nodes[node_name]["pos"][0] + 0.25 * d),
             float(get_degree.nodes[node_name]["pos"][1] - 0.25 * d),
         ),
+        spike={},
         is_redundant=True,
     )
 
@@ -94,5 +94,7 @@ def add_output_synapses(get_degree, node_name):
 
 
 def add_inhibitory_synapse(get_degree, node_name):
-    get_degree.add_edges_from([(node_name, f"red_{node_name}")])
+    # TODO: compute what minimum inhibitory weight should be in network to
+    # prevent all neurons from spiking.
+    get_degree.add_edges_from([(node_name, f"red_{node_name}")], weight=-100)
     # TODO: set edge weight
