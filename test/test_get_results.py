@@ -8,7 +8,8 @@ from lava.magma.core.run_configs import Loihi1SimCfg
 from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_4_nodes,
     create_manual_graph_with_5_nodes,
-    create_manual_graph_with_6_nodes,
+    create_manual_graph_with_6_nodes_symmetric,
+    create_manual_graph_with_6_nodes_y_shape,
     create_triangle_free_planar_graph,
 )
 from src.helper import (
@@ -49,7 +50,8 @@ class Test_counter(unittest.TestCase):
         else:
             # G = create_manual_graph_with_4_nodes()
             # G = create_manual_graph_with_5_nodes()
-            G = create_manual_graph_with_6_nodes()
+            # G = create_manual_graph_with_6_nodes_symmetric() #>-<
+            G = create_manual_graph_with_6_nodes_y_shape()  # Y
         return G
 
     def perform_integration_test_on_end_result(
@@ -88,7 +90,7 @@ class Test_counter(unittest.TestCase):
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
 
-        for m in range(1, 2):
+        for m in range(0, 1):
             plot_neuron_behaviour = True
             for retry in range(0, 1, 1):
                 for size in range(5, 6, 1):
@@ -112,7 +114,7 @@ class Test_counter(unittest.TestCase):
 
                     # Check if expected counter nodes are selected.
                     self.perform_integration_test_on_end_result(
-                        self, counter_neurons, G, m, retry, test_object
+                        counter_neurons, G, m, retry, test_object
                     )
 
                     # Terminate loihi simulation for this run.
