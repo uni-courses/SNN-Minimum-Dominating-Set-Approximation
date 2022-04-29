@@ -56,5 +56,5 @@ for run in range(10):
         f'lif1.v={mon_lif_1_v.get_data()[mon_lif_1_v_process]["v"][t]},lif1.s_out={mon_spike.get_data()[mon_spike_process]["s_out"][t]}, lif2.v={mon_lif_2_v.get_data()[mon_lif_2_v_process]["v"][t]}'
     )
 
-print(f'voltage_list after={voltage_list}')
+print(f"voltage_list after={voltage_list}")
 lif1.stop()

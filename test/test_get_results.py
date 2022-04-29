@@ -112,7 +112,8 @@ class Test_counter(unittest.TestCase):
                     # Create monitors to probe if neuron spiked or not.
                     monitors = convert_new_graph_to_snn(test_object)
                     # raise Exception("DONE")
-                    monitors = create_neuron_monitors(test_object)
+                    monitors = create_neuron_monitors(test_object, test_object.sim_time)
+                    raise Exception("STOP")
 
                     # Run default tests on neurons and get counted degree from
                     # neurons after inhibition time.

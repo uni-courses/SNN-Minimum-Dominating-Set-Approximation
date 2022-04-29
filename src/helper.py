@@ -629,3 +629,10 @@ def write_results_to_file(m, G, retry, G_alipour, counter_neurons):
         )
     file1.write("\n\n")
     file1.close()
+
+
+def get_neuron_from_dict(neuron_dict, neurons, neuron_name):
+    for neuron in neurons:
+        if neuron_dict[neuron] == neuron_name:
+            return neuron
+    raise Exception("Did not find neuron:{neuron_name} in dict:{neuron_dict}")
