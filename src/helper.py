@@ -636,3 +636,32 @@ def get_neuron_from_dict(neuron_dict, neurons, neuron_name):
         if neuron_dict[neuron] == neuron_name:
             return neuron
     raise Exception("Did not find neuron:{neuron_name} in dict:{neuron_dict}")
+
+
+def get_counter_neurons_from_dict(neuron_dict, expected_nr_of_neurons):
+    counter_neurons = []
+    neurons = list(neuron_dict.keys())
+    neuron_names = list(neuron_dict.values())
+    for neuron_name in neuron_names:
+        if neuron_name[:8] == "counter_":
+            counter_neurons.append[
+                get_neuron_from_dict(neuron_dict, neurons, neuron_name)
+            ]
+
+    if expected_nr_of_neurons != len(counter_neurons):
+        raise Exception(
+            f"Error, expected {expected_nr_of_neurons} neurons, yet found {len(counter_neurons)} neurons"
+        )
+    return counter_neurons
+
+
+def print_time(status, previous_time):
+    import datetime
+
+    now = datetime.datetime.now().time()
+    print(now)
+
+    durationTime = now - previous_time
+    print("The duration is " + str(durationTime))
+    print(status)
+    return now
