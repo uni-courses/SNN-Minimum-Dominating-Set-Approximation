@@ -18,7 +18,10 @@ from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_6_nodes_y_shape,
     create_triangle_free_planar_graph,
 )
-from src.get_neuron_properties import create_neuron_monitors
+from src.get_neuron_properties import (
+    create_neuron_monitors,
+    store_spike_values_in_neurons,
+)
 from src.helper import (
     degree_receiver_x_y_is_connected_to_counter_z,
     delete_files_in_folder,
@@ -69,39 +72,53 @@ class Test_counter(unittest.TestCase):
             # G = create_manual_graph_with_6_nodes_y_shape()  # Y
         return G
 
-    def test_snn_algorithm(self,adaptation=False):
+    def test_snn_algorithm(self, adaptation=True, output_behaviour=True):
 
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
+        monitors = None
 
         for m in range(1, 2):
             plot_neuron_behaviour = True
-            for retry in range(0, 1, 1):
+            for iteration in range(0, 1, 1):
                 for size in range(3, 4, 1):
                     G = self.get_graphs_for_this_test(size=size, seed=42)
 
                     latest_time = print_time("Create object.", datetime.now())
                     # Initialise paramers used for testing.
-                    test_object = create_test_object(G, retry, m, False, False)
-                    sim_time=test_object.inhibition + 10
-                    #sim_time = 4
+                    test_object = create_test_object(G, iteration, m, False, False)
+                    sim_time = test_object.inhibition + 10
+                    # sim_time = 4
                     latest_time = print_time("Created object.", latest_time)
 
                     if adaptation:
-                        inject_adaptation_mechanism_to_networkx_and_snn(G,test_object,m,retry,size)
+                        latest_time = inject_adaptation_mechanism_to_networkx_and_snn(
+                            latest_time, G, test_object, m, iteration, size
+                        )
 
-                    monitors = create_neuron_monitors(test_object, test_object.sim_time)
-                    latest_time = print_time("Got neuron monitors.", latest_time)
+                    if output_behaviour:
+                        monitors = create_neuron_monitors(
+                            test_object, test_object.sim_time
+                        )
+                        latest_time = print_time("Got neuron monitors.", latest_time)
 
                     # Run default tests on neurons and get counted degree from
                     # neurons after inhibition time.
                     neurons = list(test_object.neuron_dict.keys())
                     (
-                        latest_time, neurons,starter_neuron
-                    ) = self.run_test_degree_receiver_neurons_over_time(
                         latest_time,
                         neurons,
+                        starter_neuron,
+                    ) = self.run_test_degree_receiver_neurons_over_time(
+                        adaptation,
+                        iteration,
+                        latest_time,
+                        m,
+                        neurons,
+                        output_behaviour,
                         sim_time,
+                        size,
+                        test_object,
                     )
                     latest_time = print_time("Ran simulation.", latest_time)
 
@@ -113,7 +130,7 @@ class Test_counter(unittest.TestCase):
 
                     # Check if expected counter nodes are selected.
                     self.perform_integration_test_on_end_result(
-                        counter_neurons, G, m, retry, test_object
+                        counter_neurons, G, m, iteration, test_object
                     )
                     latest_time = print_time("Performed integration test.", latest_time)
 
@@ -121,7 +138,16 @@ class Test_counter(unittest.TestCase):
                     starter_neuron.stop()
 
     def run_test_degree_receiver_neurons_over_time(
-        self, latest_time, neurons, sim_time
+        self,
+        adaptation,
+        iteration,
+        latest_time,
+        m,
+        neurons,
+        output_behaviour,
+        sim_time,
+        size,
+        test_object,
     ):
         """Verifies the neuron properties over time."""
 
@@ -129,16 +155,23 @@ class Test_counter(unittest.TestCase):
         starter_neuron = neurons[0]
 
         # Simulate SNN and assert values inbetween timesteps.
-        # Simulate till extraction time+10 sec.
+        latest_time = print_time("Start simulation for 1 timestep.", latest_time)
         for t in range(1, sim_time):
 
-            latest_time = print_time("Start simulation for 1 timestep.", latest_time)
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
             latest_time = print_time(f"Simulated SNN for t={t}.", latest_time)
 
+            # Store spike bools in networkx graph for plotting.
+            if adaptation and output_behaviour:
+                store_spike_values_in_neurons(test_object.get_degree, t)
+            if output_behaviour:
+                plot_neuron_behaviour_over_time(
+                    test_object.get_degree, iteration, size, m, t, show=False
+                )
+
         # raise Exception("Stop")
-        return latest_time, neurons,starter_neuron
+        return latest_time, neurons, starter_neuron
 
     def perform_integration_test_on_end_result(
         self, counter_neurons, G, m, retry, test_object

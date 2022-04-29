@@ -122,7 +122,9 @@ def convert_new_graph_to_snn(test_object):
     return test_object
 
 
-def inject_adaptation_mechanism_to_networkx_and_snn(G,test_object,m,retry,size):
+def inject_adaptation_mechanism_to_networkx_and_snn(
+    latest_time, G, test_object, m, retry, size
+):
     # Implement brain adaptation on networkx graph.
     implement_adaptation_mechanism(
         G, test_object.get_degree, m, retry, size, test_object
@@ -132,3 +134,4 @@ def inject_adaptation_mechanism_to_networkx_and_snn(G,test_object,m,retry,size):
     # Convert the graph with brain adaptation to an SNN.
     test_object = convert_new_graph_to_snn(test_object)
     latest_time = print_time("Got adapted SNN.", latest_time)
+    return latest_time

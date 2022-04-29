@@ -60,3 +60,25 @@ def create_neuron_monitors(test_object, sim_time):
             get_degree.nodes[node_name]["neuron"] = neuron
             get_degree.nodes[node_name]["spike_monitor"] = monitor
             get_degree.nodes[node_name]["spike_monitor_id"] = monitor_process_id
+
+
+def store_spike_values_in_neurons(get_degree, t):
+    for node_name in get_degree.nodes:
+        if node_name != "connecting_node":
+            monitor = get_degree.nodes[node_name]["spike_monitor"]
+            monitor_process_id = get_degree.nodes[node_name]["spike_monitor_id"]
+
+            # TODO: doubt, or t=1?
+            # simulation starts at time t=1, then 1 timestep is simulated, after
+            # that time step, this monitoring function is called, which has the
+            # first spike value stored in list index 0, hence t-1. Spike value
+            # for t=2 is then stored in list index 1.
+            s_out = monitor.get_data()[monitor_process_id]["s_out"][t - 0]
+            if s_out == 1:
+                get_degree.nodes[node_name]["spike"][t] = True
+            elif s_out == 0:
+                get_degree.nodes[node_name]["spike"][t] = False
+            else:
+                raise Exception(
+                    f"Was not able to compute spike or not for node:{node_name}"
+                )

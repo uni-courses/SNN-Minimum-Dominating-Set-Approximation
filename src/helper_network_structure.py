@@ -502,9 +502,7 @@ def plot_coordinated_graph(G, iteration, size, show=False):
     plt.close()
 
 
-def plot_neuron_behaviour_over_time(
-    G, iteration, size, grouped_neurons, m, spike_dict, t, show=False
-):
+def plot_neuron_behaviour_over_time(G, iteration, size, m, t, show=False):
 
     # options = {"edgecolors": "red"}
     options = {}
@@ -538,8 +536,6 @@ def plot_neuron_behaviour_over_time(
     # plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
     if show:
         plt.show()
-    for neuron_set, spikes in spike_dict.items():
-        print(f"{neuron_set},spikes={spikes}")
 
     plot_export = Plot_to_tex()
     plot_export.export_plot(plt, f"snn_m{m}_n{size}_iter{iteration}_t{t}")
@@ -555,7 +551,7 @@ def set_node_colours(G, t):
     for node_name in G.nodes:
         if G.nodes[node_name]["spike"] != {}:
             # for node in G:
-            if G.nodes[node_name]["spike"][t] == 1:
+            if G.nodes[node_name]["spike"][t]:
                 color_map.append("green")
                 for neighbour in nx.all_neighbors(G, node_name):
                     spiking_edges.append((node_name, neighbour))
