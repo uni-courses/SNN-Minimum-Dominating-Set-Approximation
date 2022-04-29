@@ -33,12 +33,13 @@ lif1.out_ports.s_out.connect(dense.in_ports.s_in)
 dense.out_ports.a_out.connect(lif2.in_ports.a_in)
 
 for run in range(10):
+    t = run
     # Execute process lif1 and all processes connected to it for fixed number of steps
     lif1.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
 
     # Print the currents that have accumulated in the post synaptic neuron (lif2)
     print(
-        f'lif1.v={mon_lif_1_v.get_data()["Process_0"]["v"][-1]},lif1.s_out={mon_spike.get_data()["Process_0"]["s_out"][-1]}'
+        f'lif1.v={mon_lif_1_v.get_data()[mon_lif_1_v_process]["v"][t]},lif1.s_out={mon_spike.get_data()[mon_spike_process]["s_out"][t]}, lif2.v={mon_lif_2_v.get_data()[mon_lif_2_v_process]["v"][t]}'
     )
 
 # Change and Print the weights of the synapse (dense) to 2 from its initial state of 1
@@ -46,17 +47,12 @@ dense.weights.set(np.ones((1, 1)) * 2)
 print(dense.weights)
 
 for run in range(10):
+    t = run + 10
     # Run the simulation for 10 more timesteps
     lif1.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())
     # Show that the voltage increase reflects the increase in the synaptic weights
     print(
-        f'lif1.v={mon_lif_1_v.get_data()["Process_0"]["v"][-1]},lif1.s_out={mon_spike.get_data()["Process_0"]["s_out"][-1]}'
+        f'lif1.v={mon_lif_1_v.get_data()[mon_lif_1_v_process]["v"][t]},lif1.s_out={mon_spike.get_data()[mon_spike_process]["s_out"][t]}, lif2.v={mon_lif_2_v.get_data()[mon_lif_2_v_process]["v"][t]}'
     )
-
-
-print(mon_lif_1_v.get_data()[mon_lif_1_v_process]["v"])
-print(mon_spike.get_data()[mon_spike_process]["s_out"])
-print(mon_lif_2_v.get_data()[mon_lif_2_v_process]["v"])
-
 
 lif1.stop()

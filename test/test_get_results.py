@@ -105,6 +105,9 @@ class Test_counter(unittest.TestCase):
                         G, test_object.get_degree, m, retry, size, test_object
                     )
 
+                    # Create monitors to probe if neuron spiked or not.
+                    monitors
+
                     # Run default tests on neurons and get counted degree from
                     # neurons after inhibition time.
                     (
