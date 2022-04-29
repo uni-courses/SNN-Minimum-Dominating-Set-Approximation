@@ -15,7 +15,6 @@ def implement_adaptation_mechanism(G, get_degree, m, retry, size, test_object):
         store_output_synapses(get_degree, node_name)
 
         # Create redundant neurons.
-        # TODO: specify position.
         create_redundant_node(d, get_degree, node_name)
 
     # Start new loop before adding edges, because all reduundant neurons need
@@ -28,6 +27,7 @@ def implement_adaptation_mechanism(G, get_degree, m, retry, size, test_object):
         add_output_synapses(get_degree, node_name)
 
         # Add inhibitory synapse from node to redundant node.
+        # TODO: set edge weight
         add_inhibitory_synapse(get_degree, node_name)
 
         # Add recurrent self inhibitory synapse for some redundant nodes.
@@ -55,11 +55,9 @@ def store_output_synapses(get_degree, node_name):
 
 
 def create_redundant_node(d, get_degree, node_name):
-    # TODO: set coordinates
+    """ Create neuron and set coordinate position. """
     get_degree.add_node(
         f"red_{node_name}",
-        # id=len(G.nodes),
-        # TODO: change to get neuron properties.
         du=get_degree.nodes[node_name]["du"],
         dv=get_degree.nodes[node_name]["dv"],
         bias=get_degree.nodes[node_name]["bias"],
@@ -93,7 +91,6 @@ def add_output_synapses(get_degree, node_name):
 
         # Create edge
         get_degree.add_edge(left_node, right_node, weight=weight, is_redundant=True)
-    # TODO: set edge weight
 
 
 def add_inhibitory_synapse(get_degree, node_name):
