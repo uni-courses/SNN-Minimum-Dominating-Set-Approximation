@@ -422,6 +422,7 @@ def create_degree_synapses_for_m_is_zero(get_degree, left, rand_ceil, right):
                             )
     return get_degree
 
+
 def retry_create_degree_synapses(G, get_degree, m, rand_ceil):
     print(f"m={m},RETRY")
     for loop in range(0, m):

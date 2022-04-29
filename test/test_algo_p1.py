@@ -7,6 +7,7 @@ from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
 from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_4_nodes,
+    create_manual_graph_with_5_nodes,
     create_triangle_free_planar_graph,
 )
 from src.export_data.helper_dir_file_edit import delete_dir_if_exists
@@ -57,64 +58,66 @@ class Test_counter(unittest.TestCase):
         delete_files_in_folder(f"latex/Images/graphs")
 
         # Get list of planer triangle free graphs.
-        m = 3
-        plot_neuron_behaviour = False
 
-        for retry in range(0, 3, 1):
-            graphs = []
-            for size in range(3, 6, 1):
-                graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
-            for G in graphs:
-                # G = create_manual_graph_with_4_nodes()
-                # Initialise paramers used for testing.
-                test_object = create_test_object(G, retry, m, False, False)
+        for m in range(0, 3):
+            plot_neuron_behaviour = True
 
-                # Run default tests on neurons
-                # and get counted degree from neurons after inhibition time.
-                (
-                    counter_neurons,
-                    starter_neuron,
-                ) = self.run_test_degree_receiver_neurons_over_time(
-                    m,
-                    plot_neuron_behaviour,
-                    retry,
-                    test_object,
-                    extraction_time=test_object.inhibition + 1,
-                )
+            for retry in range(0, 1, 1):
+                graphs = []
+                for size in range(5, 6, 1):
+                    #    graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
+                    # for G in graphs:
+                    # G = create_manual_graph_with_4_nodes()
+                    G = create_manual_graph_with_5_nodes()
+                    # Initialise paramers used for testing.
+                    test_object = create_test_object(G, retry, m, False, False)
 
-                # Compute degree count using Alipour algorithm
-                # G_alipour = partial_alipour(
-                #     test_object.delta,
-                #     test_object.inhibition,
-                #     G,
-                #     test_object.rand_ceil,
-                #     test_object.rand_nrs,
-                # )
-
-                G_alipour = full_alipour(
-                    test_object.delta,
-                    test_object.inhibition,
-                    G,
-                    test_object.rand_ceil,
-                    test_object.rand_nrs,
-                    test_object.m,
-                )
-
-                # Compare the counts per node and assert they are equal.
-                for node in G.nodes:
-                    print(
-                        "G_alipour countermarks", G_alipour.nodes[node]["countermarks"]
+                    # Run default tests on neurons
+                    # and get counted degree from neurons after inhibition time.
+                    (
+                        counter_neurons,
+                        starter_neuron,
+                    ) = self.run_test_degree_receiver_neurons_over_time(
+                        m,
+                        plot_neuron_behaviour,
+                        retry,
+                        test_object,
+                        extraction_time=test_object.inhibition + 1,
                     )
-                    print("SNN counter current", counter_neurons[node].u.get())
-                    self.assertEqual(
-                        G_alipour.nodes[node]["countermarks"],
-                        counter_neurons[node].u.get(),
+
+                    # Compute degree count using Alipour algorithm
+                    # G_alipour = partial_alipour(
+                    #     test_object.delta,
+                    #     test_object.inhibition,
+                    #     G,
+                    #     test_object.rand_ceil,
+                    #     test_object.rand_nrs,
+                    # )
+
+                    G_alipour = full_alipour(
+                        test_object.delta,
+                        test_object.inhibition,
+                        G,
+                        test_object.rand_ceil,
+                        test_object.rand_nrs,
+                        test_object.m,
                     )
-                # Terminate Loihi simulation.
-                starter_neuron.stop()
+
+                    # Compare the counts per node and assert they are equal.
+                    for node in G.nodes:
+                        print(
+                            "G_alipour countermarks",
+                            G_alipour.nodes[node]["countermarks"],
+                        )
+                        print("SNN counter current", counter_neurons[node].u.get())
+                        self.assertEqual(
+                            G_alipour.nodes[node]["countermarks"],
+                            counter_neurons[node].u.get(),
+                        )
+                    # Terminate Loihi simulation.
+                    starter_neuron.stop()
 
     def run_test_degree_receiver_neurons_over_time(
-
         self, m, plot_neuron_behaviour, retry, test_object, extraction_time=None
     ):
         """Verifies the neuron properties over time."""
@@ -162,7 +165,6 @@ class Test_counter(unittest.TestCase):
             # Print the values coming into the timestep.
             # if t > 44 and t < 49:
 
-
             if plot_neuron_behaviour:
                 spike_dict = print_neuron_behaviour(test_object, grouped_neurons, t)
                 test_object = get_node_names(
@@ -177,8 +179,6 @@ class Test_counter(unittest.TestCase):
                     t,
                     show=False,
                 )
-
-            
 
             # TODO: Get args from create object.
             self.verify_neuron_behaviour(
