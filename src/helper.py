@@ -1,4 +1,5 @@
 import collections
+import datetime
 import itertools
 import os
 import random
@@ -33,7 +34,6 @@ def combinations(items):
 
 
 def get_some_sorting_key(some_set):
-    print(f"some_set={some_set}")
     if some_set != set():
         return max(some_set)
     else:
@@ -244,21 +244,12 @@ def get_a_in_for_selector_neuron_retry(
         neighbours.append(neighbour)
     # Compute number of neighbours in node.
     for index, neighbour in enumerate(list(nx.all_neighbors(G, node))):
-        print(f"index={index},neighbour={neighbour}")
         random_values.append(rand_nrs[neighbour])
         degrees.append(len(list(nx.all_neighbors(G, neighbour))))
         # +1 for the excitatory selector neuron.
         input_signals.append(random_values[index] + degrees[index] + 1)
-    print(f"node={node}")
     # Get max randomness of node:
     max_input = max(input_signals)
-
-    if node == 1:
-        print(f"random_values={random_values}")
-        print(f"degrees={degrees}")
-        print(f"input_signals={input_signals}")
-        print(f"incoming_selector_weight={incoming_selector_weight}")
-        print(f"max_input={max_input}")
 
     # Compute time at which first neuron degree_receiver spikes
     # +5: +2 Because at t=1 the currents at degree_receiver are still 0.
@@ -271,10 +262,6 @@ def get_a_in_for_selector_neuron_retry(
     #
     t_degree_receiver_first_spike = -1 * max_input + 5
     if t >= t_degree_receiver_first_spike:
-
-        print(
-            f"t={t}, returning:a_in={incoming_selector_weight}*{t-t_degree_receiver_first_spike+1}"
-        )
         return incoming_selector_weight * (t - t_degree_receiver_first_spike + 1)
     else:
         return 0
@@ -284,7 +271,6 @@ def get_a_in_for_spike_once(t):
     """The recurrent synapse with weight -2 should get a spike at time t=1,
     which means at the next timestep, t=2 it should receive an a_in of -2."""
     if t == 2:
-        print(f"t={t},return-2")
         return -2
     else:
         return 0
@@ -365,8 +351,6 @@ def get_a_in_for_degree_receiver(
     for node in G.nodes:
         for neighbour in nx.all_neighbors(G, node):
             # f"selector_{circuit}", f"degree_receiver_{circuit}_{neighbour_b}",
-            if t == 22 and x == 3:
-                print(f"before a_in={a_in}")
             a_in = a_in + get_a_in_from_selector_into_degree_receiver(
                 found_winner,
                 found_winner_at_t,
@@ -380,9 +364,6 @@ def get_a_in_for_degree_receiver(
                 y,
                 verbose,
             )
-            if t == 22 and x == 3:
-                print(f"t={t},node={node},neighbour={neighbour} a_in={a_in}")
-
     return a_in
 
 
@@ -631,3 +612,23 @@ def print_neuron_behaviour(
         )
         spike_dict[name] = spikes
     return spike_dict
+
+
+def write_results_to_file(m, G, retry, G_alipour, counter_neurons):
+    # Append-adds at last
+    file1 = open("results.txt", "a")  # append mode
+    now = datetime.datetime.now()
+    file1.write(now.strftime("%Y-%m-%d %H:%M:%S\n"))
+    file1.write(f"m={m}\n")
+    file1.write(f"len(G)={len(G)}\n")
+    file1.write("edges\n")
+    for edge in G.edges:
+        file1.write(f"{str(edge)}\n")
+    file1.write(f"retry={retry}\n")
+    file1.write("G_alipour countermarks-SNN counter current")
+    for node in G.nodes:
+        file1.write(
+            f'{G_alipour.nodes[node]["countermarks"]}-{counter_neurons[node].u.get()}\n'
+        )
+    file1.write("\n\n")
+    file1.close()

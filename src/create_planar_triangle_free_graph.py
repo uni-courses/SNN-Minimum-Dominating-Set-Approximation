@@ -66,6 +66,28 @@ def create_manual_graph_with_5_nodes():
     return graph
 
 
+def create_manual_graph_with_6_nodes():
+    """
+    creates manual test graph with 6 undirected nodes.
+    """
+
+    graph = nx.Graph()
+    graph.add_nodes_from(
+        [0, 1, 2, 3, 4],
+        color="w",
+    )
+    graph.add_edges_from(
+        [
+            (0, 2),
+            (1, 2),
+            (2, 3),
+            (3, 4),
+            (3, 5),
+        ]
+    )
+    return graph
+
+
 def create_manual_triangle_free_graph():
     """
     creates manual test graph with 7 undirected nodes.

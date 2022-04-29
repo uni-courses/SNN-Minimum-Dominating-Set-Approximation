@@ -392,7 +392,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
     ## Create replacement synapses.
     if m <= 1:
         get_degree = create_degree_synapses_for_m_is_zero(
-            get_degree, left, rand_ceil, right
+            get_degree, left, m, rand_ceil, right
         )
     else:
         get_degree = retry_create_degree_synapses(G, get_degree, m, rand_ceil)
@@ -403,7 +403,7 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
     return get_degree
 
 
-def create_degree_synapses_for_m_is_zero(get_degree, left, rand_ceil, right):
+def create_degree_synapses_for_m_is_zero(get_degree, left, m, rand_ceil, right):
     print(f"m={m},OLD")
     for id in range(m - 1):
         for l_key, l_value in left[id].items():
@@ -507,7 +507,7 @@ def plot_coordinated_graph(G, iteration, size, show=False):
 
 
 def plot_neuron_behaviour_over_time(
-    G, iteration, size, grouped_neurons, spike_dict, t, show=False
+    G, iteration, size, grouped_neurons, m, spike_dict, t, show=False
 ):
 
     # options = {"edgecolors": "red"}
@@ -546,7 +546,7 @@ def plot_neuron_behaviour_over_time(
         print(f"{neuron_set},spikes={spikes}")
 
     plot_export = Plot_to_tex()
-    plot_export.export_plot(plt, f"snn_t{t}_n{size}_iter{iteration}")
+    plot_export.export_plot(plt, f"snn_m{m}_n{size}_iter{iteration}_t{t}")
     # plt.savefig()
     plt.clf()
     plt.close()
@@ -561,14 +561,10 @@ def set_node_colours(G, t):
             # for node in G:
             if G.nodes[node_name]["spike"][t] == 1:
                 color_map.append("green")
-                print(f"{node_name}:green")
-
                 for neighbour in nx.all_neighbors(G, node_name):
                     spiking_edges.append((node_name, neighbour))
-                    print(f"Spiking Edge:{node_name,neighbour}")
             else:
                 color_map.append("white")
-                print(f"{node_name}:white")
         else:
             color_map.append("yellow")
             for neighbour in nx.all_neighbors(G, node_name):
@@ -581,7 +577,6 @@ def set_edge_colours(G, spiking_edges):
     for edge in G.edges:
 
         if edge in spiking_edges:
-            print(edge)
             edge_color_map.append("green")
         else:
             edge_color_map.append("black")

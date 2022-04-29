@@ -8,6 +8,7 @@ from lava.magma.core.run_configs import Loihi1SimCfg
 from src.create_planar_triangle_free_graph import (
     create_manual_graph_with_4_nodes,
     create_manual_graph_with_5_nodes,
+    create_manual_graph_with_6_nodes,
     create_triangle_free_planar_graph,
 )
 from src.export_data.helper_dir_file_edit import delete_dir_if_exists
@@ -22,6 +23,7 @@ from src.helper import (
     get_y_from_degree_receiver_x_y,
     print_neuron_behaviour,
     print_neurons_properties,
+    write_results_to_file,
 )
 from src.helper_network_structure import get_node_names, plot_neuron_behaviour_over_time
 from src.helper_snns import print_neuron_properties
@@ -57,6 +59,8 @@ class Test_counter(unittest.TestCase):
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
 
+        # write_results_to_file(m,G,retry,alipour_nodes,snn_nodes)
+
         # Get list of planer triangle free graphs.
 
         for m in range(0, 3):
@@ -68,7 +72,9 @@ class Test_counter(unittest.TestCase):
                     #    graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
                     # for G in graphs:
                     # G = create_manual_graph_with_4_nodes()
-                    G = create_manual_graph_with_5_nodes()
+                    # G = create_manual_graph_with_5_nodes()
+                    G = create_manual_graph_with_6_nodes()
+
                     # Initialise paramers used for testing.
                     test_object = create_test_object(G, retry, m, False, False)
 
@@ -114,6 +120,7 @@ class Test_counter(unittest.TestCase):
                             G_alipour.nodes[node]["countermarks"],
                             counter_neurons[node].u.get(),
                         )
+                    write_results_to_file(m, G, retry, G_alipour, counter_neurons)
                     # Terminate Loihi simulation.
                     starter_neuron.stop()
 
@@ -175,6 +182,7 @@ class Test_counter(unittest.TestCase):
                     retry,
                     len(test_object.G),
                     grouped_neurons,
+                    m,
                     spike_dict,
                     t,
                     show=False,
@@ -459,8 +467,6 @@ class Test_counter(unittest.TestCase):
     ):
 
         # Compute expected counter neuron properties based on a_in previous.
-        print(f"t={t}")
-        print(f"testing:{test_object.neuron_dict[counter_neuron]}")
         perform_generic_neuron_property_asserts(
             self,
             test_object,
@@ -499,7 +505,6 @@ class Test_counter(unittest.TestCase):
                         test_object.neuron_dict,
                     ):
                         current_a_in = current_a_in + 1
-                        print(f"FOUND SPIKE FOR COUNTER, current_a_in={current_a_in}")
                     else:
                         current_a_in = current_a_in  # no spike
 
