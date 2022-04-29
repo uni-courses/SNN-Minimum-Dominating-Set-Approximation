@@ -90,7 +90,7 @@ class Test_counter(unittest.TestCase):
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
 
-        for m in range(0, 1):
+        for m in range(1, 2):
             plot_neuron_behaviour = True
             for retry in range(0, 1, 1):
                 for size in range(5, 6, 1):
