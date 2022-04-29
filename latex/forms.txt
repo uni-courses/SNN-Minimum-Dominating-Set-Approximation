@@ -1,0 +1,29 @@
+Author 1 (click here to add yourself)
+First name†:*
+Johan
+Last name:*	
+Kwisthout
+Email:*	
+j.kwisthout@donders.ru.nl
+Country/region:*
+Netherlands
+Organization:*
+Radboud University, Donders Institute for Brain, Cognition and Behaviour
+Web page:
+https://www.ru.nl/english/people/kwisthout-j/
+
+Title:
+Leveraging brain-adaptation principles to increase radiation
+resistance of neuromorphic space hardware
+Abstract:
+TODO: Copy latest abstract
+
+Keywords:
+Neuromorphic engineering, spiking neural networks, brain adapta-
+tion, radiation hardening
+
+Topics:
+Applications for and use-cases of neuromorphic systems
+
+Submission Type:
+3-5 pages

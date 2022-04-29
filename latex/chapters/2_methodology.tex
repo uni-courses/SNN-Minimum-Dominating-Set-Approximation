@@ -1,6 +1,6 @@
 \section{Methodology}\label{sec:methodology}
 The research methodology starts in \cref{subsec:algorithm} with a description of the MDS approximation algorithm by Alipour, the SNN implementation of this algorithm by Diehl et al., and the implemented form%TODO: form or forms? 
-of brain adaptation \cite{alipour}\cite{diehl}. Since the overarching research project aims at eventually performing physical radiation tests, \cref{subsec:hardware} specifies the hardware that is used for testing, and how the radiation effects are simulated. The test procedure is detailed in \cref{subsec:testing}.
+of brain adaptation \cite{alipour}\cite{diehl}. Since the overarching research project aims at performing physical radiation tests, \cref{subsec:hardware} specifies the hardware that is used for testing, and how the radiation effects are simulated. The test procedure is detailed in \cref{subsec:testing}.
 
 \subsection{Algorithm Selection}\label{subsec:algorithm}
 The minimum dominating set (MDS) approximation as presented by Alipour et al., is specified in \cref{alg:alipour}.
@@ -23,15 +23,14 @@ The minimum dominating set (MDS) approximation as presented by Alipour et al., i
 Next, an SNN implementation of this algorithm is generated using Leaky-Integrate-and-Fire (LIF) neurons. This implementation is created by Diehl et al. \cite{diehl} using the open source lava software framework by Intel. This implementation takes in connected, triangle-free, planar graphs (E.g. \cref{fig:input_graph}) in the form of networkx objects. Then it converts these graphs into the specification of an SNN that is encoded in a new networkx graph (E.g. \cref{fig:encoded_snn}). A recursive method then takes a single neuron and converts the SNN encoded in the networkx graph, into an actual SNN that can be run on the Loihi (1 \& 2) chips, or simulated on a regular computer.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=8cm]{latex/Images/input_graph.png}
-    \caption{Example input graph. \textcolor{red}{TODO: change to triangle free planar graph}.%TODO:
-    }
+    \includegraphics[width=8cm]{latex/Images/input_graph_G_6_0.png}
+    \caption{Example input graph. For $m=1$ the algorithm still selects 3 nodes, \textcolor{red}{whereas for a longer runtime at $m=2$, the algorithm converges to a minimum dominating set of node 2 and 4.}}
     \label{fig:input_graph}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=8cm]{latex/Images/structured_graph.png}
+    \includegraphics[width=8cm]{latex/Images/structured_graph_snn_m0_n6_iter0_t77.png}
     \caption{Example SNN encoding of algorithm to approximate MDS on the input graph of \cref{fig:input_graph}. This module is connected in series where the mark counter neuron takes up the role of spike\_once neuron in the next round of the approximation algorithm. For a more detailed description of the SNN implementation the reader is referred to Diehl et al., or to the source code documentation \cite{}. %TODO: include citation. %TODO: update to match updated input graph.
     }
     \label{fig:encoded_snn}
@@ -79,7 +78,7 @@ The selected SNN implementation is enhanced with redundant neurons and neuronal 
 \end{figure}
 
 \noindent The alternative neural pathway renders a single neuron $original_i$ with $a$ input synapses, and $b$ output synapses, redundant at the cost of $2a+2b$ synapses and 2 neurons. This cost can be reduced by implementing a controller that scans the network and manually redirects neural pathways to a smaller buffer network. However, that shifts the radiation robustness problem as that controller may also endure SEEs. % This does allow local shielding to be used, and may use components that are physically more robust than the SNN networks.
-Once can also add triple/$n$-factor redundancy by including more redundant spike\_once neurons that are inhibited by the original spike\_once neuron and each other. This induces an additional delay of t=1 time step per redundant neuron.
+One can also add triple/$n$-factor redundancy by including more redundant spike\_once neurons that are inhibited by the original spike\_once neuron and each other. This induces an additional delay of t=1 time step per redundant neuron.
 
 %\item \textcolor{red}{An Neumann monitoring module that scans the entire SNN network probing its behaviour, and re-routing broken neurons and/or synapses to redundant neurons.}
 %\item \textcolor{red}{A rate-coding frequency adaptation to reduce the relative impact of radiation induced spike omission in a subnetwork of the complete SNN implementation of the MDS approximation.}
