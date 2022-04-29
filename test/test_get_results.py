@@ -53,10 +53,10 @@ class Test_counter(unittest.TestCase):
         if not size is None and not random is None:
             G = create_triangle_free_planar_graph(size, 0.6, 42, False)
         else:
-            # G = create_manual_graph_with_4_nodes()
+            G = create_manual_graph_with_4_nodes()
             # G = create_manual_graph_with_5_nodes()
             # G = create_manual_graph_with_6_nodes_symmetric() #>-<
-            G = create_manual_graph_with_6_nodes_y_shape()  # Y
+            #G = create_manual_graph_with_6_nodes_y_shape()  # Y
         return G
 
     def perform_integration_test_on_end_result(
@@ -111,7 +111,7 @@ class Test_counter(unittest.TestCase):
 
                     # Create monitors to probe if neuron spiked or not.
                     monitors = convert_new_graph_to_snn(test_object)
-                    raise Exception("DONE")
+                    #raise Exception("DONE")
                     monitors = create_neuron_monitors(test_object.get_degree)
 
                     # Run default tests on neurons and get counted degree from
