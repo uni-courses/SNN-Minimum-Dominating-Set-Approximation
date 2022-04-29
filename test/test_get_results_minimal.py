@@ -102,7 +102,7 @@ class Test_counter(unittest.TestCase):
 
                     # Run default tests on neurons and get counted degree from
                     # neurons after inhibition time.
-                    neurons = test_object.neuron_dict.keys()
+                    neurons = list(test_object.neuron_dict.keys())
                     (
                         starter_neuron,
                         neurons,
