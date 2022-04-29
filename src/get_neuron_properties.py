@@ -1,5 +1,8 @@
+from lava.proc.monitor.process import Monitor
+
 from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
 from test.create_testobject import add_monitor_to_dict
+
 
 
 def neuron_spikes_at_t(get_degree, t, node_name):
@@ -26,5 +29,27 @@ def neuron_spikes_at_t(get_degree, t, node_name):
     # Store the spike in a dictionary with t as keys in the node.
 
 
-def create_neuron_monitors(test_object):
-    pass
+def create_neuron_monitors(test_object,sim_time):
+    get_degree=test_object.get_degree
+    for node_name in get_degree.nodes:
+        neuron=test_object.neuron_dict[node_name]
+        if neuron is None:
+            raise Exception("Error, was not able to find the neuron for node:{node_name}")
+
+        # Create monitor
+        monitor = Monitor()
+
+        # Specify what the monitor monitors, and for how long.
+        monitor.probe(neuron.s_out, sim_time)
+
+        # Get monitor process id
+        monitor_process_id = list(monitor.get_data())[0]
+
+        # Read out the boolean spike (at time t, with 1=1 being after 1 second of running.) or no spike with:
+        #s_out=monitor.get_data()[monitor_process_id]["s_out"][t]
+        # You need to call this again after every timestep.
+        
+        # Store monitor in node attribute.
+        get_degree.nodes[node_name]['neuron']=neuron
+        get_degree.nodes[node_name]['spike_monitor']=monitor
+        get_degree.nodes[node_name]['spike_monitor_id']=monitor_process_id

@@ -28,6 +28,7 @@ print(f"mon_lif_1_v_process={mon_lif_1_v_process}")
 print(f"mon_lif_2_v_process={mon_lif_2_v_process}")
 print(f"mon_spike_process={mon_spike_process}")
 
+
 # Connect processes via their directional input and output ports
 lif1.out_ports.s_out.connect(dense.in_ports.s_in)
 dense.out_ports.a_out.connect(lif2.in_ports.a_in)
@@ -55,4 +56,5 @@ for run in range(10):
         f'lif1.v={mon_lif_1_v.get_data()[mon_lif_1_v_process]["v"][t]},lif1.s_out={mon_spike.get_data()[mon_spike_process]["s_out"][t]}, lif2.v={mon_lif_2_v.get_data()[mon_lif_2_v_process]["v"][t]}'
     )
 
+print(f'voltage_list after={voltage_list}')
 lif1.stop()
