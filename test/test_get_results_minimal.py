@@ -79,7 +79,7 @@ class Test_counter(unittest.TestCase):
                     # Initialise paramers used for testing.
                     test_object = create_test_object(G, iteration, m, False, False)
                     sim_time = test_object.inhibition + 10
-                    # sim_time = 4
+                    # sim_time = 11
                     latest_time, latest_millis = print_time(
                         "Created object.", latest_time, latest_millis
                     )
@@ -138,12 +138,12 @@ class Test_counter(unittest.TestCase):
                     )
 
                     # Check if expected counter nodes are selected.
-                    self.perform_integration_test_on_end_result(
-                        counter_neurons, G, m, iteration, test_object
-                    )
-                    latest_time, latest_millis = print_time(
-                        "Performed integration test.", latest_time, latest_millis
-                    )
+                    # self.perform_integration_test_on_end_result(
+                    #    counter_neurons, G, m, iteration, test_object
+                    # )
+                    # latest_time, latest_millis = print_time(
+                    #    "Performed integration test.", latest_time, latest_millis
+                    # )
 
                     # Terminate loihi simulation for this run.
                     starter_neuron.stop()

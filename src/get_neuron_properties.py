@@ -72,8 +72,9 @@ def store_spike_values_in_neurons(get_degree, t):
             # simulation starts at time t=1, then 1 timestep is simulated, after
             # that time step, this monitoring function is called, which has the
             # first spike value stored in list index 0, hence t-1. Spike value
-            # for t=2 is then stored in list index 1.
-            s_out = monitor.get_data()[monitor_process_id]["s_out"][t - 0]
+            # for t=2 is then stored in list index 1. (The first 0 is because
+            #  it is a list of lists.)
+            s_out = monitor.get_data()[monitor_process_id]["s_out"][t - 1][0]
             if s_out == 1:
                 get_degree.nodes[node_name]["spike"][t] = True
             elif s_out == 0:
