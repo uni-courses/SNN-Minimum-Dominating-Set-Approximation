@@ -1,5 +1,5 @@
 import collections
-import datetime
+from datetime import datetime
 import itertools
 import os
 import random
@@ -614,7 +614,7 @@ def print_neuron_behaviour(
 def write_results_to_file(m, G, retry, G_alipour, counter_neurons):
     # Append-adds at last
     file1 = open("results.txt", "a")  # append mode
-    now = datetime.datetime.now()
+    now = datetime.now()
     file1.write(now.strftime("%Y-%m-%d %H:%M:%S\n"))
     file1.write(f"m={m}\n")
     file1.write(f"len(G)={len(G)}\n")
@@ -656,12 +656,14 @@ def get_counter_neurons_from_dict(neuron_dict, expected_nr_of_neurons):
 
 
 def print_time(status, previous_time):
-    import datetime
-
-    now = datetime.datetime.now().time()
-    print(now)
-
-    durationTime = now - previous_time
-    print("The duration is " + str(durationTime))
-    print(status)
+    now = datetime.now()
+    durationTime = (now - previous_time).total_seconds()
+    print(f"{str(now.time())[:8]}, Duration:{int(durationTime)}, status:{status}")
     return now
+
+
+def getDifference(then, now=datetime.now(), interval="secs"):
+
+    duration = now - then
+    duration_in_s = duration.total_seconds()
+    print(f"duration_in_s={duration_in_s}")

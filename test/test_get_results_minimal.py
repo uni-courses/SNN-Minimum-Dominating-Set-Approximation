@@ -27,6 +27,7 @@ from src.helper import (
     get_grouped_neurons,
     get_wta_circuit_from_neuron_name,
     get_y_from_degree_receiver_x_y,
+    getDifference,
     print_neuron_behaviour,
     print_time,
     write_results_to_file,
@@ -78,7 +79,7 @@ class Test_counter(unittest.TestCase):
                 for size in range(5, 6, 1):
                     G = self.get_graphs_for_this_test(size=None, random=None)
 
-                    latest_time = print_time("Create object.", datetime.now().time())
+                    latest_time = print_time("Create object.", datetime.now())
                     # Initialise paramers used for testing.
                     test_object = create_test_object(G, retry, m, False, False)
                     # sim_time=test_object.inhibition + 1
@@ -101,6 +102,7 @@ class Test_counter(unittest.TestCase):
 
                     # Run default tests on neurons and get counted degree from
                     # neurons after inhibition time.
+                    neurons = test_object.neuron_dict.keys()
                     (
                         starter_neuron,
                         neurons,
