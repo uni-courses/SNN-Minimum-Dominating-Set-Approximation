@@ -66,6 +66,7 @@ def create_manual_graph_with_5_nodes():
     return graph
 
 
+
 def create_manual_graph_with_6_nodes_symmetric():
     """
     creates manual test graph with 6 undirected nodes.
@@ -86,6 +87,7 @@ def create_manual_graph_with_6_nodes_symmetric():
         ]
     )
     return graph
+
 
 
 def create_manual_graph_with_6_nodes_y_shape():
@@ -110,7 +112,7 @@ def create_manual_graph_with_6_nodes_y_shape():
     return graph
 
 
-def create_manual_triangle_free_graph():
+  def create_manual_triangle_free_graph():
     """
     creates manual test graph with 7 undirected nodes.
     """

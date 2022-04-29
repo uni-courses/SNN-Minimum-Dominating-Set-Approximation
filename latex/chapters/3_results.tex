@@ -2,22 +2,52 @@
 %The domains specified in \cref{subsec:results_energy_consumption} to \cref{subsec:results_radiation_robustness} are evaluated as part of the presentation of the results of this experiment. The first three are used to put the radiation robustness in perspective. All four domains are compared to the reference baseline presented in \cref{sec:methodology}.
 
 \subsection{Radiation Robustness and Neuronal \& Synaptic Overcapacity}\label{subsec:algorithm_performance}
-% DOubt: rename: "algorithmic performance" to radiation robustness?
-Barchart here: x-axis: radiation death percentage, per x-coordinate, 3 bars: 10\%,100\%,200\% redundancy, y-axis: percentage of correctly evaluated graphs.
 
-If  multiple brain adaptation mechanisms are implemented before the deadline, use line type to distinguish between these implementations, and generate 3 plots, or use line colour to distinguish between redundancy levels. (Depending on what is most insightful).
+\begin{table}[H]
+\caption{Fraction of correct outputs of the default and enhanced SNN implementation of the MDS approximation algorithm presented by Alipour et al. Neuron deaths occur in both the default SNN and in the redundant neurons when present.}
+\begin{tabular}{llllll}
+           & \multicolumn{5}{l}{Neuron Death: Default SNN/Enhanced SNN} \\
+           & 5\%    & 10\%    & 20\%    & 50\%    & 75\%    \\
+Redundancy &        &         &         &         &         \\
+10\%       & 0.1/0.9    & 0.05/0.2     & 0/0       & 0/0       & 0/0       \\
+100\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.1     & 0/0       \\
+200\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.4     & 0/0      
+\end{tabular}
+\end{table}
 
-Alternatively a table can be generated with the performances.
+%If  multiple brain adaptation mechanisms are implemented before the deadline, use line type to distinguish between these implementations, and generate 3 plots, or use line colour to distinguish between redundancy levels. (Depending on what is most insightful).
 
-%\subsection{}\label{subsec:results_neuronal_synaptic_overcapacity}
+\subsection{Neuronal \& Synaptic Overcapacity}\label{subsec:results_neuronal_synaptic_overcapacity}
 %By taking this factor into account, a context can be provided for the added value of using brain-inspired radiation robustness implementations in neuromorphic hardware.
 
+\begin{table}[H]
+\begin{tabular}{lll}
+           & \multicolumn{2}{l}{Overcapacity} \\
+           & Neuronal     & Synaptic                   \\
+Redundancy &              &                            \\
+10\%       & 1.1          & 2.5                        \\
+100\%      & 2            & 9.6                          \\
+200\%      & 3            & 11.5                         
+\end{tabular}
+\end{table}
+
 \subsection{Energy Consumption}\label{subsec:results_energy_consumption}
-Plot x=redundancy level, y=fraction of additional spikes.
+TODO: Either plot x=redundancy level, y=fraction of additional spikes, 5 lines: for 5,10,20,50,75\% neuron death, or fill table.
+\begin{table}[H]
+\caption{Fraction additional spikes consumed with brain adaptation.}
+\begin{tabular}{llllll}
+           & \multicolumn{5}{l}{Neuron Death: Default SNN/Enhanced SNN} \\
+           & 5\%    & 10\%    & 20\%    & 50\%    & 75\%    \\
+Redundancy &        &         &         &         &         \\
+10\%       & 1.1    & 1.07     & 1.05       & 1.025       & 1.01       \\
+100\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.1     & 0/0       \\
+200\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.4     & 0/0      
+\end{tabular}
+\end{table}
 %\textit{Depending on the radiation test method, the energy consumption may be monitored hardwarematically, or estimated softwarematically. This may be challenging in the case of reliance on neuromorphic cloud architectures for testing, as some may not provide the ability to measure and/or report energy consumption. An approximation to the energy consumption could be counting the occurrence of neuron spikes. This is because neuromorphic architectures are considered to only consume significant amounts of energy when they spike.}
 
 \subsection{Time Complexity}\label{subsec:time_complexity}
-Presents the time complexity of the default SNN as two terms: network initialisation and network runtime. Then presents the same parameters for the adapted SNN. If relevant, as a function of the level of redundancy.
+TODO:Presents the time complexity of the default SNN as two terms: network initialisation and network runtime. Then presents the same parameters for the adapted SNN. If relevant, as a function of the level of redundancy.
 
 \subsection{Space Complexity}\label{subsec:time_complexity}
-Presents the space complexity of the default SNN as two terms: network initialisation and network runtime. Then presents the same parameters for the adapted SNN. If relevant, as a function of the level of redundancy.
+TODO:Presents the space complexity of the default SNN as two terms: network initialisation and network runtime. Then presents the same parameters for the adapted SNN. If relevant, as a function of the level of redundancy.
