@@ -58,12 +58,13 @@ def store_output_synapses(get_degree, node_name):
 
 def create_redundant_node(d, get_degree, node_name):
     """Create neuron and set coordinate position."""
+    vth = compute_vth_for_delay(get_degree, node_name)
     get_degree.add_node(
         f"red_{node_name}",
         du=get_degree.nodes[node_name]["du"],
         dv=get_degree.nodes[node_name]["dv"],
         bias=get_degree.nodes[node_name]["bias"],
-        vth=get_degree.nodes[node_name]["vth"],
+        vth=vth,
         pos=(
             float(get_degree.nodes[node_name]["pos"][0] + 0.25 * d),
             float(get_degree.nodes[node_name]["pos"][1] - 0.25 * d),
@@ -71,6 +72,17 @@ def create_redundant_node(d, get_degree, node_name):
         spike={},
         is_redundant=True,
     )
+
+
+def compute_vth_for_delay(get_degree, node_name):
+    """Increases vth with 1 to realise a delay of t=1 for
+    the redunant spike_once neurons and the rand_ neurons.
+    Returns dv of default node otherwise."""
+    if node_name[:11] == "spike_once_" or node_name[:5] == "rand_":
+        vth = get_degree.nodes[node_name]["vth"] + 1
+    else:
+        vth = get_degree.nodes[node_name]["vth"]
+    return vth
 
 
 def add_input_synapses(get_degree, node_name):
