@@ -111,15 +111,26 @@ def get_degree_graph_with_separate_wta_circuits(G, rand_nrs, rand_ceil, m):
 
         # Add winner selector node
         for loop in range(0, m):
-            get_degree.add_node(
-                f"selector_{node}_{loop}",
-                id=node,
-                du=0,
-                dv=1,
-                bias=5,
-                vth=4,
-                pos=(float(7 * d + loop * 9 * d), float(node * 4 * d + d)),
-            )
+            if loop == 0:
+                get_degree.add_node(
+                    f"selector_{node}_{loop}",
+                    id=node,
+                    du=0,
+                    dv=1,
+                    bias=5,
+                    vth=4,
+                    pos=(float(7 * d + loop * 9 * d), float(node * 4 * d + d)),
+                )
+            elif loop > 0:
+                get_degree.add_node(
+                    f"selector_{node}_{loop}",
+                    id=node,
+                    du=0,
+                    dv=1,
+                    bias=4,
+                    vth=4,
+                    pos=(float(7 * d + loop * 9 * d), float(node * 4 * d + d)),
+                )
 
         # Add winner selector node
         # for loop in range(0, m):

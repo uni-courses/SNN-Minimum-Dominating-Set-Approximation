@@ -75,7 +75,7 @@ class Test_counter(unittest.TestCase):
                 for size in range(3, 4, 1):
                     rad_dam = Radiation_damage(size, seed)
                     G = self.get_graphs_for_this_test(size=size, seed=seed)
-                    for adaptation in (False, True):
+                    for adaptation in [False]:
 
                         # Start performance report.
                         latest_millis = int(round(time() * 1000))
@@ -104,7 +104,7 @@ class Test_counter(unittest.TestCase):
                         )
 
                         # Specify simulation duration.
-                        sim_time = test_object.inhibition + 10
+                        sim_time = test_object.inhibition * (m + 1) + 10
                         # sim_time = 2
 
                         # Report performance.
@@ -271,6 +271,8 @@ class Test_counter(unittest.TestCase):
             print(
                 f'{G_alipour.nodes[node]["countermarks"]}-{counter_neurons[node].u.get()}'
             )
+        print(f"Now testing they are equal:")
+        for node in G.nodes:
             self.assertEqual(
                 G_alipour.nodes[node]["countermarks"],
                 counter_neurons[node].u.get(),
