@@ -5,9 +5,17 @@ class Used_graphs:
     """Creates graphs used for paper."""
 
     def __init__(self):
-        self.three = None
-        self.four = None
-        self.Five = None
+        self.three = self.get_graphs_with_3_neurons()
+        self.four = self.get_graphs_with_4_neurons()
+        self.Five = self.get_graphs_with_5_neurons()
+
+    def get_graphs(self, size):
+        if size == 3:
+            return self.three
+        elif size == 4:
+            return self.four
+        elif size == 4:
+            return self.five
 
     def get_graphs_with_3_neurons(self):
         return [self.three_a()]
@@ -15,7 +23,7 @@ class Used_graphs:
     def get_graphs_with_4_neurons(self):
         return [self.four_a(), self.four_b(), self.four_c()]
 
-    def get_graphs_with_4_neurons(self):
+    def get_graphs_with_5_neurons(self):
         return [
             self.five_a(),
             self.five_b(),
