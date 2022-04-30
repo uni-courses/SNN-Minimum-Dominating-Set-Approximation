@@ -3050,7 +3050,7 @@
   \if@twocolumn
   \balance
   \fi\fi}
-\newcommand\acksname{Acknowledgments}
+\newcommand\acksname{Acknowledgements}
 \specialcomment{acks}{%
   \begingroup
   \section*{\acksname}

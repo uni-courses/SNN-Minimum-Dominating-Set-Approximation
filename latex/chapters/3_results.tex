@@ -1,4 +1,6 @@
 \section{Results}\label{sec:results}
+%\textcolor{red}{TODO: change dummy results with actual results.}
+%\textcolor{red}{TODO: Include synaptic death.}
 %The domains specified in \cref{subsec:results_energy_consumption} to \cref{subsec:results_radiation_robustness} are evaluated as part of the presentation of the results of this experiment. The first three are used to put the radiation robustness in perspective. All four domains are compared to the reference baseline presented in \cref{sec:methodology}.
 
 \subsection{Radiation Robustness}\label{subsec:algorithm_performance}
@@ -6,12 +8,11 @@
 \begin{table}[H]
 \caption{Fraction of correct outputs of the default and enhanced SNN implementation of the MDS approximation algorithm presented by Alipour et al. Neuron deaths occur in both the default SNN and in the redundant neurons when present.}
 \begin{tabular}{llllll}
-           & \multicolumn{5}{l}{Neuron Death: Default SNN/Enhanced SNN} \\
-           & 5\%    & 10\%    & 20\%    & 50\%    & 75\%    \\
-Redundancy &        &         &         &         &         \\
-10\%       & 0.1/0.9    & 0.05/0.2     & 0/0       & 0/0       & 0/0       \\
-100\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.1     & 0/0       \\
-200\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.4     & 0/0      
+        & \multicolumn{5}{l}{Neuron Death: Default SNN/Enhanced SNN} \\ \cmidrule{2-6}
+        Redundancy & 5\%    & 10\%    & 20\%    & 50\%    & 75\%    \\ \hline
+        10\%       & 0.1/0.9    & 0.05/0.2     & 0/0       & 0/0       & 0/0       \\
+        100\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.1     & 0/0       \\
+        200\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.4     & 0/0   
 \end{tabular}
 \end{table}
 
@@ -22,9 +23,8 @@ Redundancy &        &         &         &         &         \\
 
 \begin{table}[H]
 \begin{tabular}{lll}
-           & \multicolumn{2}{l}{Overcapacity} \\
-           & Neuronal     & Synaptic                   \\
-Redundancy &              &                            \\
+           & \multicolumn{2}{l}{Overcapacity} \\ \cmidrule{2-3}
+           Redundancy & Neuronal     & Synaptic                   \\ \hline 
 10\%       & 1.1          & 2.5                        \\
 100\%      & 2            & 9.6                          \\
 200\%      & 3            & 11.5                         
@@ -36,9 +36,8 @@ TODO: Either plot x=redundancy level, y=fraction of additional spikes, 5 lines: 
 \begin{table}[H]
 \caption{Fraction additional spikes consumed with brain adaptation.}
 \begin{tabular}{llllll}
-           & \multicolumn{5}{l}{Neuron Death: Default SNN/Enhanced SNN} \\
-           & 5\%    & 10\%    & 20\%    & 50\%    & 75\%    \\
-Redundancy &        &         &         &         &         \\
+           & \multicolumn{5}{l}{Neuron Death: Default SNN/Enhanced SNN} \\ \cmidrule{2-6} % Neuron Death in SNN: with/ without adaption%
+          Redundancy & 5\%    & 10\%    & 20\%    & 50\%    & 75\%    \\ \hline
 10\%       & 1.1    & 1.07     & 1.05       & 1.025       & 1.01       \\
 100\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.1     & 0/0       \\
 200\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.4     & 0/0      

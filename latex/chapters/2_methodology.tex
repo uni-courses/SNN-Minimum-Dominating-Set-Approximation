@@ -1,9 +1,9 @@
 \section{Methodology}\label{sec:methodology}
-The research methodology starts in \cref{subsec:algorithm} with a description of the MDS approximation algorithm by Alipour, the SNN implementation of this algorithm by Diehl et al., and the implemented form%TODO: form or forms? 
+The research methodology starts in \cref{subsec:algorithm} with a description of the minimum dominating set (MDS) approximation algorithm by Alipour, the SNN implementation of this algorithm by Diehl et al., and the implemented form%TODO: form or forms? 
 of brain adaptation \cite{alipour}\cite{diehl}. Since the overarching research project aims at performing physical radiation tests, \cref{subsec:hardware} specifies the hardware that is used for testing, and how the radiation effects are simulated. The test procedure is detailed in \cref{subsec:testing}.
 
 \subsection{Algorithm Selection}\label{subsec:algorithm}
-The minimum dominating set (MDS) approximation as presented by Alipour et al., is specified in \cref{alg:alipour}.
+The MDS approximation as presented by Alipour et al., is specified in \cref{alg:alipour}.
 %Within the graph algorithms, some SNN algorithms may be naturally more robust than others. For example, SNN algorithms that calculate the shortest path within graphs may automatically re-route if radiation imposed neuron-death occurs. However, since this research aims at determining the effectivity of brain adaptation mechanisms, a stricter test is found in algorithms that can fail to produce meaningful output if a single neuronal or synaptic property is changed. Therefore, 
 \begin{algorithm}[h]%[1]
     \caption{Distributed Algorithm for computing a total dominating set in a graph with given integer $m\geq 0$.}\label{alg:alipour}
@@ -23,7 +23,7 @@ The minimum dominating set (MDS) approximation as presented by Alipour et al., i
 Next, an SNN implementation of this algorithm is generated using Leaky-Integrate-and-Fire (LIF) neurons. This implementation is created by Diehl et al. \cite{diehl} using the open source lava software framework by Intel. This implementation takes in connected, triangle-free, planar graphs (E.g. \cref{fig:input_graph}) in the form of networkx objects. Then it converts these graphs into the specification of an SNN that is encoded in a new networkx graph (E.g. \cref{fig:encoded_snn}). A recursive method then takes a single neuron and converts the SNN encoded in the networkx graph, into an actual SNN that can be run on the Loihi (1 \& 2) chips, or simulated on a regular computer.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=8cm]{latex/Images/input_graph_G_6_0.png}
+    \includegraphics[width=8cm]{latex/Images/input_graph_G_6_0_alternative1.png}
     \caption{Example input graph. For $m=1$ the algorithm still selects 3 nodes, \textcolor{red}{whereas for a longer runtime at $m=2$, the algorithm converges to a minimum dominating set of node 2 and 4.}}
     \label{fig:input_graph}
 \end{figure}
@@ -72,7 +72,7 @@ This work simulates radiation damage propagation of SEEs as neuron deaths by set
 The selected SNN implementation is enhanced with redundant neurons and neuronal pathways to realise simulated radiation robustness. A basic example is shown in \cref{fig:eg_brain_adaptation}.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=8cm]{latex/Images/brain_adaptation.pdf}
+    \includegraphics[width=.5\linewidth]{latex/Images/brain_adaptation_alternative.png}
     \caption{Alternative neural pathway for a redundancy of the spike\_once neuron. If the spike\_once neuron dies due to simulated radiation-induced SEEs ($vth=inf$), the redundancy neuron inhibition is eliminated. Without inhibition, the redundant spike\_once neuron copies the spike\_once behaviour with a delay of 1 timestep.}
     \label{fig:eg_brain_adaptation}
 \end{figure}
