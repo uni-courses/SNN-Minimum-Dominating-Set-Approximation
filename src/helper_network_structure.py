@@ -463,6 +463,34 @@ def plot_unstructured_graph(G, iteration, size, show=False):
     plt.close()
 
 
+def plot_alipour(G, separate=True, show=False):
+    the_labels = get_alipour_labels(G, separate=separate)
+    # nx.draw_networkx_labels(G, pos=None, labels=the_labels)
+    npos = nx.circular_layout(
+        G,
+        scale=1,
+    )
+    nx.draw(G, npos, labels=the_labels, with_labels=True)
+    if show:
+        plt.show()
+    #    plot_export = Plot_to_tex()
+    #    plot_export.export_plot(plt, f"G_{size}_{iteration}")
+    plt.clf()
+    plt.close()
+
+
+def get_alipour_labels(G, separate=True):
+    labels = {}
+    for node_name in G.nodes:
+        if separate:
+            labels[
+                node_name
+            ] = f'{node_name},R:{G.nodes[node_name]["random_number"]}, M:{G.nodes[node_name]["marks"]}'
+        else:
+            labels[node_name] = f'{node_name}, W:{G.nodes[node_name]["weight"]}'
+    return labels
+
+
 def plot_coordinated_graph(G, iteration, size, show=False):
     # Width=edge width.
     nx.draw(

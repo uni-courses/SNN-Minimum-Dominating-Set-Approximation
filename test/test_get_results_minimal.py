@@ -87,6 +87,18 @@ class Test_counter(unittest.TestCase):
                         adaptation, G, iteration, m, False, False
                     )
 
+                    # Show alipour
+                    # Compute the Alipour graph.
+                    G_alipour = full_alipour(
+                        test_object.delta,
+                        test_object.inhibition,
+                        G,
+                        test_object.rand_ceil,
+                        test_object.rand_nrs,
+                        test_object.m,
+                    )
+                    raise Exception("STOP")
+
                     # Specify simulation duration.
                     # sim_time = test_object.inhibition + 10
                     sim_time = 3
