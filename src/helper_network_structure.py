@@ -547,7 +547,7 @@ def plot_coordinated_graph(G, iteration, size, show=False):
 
 
 def plot_neuron_behaviour_over_time(
-    adaptation, G, iteration, seed, size, m, t, show=False, current=True
+    adaptation, filename, G, iteration, seed, size, m, t, show=False, current=True
 ):
 
     # options = {"edgecolors": "red"}
@@ -583,7 +583,8 @@ def plot_neuron_behaviour_over_time(
     plot_export = Plot_to_tex()
     plot_export.export_plot(
         plt,
-        f"test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}_t{t}",
+        # f"test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}_t{t}",
+        filename,
     )
     # plt.savefig()
     plt.clf()

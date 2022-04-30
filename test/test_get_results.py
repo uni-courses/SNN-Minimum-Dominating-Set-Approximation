@@ -145,6 +145,7 @@ class Test_counter(unittest.TestCase):
                                     latest_millis,
                                     latest_time,
                                     m,
+                                    neuron_death_probability,
                                     neurons,
                                     output_behaviour,
                                     seed,
@@ -233,6 +234,7 @@ class Test_counter(unittest.TestCase):
         latest_millis,
         latest_time,
         m,
+        neuron_death_probability,
         neurons,
         output_behaviour,
         seed,
@@ -262,6 +264,7 @@ class Test_counter(unittest.TestCase):
                 store_spike_values_in_neurons(test_object.get_degree, t)
                 plot_neuron_behaviour_over_time(
                     adaptation,
+                    f"probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}",
                     test_object.get_degree,
                     iteration,
                     seed,

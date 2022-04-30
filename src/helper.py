@@ -690,7 +690,7 @@ def export_get_degree_graph(
 ):
     remove_monitors_from_get_degree(get_degree)
     with open(
-        f"pickles/test_object_seed_probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        f"pickles/probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
         "wb",
     ) as fh:
         pickle.dump([G, get_degree, iteration, m, run_result, seed, size], fh)
@@ -709,7 +709,7 @@ def load_pickle_and_plot(
     from src.helper_network_structure import plot_neuron_behaviour_over_time
 
     pickle_off = open(
-        f"pickles/test_object_seed_probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        f"pickles/probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
         "rb",
     )
     [G, get_degree, iteration, m, run_result, seed, size] = pickle.load(pickle_off)
@@ -724,6 +724,7 @@ def load_pickle_and_plot(
     for t in range(sim_time - 1):
         plot_neuron_behaviour_over_time(
             adaptation,
+            f"pickle_probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}",
             get_degree,
             iteration,
             seed,
