@@ -62,19 +62,19 @@ class Test_counter(unittest.TestCase):
             # G = create_manual_graph_with_6_nodes_y_shape()  # Y
         return G
 
-    def test_snn_algorithm(self, adaptation=False, output_behaviour=True):
+    def test_snn_algorithm(self, adaptation=True, output_behaviour=True):
 
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
         monitors = None
         seed = 42
 
-        for m in range(1, 2):
+        for m in range(0, 1):
             plot_neuron_behaviour = True
             for iteration in range(0, 1, 1):
                 for size in range(3, 4, 1):
                     rad_dam = Radiation_damage(size, seed)
-                    G = self.get_graphs_for_this_test(size=None, seed=seed)
+                    G = self.get_graphs_for_this_test(size=size, seed=seed)
 
                     # Start performance report.
                     latest_millis = int(round(time() * 1000))
