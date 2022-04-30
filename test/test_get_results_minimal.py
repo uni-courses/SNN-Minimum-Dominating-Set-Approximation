@@ -92,16 +92,19 @@ class Test_counter(unittest.TestCase):
                     G_alipour = full_alipour(
                         test_object.delta,
                         test_object.inhibition,
+                        iteration,
                         G,
                         test_object.rand_ceil,
                         test_object.rand_nrs,
                         test_object.m,
+                        seed,
+                        len(test_object.G),
+                        export=True,
                     )
-                    raise Exception("STOP")
 
                     # Specify simulation duration.
-                    # sim_time = test_object.inhibition + 10
-                    sim_time = 3
+                    sim_time = test_object.inhibition + 10
+                    # sim_time = 2
 
                     # Report performance.
                     latest_time, latest_millis = print_time(
@@ -159,7 +162,7 @@ class Test_counter(unittest.TestCase):
 
                     # Get the counter neurons at the end of the simulation.
                     counter_neurons = get_counter_neurons_from_dict(
-                        test_object.neuron_dict, len(test_object.G)
+                        len(test_object.G), test_object.neuron_dict, m
                     )
                     latest_time, latest_millis = print_time(
                         "Got counter neurons.", latest_time, latest_millis
@@ -175,11 +178,11 @@ class Test_counter(unittest.TestCase):
                         seed,
                         size,
                     )
-                    load_pickle_and_plot(adaptation, iteration, m, seed, sim_time, size)
+                    # load_pickle_and_plot(adaptation, iteration, m, seed, sim_time, size)
 
                     # Check if expected counter nodes are selected.
                     self.perform_integration_test_on_end_result(
-                        counter_neurons, G, m, iteration, test_object
+                        counter_neurons, G, iteration, m, iteration, seed, test_object
                     )
                     latest_time, latest_millis = print_time(
                         "Performed integration test.", latest_time, latest_millis
@@ -229,23 +232,29 @@ class Test_counter(unittest.TestCase):
                     m,
                     t,
                     show=False,
+                    current=True,
                 )
 
         # raise Exception("Stop")
         return latest_time, neurons, starter_neuron
 
     def perform_integration_test_on_end_result(
-        self, counter_neurons, G, m, retry, test_object
+        self, counter_neurons, G, iteration, m, retry, seed, test_object
     ):
         """Tests whether the SNN returns the same results as the Alipour algorithm."""
-        # Compute the Alipour graph.
+        # Compute the Alipour graph
+        # delta, inhibition,iteration, G, rand_ceil, rand_nrs, m,seed,size, show=False, export=False.
         G_alipour = full_alipour(
             test_object.delta,
             test_object.inhibition,
+            iteration,
             G,
             test_object.rand_ceil,
             test_object.rand_nrs,
             test_object.m,
+            seed,
+            len(test_object.G),
+            export=True,
         )
 
         # Compare the counts per node and assert they are equal.

@@ -457,14 +457,14 @@ def plot_unstructured_graph(G, iteration, size, show=False):
     nx.draw(G, with_labels=True)
     if show:
         plt.show()
-    plot_export = Plot_to_tex()
-    plot_export.export_plot(plt, f"G_{size}_{iteration}")
+    # plot_export = Plot_to_tex()
+    # plot_export.export_plot(plt, f"G_{size}_{iteration}")
     plt.clf()
     plt.close()
 
 
-def plot_alipour(G, separate=True, show=False):
-    the_labels = get_alipour_labels(G, separate=separate)
+def plot_alipour(configuration, iteration, seed, size, m, G, export=True, show=False):
+    the_labels = get_alipour_labels(G, configuration=configuration)
     # nx.draw_networkx_labels(G, pos=None, labels=the_labels)
     npos = nx.circular_layout(
         G,
@@ -473,21 +473,31 @@ def plot_alipour(G, separate=True, show=False):
     nx.draw(G, npos, labels=the_labels, with_labels=True)
     if show:
         plt.show()
-    #    plot_export = Plot_to_tex()
-    #    plot_export.export_plot(plt, f"G_{size}_{iteration}")
+    if export:
+        plot_export = Plot_to_tex()
+        plot_export.export_plot(
+            plt,
+            f"alipour_{seed}_size{size}_m{m}_iter{iteration}_combined_{configuration}",
+        )
+
     plt.clf()
     plt.close()
 
 
-def get_alipour_labels(G, separate=True):
+def get_alipour_labels(G, configuration):
     labels = {}
     for node_name in G.nodes:
-        if separate:
+        if configuration == "0rand_mark":
             labels[
                 node_name
             ] = f'{node_name},R:{G.nodes[node_name]["random_number"]}, M:{G.nodes[node_name]["marks"]}'
-        else:
+        elif configuration == "1weight":
             labels[node_name] = f'{node_name}, W:{G.nodes[node_name]["weight"]}'
+        elif configuration == "2inhib_weight":
+            labels[
+                node_name
+            ] = f'{node_name}, W:{G.nodes[node_name]["inhibited_weight"]}'
+
     return labels
 
 

@@ -6,7 +6,7 @@ class Radiation_damage:
 
     def __init__(self, nr_of_neurons, seed):
         self.neuron_decay = 0.1  # % of neurons that will decay.
-        self.synaptic_decay = 0.2  # % of synapses that will decay.
+        # self.synaptic_decay = 0.2  # % of synapses that will decay.
         self.decayed_neuron = "spike_once_0_0"
         self.decayed_neurons = ["spike_once_0_0", "degree_receiver_0_2"]
         self.adaption_decays = False  # specifies if redundant neurons decay.

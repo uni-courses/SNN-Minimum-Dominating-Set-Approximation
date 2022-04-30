@@ -2,6 +2,7 @@ from datetime import datetime
 import itertools
 import os
 import pickle
+from pprint import pprint
 import random
 import shutil
 import networkx as nx
@@ -639,15 +640,19 @@ def get_neuron_from_dict(neuron_dict, neurons, neuron_name):
     raise Exception("Did not find neuron:{neuron_name} in dict:{neuron_dict}")
 
 
-def get_counter_neurons_from_dict(neuron_dict, expected_nr_of_neurons):
+def get_counter_neurons_from_dict(expected_nr_of_neurons, neuron_dict, m):
     counter_neurons = []
     neurons = list(neuron_dict.keys())
     neuron_names = list(neuron_dict.values())
-    for neuron_name in neuron_names:
-        if neuron_name[:8] == "counter_":
-            counter_neurons.append(
-                get_neuron_from_dict(neuron_dict, neurons, neuron_name)
-            )
+    # Get sorted counter neurons.
+    for node_index in range(expected_nr_of_neurons):
+        for neuron_name in neuron_names:
+            if neuron_name == f"counter_{node_index}_{m}":
+                counter_neurons.append(
+                    get_neuron_from_dict(neuron_dict, neurons, neuron_name)
+                )
+
+    # pprint(f'neuron_names={neuron_names}')
 
     if expected_nr_of_neurons != len(counter_neurons):
         raise Exception(
@@ -703,5 +708,5 @@ def load_pickle_and_plot(adaptation, iteration, m, seed, sim_time, size):
             m,
             t + 1,
             show=False,
-            current=False,
+            current=True,
         )

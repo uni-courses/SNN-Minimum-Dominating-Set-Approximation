@@ -127,11 +127,22 @@ def partial_alipour(delta, inhibition, G, rand_ceil, rand_nrs):
 
 
 def full_alipour(
-    delta, inhibition, G, rand_ceil, rand_nrs, m, show=False, export=False
+    delta,
+    inhibition,
+    iteration,
+    G,
+    rand_ceil,
+    rand_nrs,
+    m,
+    seed,
+    size,
+    show=False,
+    export=False,
 ):
     # Reverse engineer actual rand nrs:
     uninhibited_rand_nrs = [(x + inhibition) for x in rand_nrs]
     print(f"uninhibited_rand_nrs={uninhibited_rand_nrs}")
+    print(f"m={m}")
 
     for node in G.nodes:
         # Initialise values.
@@ -142,10 +153,13 @@ def full_alipour(
         G.nodes[node]["weight"] = (
             G.degree(node) * (rand_ceil + 1) * delta + G.nodes[node]["random_number"]
         )
+        G.nodes[node]["inhibited_weight"] = G.nodes[node]["weight"] - inhibition
 
     if show or export:
-        plot_alipour(G, separate=True, show=show)
-        plot_alipour(G, separate=False, show=show)
+
+        plot_alipour("0rand_mark", iteration, seed, size, 0, G, show=show)
+        plot_alipour("1weight", iteration, seed, size, 0, G, show=show)
+        plot_alipour("2inhib_weight", iteration, seed, size, 0, G, show=show)
 
     # Compute the mark based on degree+randomness=weight
     for node in G.nodes:
@@ -168,11 +182,12 @@ def full_alipour(
                     raise Exception("Two numbers with identical max weight.")
 
     # Dont' compute for m=0
-    for loop in range(1, m):
+    for loop in range(1, m + 1):
         for node in G.nodes:
             G.nodes[node]["weight"] = (
                 G.nodes[node]["marks"] + G.nodes[node]["random_number"]
             )
+            G.nodes[node]["inhibited_weight"] = G.nodes[node]["weight"] - inhibition
             # Reset marks.
             G.nodes[node]["marks"] = 0
             G.nodes[node]["countermarks"] = 0
@@ -185,4 +200,11 @@ def full_alipour(
                     # Always raise mark always by (rand_ceil + 1) * delta (not by 1).
                     G.nodes[n]["marks"] += (rand_ceil + 1) * delta
                     G.nodes[n]["countermarks"] += 1
+
+        if show or export:
+            plot_alipour("0rand_mark", iteration, seed, size, loop, G, show=show)
+            plot_alipour("1weight", iteration, seed, size, loop, G, show=show)
+            plot_alipour("2inhib_weight", iteration, seed, size, loop, G, show=show)
+        for node in G.nodes:
+            print(f'{node},{G.nodes[node]["countermarks"]}')
     return G
