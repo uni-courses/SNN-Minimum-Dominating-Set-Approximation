@@ -17,7 +17,7 @@ def inject_adaptation_mechanism_to_networkx_and_snn(
     test_object,
 ):
     # Implement brain adaptation on networkx graph.
-    implement_adaptation_mechanism(
+    dead_neuron_names = implement_adaptation_mechanism(
         G, test_object.get_degree, iteration, m, rad_dam, size, test_object
     )
     latest_time, latest_millis = print_time(
@@ -29,7 +29,7 @@ def inject_adaptation_mechanism_to_networkx_and_snn(
     latest_time, latest_millis = print_time(
         f"Got adapted SNN.", latest_time, latest_millis
     )
-    return latest_time, latest_millis
+    return dead_neuron_names, latest_time, latest_millis
 
 
 def implement_adaptation_mechanism(
@@ -67,11 +67,13 @@ def implement_adaptation_mechanism(
 
     # Inject radiation by setting arbitrary neuron thresholds to 1000
     # before converting the networkx to snn.
-    rad_dam.inject_simulated_radiation(get_degree)
+    dead_neuron_names = rad_dam.inject_simulated_radiation(
+        get_degree, rad_dam.neuron_death_probability
+    )
 
     # Visualise new graph.
     plot_coordinated_graph(get_degree, iteration, size, show=False)
-    return get_degree
+    return dead_neuron_names
 
 
 def store_input_synapses(get_degree, node_name):

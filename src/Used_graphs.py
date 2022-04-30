@@ -209,35 +209,34 @@ class Run:
         has_adaptation,
         m,
         pass_fail,
+        rand_ceil,
         rand_values,
         selected_alipour_nodes,
+        selected_snn_nodes,
         sim_time,
-        t,
     ):
         """Called at end of run."""
         self.pass_fail = pass_fail
         self.selected_alipour_nodes = selected_alipour_nodes
+        self.selected_snn_nodes = selected_snn_nodes
+        self.rand_ceil = rand_ceil
         self.rand_values = rand_values
         self.m = m
-        self.t = t
         self.G = G
         self.has_adaptation = has_adaptation
-        if self.has_adaptation:
-            self.get_degree_without_adaptation = get_degree
-        else:
-            self.get_degree_with_adaptation = get_degree
+        self.get_degree = get_degree
         self.died_neurons = died_neurons
         self.sim_time = sim_time
 
-        self.amount_extra_neurons = self.get_amount_of_neurons()
-        self.amount_extra_synapses = self.get_amount_synapses()
-        self.nr_of_spikes = self.get_nr_of_spikes()
+        self.amount_of_neurons = self.get_amount_of_neurons(self.get_degree)
+        self.amount_synapses = self.get_amount_synapses(self.get_degree)
+        self.nr_of_spikes = self.get_nr_of_spikes(self.get_degree)
 
     def get_amount_of_neurons(self, get_degree):
-        return None
+        return len(get_degree)
 
     def get_amount_synapses(self, get_degree):
-        return None
+        return len(get_degree.edges)
 
     def get_nr_of_spikes(self, get_degree):
         return None
