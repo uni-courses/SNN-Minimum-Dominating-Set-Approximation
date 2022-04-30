@@ -39,7 +39,8 @@ class Radiation_damage:
 
         # Get random neurons from list.
         # dead_neurons=dead_neurons[0]+dead_neurons[1]
-        dead_neurons = ["spike_once_0", "selector_2_0"]
+        # dead_neurons = ["spike_once_0", "selector_2_0"]
+        dead_neurons = ["degree_receiver_1_2_0"]
 
         # Kill neurons.
         self.kill_neurons(get_degree, dead_neurons)
