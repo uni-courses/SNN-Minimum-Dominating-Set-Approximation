@@ -63,17 +63,18 @@ class Test_counter(unittest.TestCase):
 
         # Get list of planer triangle free graphs.
 
-        for m in range(0, 3):
+        for m in range(0, 1):
             plot_neuron_behaviour = True
 
             for retry in range(0, 1, 1):
                 graphs = []
-                for size in range(5, 6, 1):
+
+                for size in range(4, 5, 1):
                     #    graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
                     # for G in graphs:
-                    # G = create_manual_graph_with_4_nodes()
+                    G = create_manual_graph_with_4_nodes()
                     # G = create_manual_graph_with_5_nodes()
-                    G = create_manual_graph_with_6_nodes()
+                    # G = create_manual_graph_with_6_nodes()
 
                     # Initialise paramers used for testing.
                     test_object = create_test_object(G, retry, m, False, False)

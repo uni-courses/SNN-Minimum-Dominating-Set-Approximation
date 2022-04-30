@@ -1,14 +1,9 @@
-import copy
-from gettext import npgettext
-from pprint import pprint
+from platform import node
 import numpy as np
 import networkx as nx
 import pylab as plt
-from networkx.drawing.nx_agraph import graphviz_layout
-from src.create_planar_triangle_free_graph import plot_basic_graph
-from src.export_data.Plot_to_tex import Plot_to_tex
-from src.export_data.helper_tex_editing import export_python_export_code
 from src.helper import get_y_position
+from src.export_data.Plot_to_tex import Plot_to_tex
 
 
 def get_weight_receiver_synapse_paths_fully_connected(G):
@@ -424,7 +419,6 @@ def create_degree_synapses_for_m_is_zero(get_degree, left, m, rand_ceil, right):
 
 
 def retry_create_degree_synapses(G, get_degree, m, rand_ceil):
-    print(f"m={m},RETRY")
     for loop in range(0, m):
         for x_l in G.nodes:
             for y in G.nodes:
@@ -432,9 +426,6 @@ def retry_create_degree_synapses(G, get_degree, m, rand_ceil):
                     if f"degree_receiver_{x_l}_{y}_{loop}" in get_degree.nodes:
                         if f"degree_receiver_{x_r}_{y}_{loop+1}" in get_degree.nodes:
                             # if not G.has_edge(x_l, v):
-                            print(
-                                f"degree_receiver_{x_l}_{y}_{loop} to: degree_receiver_{x_r}_{y}_{loop+1}"
-                            )
                             get_degree.add_edges_from(
                                 [
                                     (
@@ -466,10 +457,48 @@ def plot_unstructured_graph(G, iteration, size, show=False):
     nx.draw(G, with_labels=True)
     if show:
         plt.show()
-    plot_export = Plot_to_tex()
-    plot_export.export_plot(plt, f"G_{size}_{iteration}")
+    # plot_export = Plot_to_tex()
+    # plot_export.export_plot(plt, f"G_{size}_{iteration}")
     plt.clf()
     plt.close()
+
+
+def plot_alipour(configuration, iteration, seed, size, m, G, export=True, show=False):
+    the_labels = get_alipour_labels(G, configuration=configuration)
+    # nx.draw_networkx_labels(G, pos=None, labels=the_labels)
+    npos = nx.circular_layout(
+        G,
+        scale=1,
+    )
+    nx.draw(G, npos, labels=the_labels, with_labels=True)
+    if show:
+        plt.show()
+    if export:
+        plot_export = Plot_to_tex()
+        plot_export.export_plot(
+            plt,
+            f"alipour_{seed}_size{size}_m{m}_iter{iteration}_combined_{configuration}",
+        )
+
+    plt.clf()
+    plt.close()
+
+
+def get_alipour_labels(G, configuration):
+    labels = {}
+    for node_name in G.nodes:
+        if configuration == "0rand_mark":
+            labels[
+                node_name
+            ] = f'{node_name},R:{G.nodes[node_name]["random_number"]}, M:{G.nodes[node_name]["marks"]}'
+        elif configuration == "1weight":
+            labels[node_name] = f'{node_name}, W:{G.nodes[node_name]["weight"]}'
+        elif configuration == "2inhib_weight":
+            labels[
+                node_name
+            ] = f'{node_name}, W:{G.nodes[node_name]["inhibited_weight"]}'
+
+    return labels
 
 
 def plot_coordinated_graph(G, iteration, size, show=False):
@@ -507,7 +536,7 @@ def plot_coordinated_graph(G, iteration, size, show=False):
 
 
 def plot_neuron_behaviour_over_time(
-    G, iteration, size, grouped_neurons, m, spike_dict, t, show=False
+    adaptation, G, iteration, seed, size, m, t, show=False, current=True
 ):
 
     # options = {"edgecolors": "red"}
@@ -526,7 +555,7 @@ def plot_neuron_behaviour_over_time(
         edge_color=edge_color_map,
         **options,
     )
-    node_labels = nx.get_node_attributes(G, "")
+    node_labels = get_labels(G, current)
     pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
     nx.draw_networkx_labels(G, pos, labels=node_labels)
     edge_labels = nx.get_edge_attributes(G, "weight")
@@ -536,20 +565,32 @@ def plot_neuron_behaviour_over_time(
     axis = plt.gca()
     axis.set_xlim([1.2 * x for x in axis.get_xlim()])
     axis.set_ylim([1.2 * y for y in axis.get_ylim()])
-    # f = plt.figure()
-    # f.set_figwidth(10)
-    # f.set_figheight(10)
-    # plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
+
     if show:
         plt.show()
-    for neuron_set, spikes in spike_dict.items():
-        print(f"{neuron_set},spikes={spikes}")
 
     plot_export = Plot_to_tex()
-    plot_export.export_plot(plt, f"snn_m{m}_n{size}_iter{iteration}_t{t}")
+    plot_export.export_plot(
+        plt,
+        f"test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}_t{t}",
+    )
+
     # plt.savefig()
     plt.clf()
     plt.close()
+
+
+def get_labels(G, current=True):
+    node_labels = {}
+    if current:
+        for node_name in G.nodes:
+            if node_name != "connecting_node":
+                node_labels[node_name] = G.nodes[node_name]["neuron"].u.get()[0]
+            else:
+                node_labels[node_name] = "0"
+    else:
+        node_labels = nx.get_node_attributes(G, "")
+    return node_labels
 
 
 def set_node_colours(G, t):
@@ -559,16 +600,19 @@ def set_node_colours(G, t):
     for node_name in G.nodes:
         if G.nodes[node_name]["spike"] != {}:
             # for node in G:
-            if G.nodes[node_name]["spike"][t] == 1:
+            if G.nodes[node_name]["spike"][t]:
                 color_map.append("green")
                 for neighbour in nx.all_neighbors(G, node_name):
                     spiking_edges.append((node_name, neighbour))
             else:
                 color_map.append("white")
         else:
-            color_map.append("yellow")
-            for neighbour in nx.all_neighbors(G, node_name):
-                unseen_edges.append((node_name, neighbour))
+            if node_name[:11] != "connecting_":
+                raise Exception(f"Did not find spike dictionary for node:{node_name}")
+            else:
+                color_map.append("yellow")
+                for neighbour in nx.all_neighbors(G, node_name):
+                    unseen_edges.append((node_name, neighbour))
     return color_map, spiking_edges, unseen_edges
 
 

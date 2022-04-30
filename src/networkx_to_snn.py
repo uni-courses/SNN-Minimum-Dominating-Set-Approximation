@@ -14,9 +14,7 @@ from src.helper_snns import (
 )
 
 
-def convert_networkx_graph_to_snn_with_one_neuron(
-    G, full_spec, bias=0, du=0, dv=0, weight=1, vth=1
-):
+def convert_networkx_graph_to_snn_with_one_neuron(G):
     # TODO: rewrite function to:
     # 0. Verify the graph is connected (no lose nodes exist).
     # 1. Start with first incoming node.

@@ -1,5 +1,6 @@
 import random
 import networkx as nx
+from src.helper_network_structure import plot_alipour
 
 
 def compute_mtds(input_graph, m=0):
@@ -125,34 +126,69 @@ def partial_alipour(delta, inhibition, G, rand_ceil, rand_nrs):
     return G
 
 
-def full_alipour(delta, inhibition, G, rand_ceil, rand_nrs, m):
+def full_alipour(
+    delta,
+    inhibition,
+    iteration,
+    G,
+    rand_ceil,
+    rand_nrs,
+    m,
+    seed,
+    size,
+    show=False,
+    export=False,
+):
     # Reverse engineer actual rand nrs:
     uninhibited_rand_nrs = [(x + inhibition) for x in rand_nrs]
     print(f"uninhibited_rand_nrs={uninhibited_rand_nrs}")
+    print(f"m={m}")
 
     for node in G.nodes:
-        G.nodes[node]["marks"] = 0
+        # Initialise values.
+        # G.nodes[node]["marks"] = 0
+        G.nodes[node]["marks"] = G.degree(node) * (rand_ceil + 1) * delta
         G.nodes[node]["countermarks"] = 0
         G.nodes[node]["random_number"] = 1 * uninhibited_rand_nrs[node]
         G.nodes[node]["weight"] = (
             G.degree(node) * (rand_ceil + 1) * delta + G.nodes[node]["random_number"]
         )
+        G.nodes[node]["inhibited_weight"] = G.nodes[node]["weight"] - inhibition
 
+    if show or export:
+
+        plot_alipour("0rand_mark", iteration, seed, size, 0, G, show=show)
+        plot_alipour("1weight", iteration, seed, size, 0, G, show=show)
+        plot_alipour("2inhib_weight", iteration, seed, size, 0, G, show=show)
+
+    # Compute the mark based on degree+randomness=weight
     for node in G.nodes:
         max_weight = max(G.nodes[n]["weight"] for n in nx.all_neighbors(G, node))
+
+        nr_of_max_weights = 0
         for n in nx.all_neighbors(G, node):
             if (
                 G.nodes[n]["weight"] == max_weight
             ):  # should all max weight neurons be marked or only one of them?
-                G.nodes[n]["marks"] += 1 if m == 0 else (rand_ceil + 1) * delta
+
+                # Always raise mark always by (rand_ceil + 1) * delta (not by 1).
+                # Read of the score from countermarks, not marks.
+                G.nodes[n]["marks"] += (rand_ceil + 1) * delta
                 G.nodes[n]["countermarks"] += 1
+                nr_of_max_weights = nr_of_max_weights + 1
 
-    for loop in range(m):
+                # Verify there is only one max weight neuron.
+                if nr_of_max_weights > 1:
+                    raise Exception("Two numbers with identical max weight.")
 
+    # Dont' compute for m=0
+    for loop in range(1, m + 1):
         for node in G.nodes:
             G.nodes[node]["weight"] = (
                 G.nodes[node]["marks"] + G.nodes[node]["random_number"]
             )
+            G.nodes[node]["inhibited_weight"] = G.nodes[node]["weight"] - inhibition
+            # Reset marks.
             G.nodes[node]["marks"] = 0
             G.nodes[node]["countermarks"] = 0
 
@@ -160,9 +196,15 @@ def full_alipour(delta, inhibition, G, rand_ceil, rand_nrs, m):
             max_weight = max(G.nodes[n]["weight"] for n in nx.all_neighbors(G, node))
             for n in nx.all_neighbors(G, node):
                 if G.nodes[n]["weight"] == max_weight:
-                    G.nodes[n]["marks"] += (
-                        1 if loop == (m - 1) else (rand_ceil + 1) * delta
-                    )
+
+                    # Always raise mark always by (rand_ceil + 1) * delta (not by 1).
+                    G.nodes[n]["marks"] += (rand_ceil + 1) * delta
                     G.nodes[n]["countermarks"] += 1
 
+        if show or export:
+            plot_alipour("0rand_mark", iteration, seed, size, loop, G, show=show)
+            plot_alipour("1weight", iteration, seed, size, loop, G, show=show)
+            plot_alipour("2inhib_weight", iteration, seed, size, loop, G, show=show)
+        for node in G.nodes:
+            print(f'{node},{G.nodes[node]["countermarks"]}')
     return G

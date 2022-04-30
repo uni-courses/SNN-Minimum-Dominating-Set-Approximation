@@ -1,11 +1,13 @@
-import collections
-import datetime
+from datetime import datetime
 import itertools
 import os
+import pickle
+from pprint import pprint
 import random
 import shutil
 import networkx as nx
 import traceback
+
 
 from src.helper_snns import print_neuron_properties
 from test.contains_neurons_of_type_x import get_n_neurons
@@ -320,9 +322,6 @@ def get_a_in_for_degree_receiver(
 
                         a_in = a_in + spike_once_weight
                         # print(f'node={node},neighbour={neighbour},other_node={other_node},a_in={a_in}')
-                        print(
-                            f'"spike_once_{other_node} to: degree_receiver_{node}_{neighbour}, a_in={a_in}'
-                        )
 
     for circuit in G.nodes:
         # Add synapse between random node and degree receiver nodes.
@@ -617,7 +616,8 @@ def print_neuron_behaviour(
 def write_results_to_file(m, G, retry, G_alipour, counter_neurons):
     # Append-adds at last
     file1 = open("results.txt", "a")  # append mode
-    now = datetime.datetime.now()
+    now = datetime.now()
+
     file1.write(now.strftime("%Y-%m-%d %H:%M:%S\n"))
     file1.write(f"m={m}\n")
     file1.write(f"len(G)={len(G)}\n")
@@ -625,10 +625,89 @@ def write_results_to_file(m, G, retry, G_alipour, counter_neurons):
     for edge in G.edges:
         file1.write(f"{str(edge)}\n")
     file1.write(f"retry={retry}\n")
-    file1.write("G_alipour countermarks-SNN counter current")
+    file1.write("G_alipour countermarks-SNN counter current\n")
     for node in G.nodes:
         file1.write(
             f'{G_alipour.nodes[node]["countermarks"]}-{counter_neurons[node].u.get()}\n'
         )
     file1.write("\n\n")
     file1.close()
+
+
+def get_neuron_from_dict(neuron_dict, neurons, neuron_name):
+    for neuron in neurons:
+        if neuron_dict[neuron] == neuron_name:
+            return neuron
+    raise Exception("Did not find neuron:{neuron_name} in dict:{neuron_dict}")
+
+
+def get_counter_neurons_from_dict(expected_nr_of_neurons, neuron_dict, m):
+    counter_neurons = []
+    neurons = list(neuron_dict.keys())
+    neuron_names = list(neuron_dict.values())
+    # Get sorted counter neurons.
+    for node_index in range(expected_nr_of_neurons):
+        for neuron_name in neuron_names:
+            if neuron_name == f"counter_{node_index}_{m}":
+                counter_neurons.append(
+                    get_neuron_from_dict(neuron_dict, neurons, neuron_name)
+                )
+
+    # pprint(f'neuron_names={neuron_names}')
+
+    if expected_nr_of_neurons != len(counter_neurons):
+        raise Exception(
+            f"Error, expected {expected_nr_of_neurons} neurons, yet found {len(counter_neurons)} neurons"
+        )
+    return counter_neurons
+
+
+def print_time(status, previous_time, previous_millis):
+    now = datetime.now()
+    # durationTime = (now - previous_time).total_seconds()
+    durationTime = now - previous_time
+    import time
+
+    now_millis = int(round(time.time() * 1000))
+
+    duration_millis = now_millis - previous_millis
+    print(f"{str(now.time())[:8]}, Duration:{duration_millis} [ms], status:{status}")
+    return now, now_millis
+
+
+def export_get_degree_graph(adaptation, G, get_degree, iteration, m, seed, size):
+    remove_monitors_from_get_degree(get_degree)
+    with open(
+        f"pickles/test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        "wb",
+    ) as fh:
+        pickle.dump([G, get_degree, iteration, m, seed, size], fh)
+
+
+def remove_monitors_from_get_degree(get_degree):
+    for node_name in get_degree.nodes:
+        get_degree.nodes[node_name]["neuron"] = None
+        get_degree.nodes[node_name]["spike_monitor"] = None
+        get_degree.nodes[node_name]["spike_monitor_id"] = None
+
+
+def load_pickle_and_plot(adaptation, iteration, m, seed, sim_time, size):
+    from src.helper_network_structure import plot_neuron_behaviour_over_time
+
+    pickle_off = open(
+        f"pickles/test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        "rb",
+    )
+    [G, get_degree, iteration, m, seed, size] = pickle.load(pickle_off)
+    for t in range(sim_time - 1):
+        plot_neuron_behaviour_over_time(
+            adaptation,
+            get_degree,
+            iteration,
+            seed,
+            size,
+            m,
+            t + 1,
+            show=False,
+            current=True,
+        )

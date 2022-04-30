@@ -28,7 +28,7 @@ dependencies:
 # Auto generate docstrings
   - pyment
 # Auto format networkx graph plots.
-  - pygraphviz
+#  - pygraphviz
 # Auto generate docstrings
   - flake8
 # Auto generate documentation.
