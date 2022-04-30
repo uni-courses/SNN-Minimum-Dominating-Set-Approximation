@@ -17,6 +17,9 @@ Leveraging brain-adaptation principles to increase radiation
 resistance of neuromorphic space hardware
 Abstract:
 TODO: Copy latest abstract
+This research sets out to test whether principles of brain adaptation can be leveraged to increase the radiation resistance of neuromorphic space hardware. Neuromorphic architectures provide energy efficient platforms for AI applications in space. Structural similarities between neuromorphic architectures and the brain may allow them to benefit from brain-inspired design on the topic of damage recovery. Space environments can provide challenging conditions with significant radiation exposure, that may damage neuromorphic space hardware. A brain-inspired approach is explored in mitigating such damage.
+  
+ This approach is investigated using simulated radiation robustness tests with- and without brain adaptation implementation. The differences in radiation robustness are then analysed and discussed in the context of space applications of neuromorphic hardware. The SNN implementation by Diehl et al. of the minimum dominating set approximation algorithm by Alipour et al. is enhanced with brain adaptation mechanisms for these tests. The tests are performed using a Monte-Carlo simulation using Intel's Lava framework V0.3.0.
 
 Keywords:
 Neuromorphic engineering, spiking neural networks, brain adapta-
