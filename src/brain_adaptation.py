@@ -12,6 +12,7 @@ def inject_adaptation_mechanism_to_networkx_and_snn(
     latest_time,
     m,
     rad_dam,
+    sim_time,
     size,
     test_object,
 ):
@@ -24,7 +25,7 @@ def inject_adaptation_mechanism_to_networkx_and_snn(
     )
 
     # Convert the graph with brain adaptation to an SNN.
-    test_object = convert_new_graph_to_snn(test_object)
+    test_object = convert_new_graph_to_snn(test_object, sim_time)
     latest_time, latest_millis = print_time(
         f"Got adapted SNN.", latest_time, latest_millis
     )
@@ -154,7 +155,7 @@ def add_inhibitory_synapse(get_degree, node_name):
     # TODO: set edge weight
 
 
-def convert_new_graph_to_snn(test_object):
+def convert_new_graph_to_snn(test_object, sim_time):
     ## Convert the snn networkx graph into a Loihi implementation.
     (
         test_object.converted_nodes,
@@ -168,6 +169,6 @@ def convert_new_graph_to_snn(test_object):
     test_object.monitor_dict = {}
     for neuron in test_object.neurons:
         test_object.monitor_dict = add_monitor_to_dict(
-            neuron, test_object.monitor_dict, test_object.sim_time
+            neuron, test_object.monitor_dict, sim_time
         )
     return test_object

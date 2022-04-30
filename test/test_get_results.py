@@ -112,7 +112,7 @@ class Test_counter(unittest.TestCase):
                     # Create monitors to probe if neuron spiked or not.
                     monitors = convert_new_graph_to_snn(test_object)
                     # raise Exception("DONE")
-                    monitors = create_neuron_monitors(test_object, test_object.sim_time)
+                    monitors = create_neuron_monitors(test_object, sim_time)
                     # raise Exception("STOP")
 
                     # Run default tests on neurons and get counted degree from
@@ -175,7 +175,7 @@ class Test_counter(unittest.TestCase):
 
         # Simulate SNN and assert values inbetween timesteps.
         # Simulate till extraction time+10 sec.
-        for t in range(1, test_object.sim_time):
+        for t in range(1, sim_time):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())

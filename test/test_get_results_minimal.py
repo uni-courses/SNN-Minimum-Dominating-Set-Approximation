@@ -124,13 +124,14 @@ class Test_counter(unittest.TestCase):
                                 latest_time,
                                 m,
                                 rad_dam,
+                                sim_time,
                                 size,
                                 test_object,
                             )
 
                         # Add spike monitors in networkx graph representing SNN.
                         # if output_behaviour:
-                        create_neuron_monitors(test_object, test_object.sim_time)
+                        create_neuron_monitors(test_object, sim_time)
                         # Report performance.
                         latest_time, latest_millis = print_time(
                             "Got neuron monitors.", latest_time, latest_millis

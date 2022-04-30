@@ -164,7 +164,7 @@ class Test_counter(unittest.TestCase):
 
         # Simulate SNN and assert values inbetween timesteps.
         # Simulate till extraction time+10 sec.
-        for t in range(1, test_object.sim_time):
+        for t in range(1, sim_time):
 
             # Run the simulation for 1 timestep.
             starter_neuron.run(condition=RunSteps(num_steps=1), run_cfg=Loihi1SimCfg())

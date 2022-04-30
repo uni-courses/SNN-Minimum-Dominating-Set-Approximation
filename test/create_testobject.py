@@ -58,7 +58,7 @@ def create_test_object(
     ## Generate the maximum random ceiling
     # +2 to allow selecting a larger range of numbers than the number of
     # nodes in the graph.
-    test_object.rand_ceil = len(test_object.G) + 2
+    test_object.rand_ceil = len(test_object.G) + 0
     # Get the list of random numbers.
     test_object.rand_nrs = generate_list_of_n_random_nrs(
         test_object.G, max=test_object.rand_ceil, seed=42
@@ -96,7 +96,7 @@ def create_test_object(
         f"After inhibition of:{test_object.inhibition}, rand_nrs={test_object.rand_nrs}"
     )
 
-    test_object.sim_time = test_object.inhibition + 11
+    # sim_time = test_object.inhibition + 11
 
     ## Convert the fully connected graph into a networkx graph that
     # stores the snn properties.
@@ -130,7 +130,7 @@ def create_test_object(
     ###test_object.monitor_dict = {}
     ###for neuron in test_object.neurons:
     ###    test_object.monitor_dict = add_monitor_to_dict(
-    ###        neuron, test_object.monitor_dict, test_object.sim_time
+    ###        neuron, test_object.monitor_dict, sim_time
     ###    )
 
     #### Specify boolean array that stores whether a winner has been found in WTA

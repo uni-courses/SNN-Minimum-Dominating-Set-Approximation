@@ -59,6 +59,8 @@ def generate_list_of_n_random_nrs(G, max=None, seed=None):
     """
     if max is None:
         return list(range(1, len(G) + 1))
+    elif max == len(G):
+        return list(range(1, len(G) + 1))
     elif max > len(G):
         large_list = list(range(1, max + 1))
         if not seed is None:
