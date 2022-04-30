@@ -78,8 +78,8 @@ class Test_counter(unittest.TestCase):
 
                     # Initialise paramers used for testing.
                     test_object = create_test_object(G, iteration, m, False, False)
-                    sim_time = test_object.inhibition + 10
-                    # sim_time = 11
+                    # sim_time = test_object.inhibition + 10
+                    sim_time = 18
                     latest_time, latest_millis = print_time(
                         "Created object.", latest_time, latest_millis
                     )
