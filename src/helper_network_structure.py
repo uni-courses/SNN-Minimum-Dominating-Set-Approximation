@@ -1,3 +1,4 @@
+from platform import node
 import numpy as np
 import networkx as nx
 import pylab as plt
@@ -496,7 +497,9 @@ def plot_coordinated_graph(G, iteration, size, show=False):
     plt.close()
 
 
-def plot_neuron_behaviour_over_time(G, iteration, size, m, t, show=False):
+def plot_neuron_behaviour_over_time(
+    adaptation, G, iteration, seed, size, m, t, show=False
+):
 
     # options = {"edgecolors": "red"}
     options = {}
@@ -514,7 +517,7 @@ def plot_neuron_behaviour_over_time(G, iteration, size, m, t, show=False):
         edge_color=edge_color_map,
         **options,
     )
-    node_labels = nx.get_node_attributes(G, "")
+    node_labels = get_labels(G)
     pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
     nx.draw_networkx_labels(G, pos, labels=node_labels)
     edge_labels = nx.get_edge_attributes(G, "weight")
@@ -524,18 +527,32 @@ def plot_neuron_behaviour_over_time(G, iteration, size, m, t, show=False):
     axis = plt.gca()
     axis.set_xlim([1.2 * x for x in axis.get_xlim()])
     axis.set_ylim([1.2 * y for y in axis.get_ylim()])
-    # f = plt.figure()
-    # f.set_figwidth(10)
-    # f.set_figheight(10)
-    # plt.subplots_adjust(left=0.0, right=4.0, bottom=0.0, top=4.0)
+
     if show:
         plt.show()
 
     plot_export = Plot_to_tex()
-    plot_export.export_plot(plt, f"snn_m{m}_n{size}_iter{iteration}_t{t}")
+    plot_export.export_plot(
+        plt,
+        f"test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}_t{t}",
+    )
     # plt.savefig()
     plt.clf()
     plt.close()
+
+
+def get_labels(G, current=True):
+    node_labels = {}
+    if current:
+        for node_name in G.nodes:
+            if node_name != "connecting_node":
+                node_labels[node_name] = G.nodes[node_name]["neuron"].u.get()[0]
+            else:
+                node_labels[node_name] = "ignore"
+    else:
+        node_labels = nx.get_node_attributes(G, "")
+    print(f"node_labels={node_labels}")
+    return node_labels
 
 
 def set_node_colours(G, t):
@@ -552,9 +569,12 @@ def set_node_colours(G, t):
             else:
                 color_map.append("white")
         else:
-            color_map.append("yellow")
-            for neighbour in nx.all_neighbors(G, node_name):
-                unseen_edges.append((node_name, neighbour))
+            if node_name[:11] != "connecting_":
+                raise Exception(f"Did not find spike dictionary for node:{node_name}")
+            else:
+                color_map.append("yellow")
+                for neighbour in nx.all_neighbors(G, node_name):
+                    unseen_edges.append((node_name, neighbour))
     return color_map, spiking_edges, unseen_edges
 
 

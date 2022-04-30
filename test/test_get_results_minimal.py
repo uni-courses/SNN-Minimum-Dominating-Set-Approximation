@@ -56,26 +56,27 @@ class Test_counter(unittest.TestCase):
             G = create_triangle_free_planar_graph(size, 0.6, seed, False)
             print("TRIANGLE")
         else:
-            G = create_manual_graph_with_4_nodes()
-            # G = create_manual_graph_with_5_nodes()
+            # G = create_manual_graph_with_4_nodes()
+            G = create_manual_graph_with_5_nodes()
             # G = create_manual_graph_with_6_nodes_symmetric() #>-<
             # G = create_manual_graph_with_6_nodes_y_shape()  # Y
         return G
 
-    def test_snn_algorithm(self, adaptation=True, output_behaviour=False):
+    def test_snn_algorithm(self, adaptation=False, output_behaviour=True):
 
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
         monitors = None
         seed = 42
 
-        for m in range(0, 2):
+        for m in range(1, 2):
             plot_neuron_behaviour = True
-            for iteration in range(0, 10, 1):
-                for size in range(3, 6, 1):
+            for iteration in range(0, 1, 1):
+                for size in range(3, 4, 1):
                     rad_dam = Radiation_damage(size, seed)
-                    G = self.get_graphs_for_this_test(size=size, seed=seed)
+                    G = self.get_graphs_for_this_test(size=None, seed=seed)
 
+                    # Start performance report.
                     latest_millis = int(round(time() * 1000))
                     latest_time, latest_millis = print_time(
                         "Create object.", datetime.now(), latest_millis
@@ -85,12 +86,17 @@ class Test_counter(unittest.TestCase):
                     test_object = create_test_object(
                         adaptation, G, iteration, m, False, False
                     )
-                    sim_time = test_object.inhibition + 10
-                    # sim_time = 18
+
+                    # Specify simulation duration.
+                    # sim_time = test_object.inhibition + 10
+                    sim_time = 2
+
+                    # Report performance.
                     latest_time, latest_millis = print_time(
                         "Created object.", latest_time, latest_millis
                     )
 
+                    # Apply simulated brain adaptation to networkx graph and SNN, if desired.
                     if adaptation:
                         (
                             latest_time,
@@ -105,13 +111,13 @@ class Test_counter(unittest.TestCase):
                             size,
                         )
 
-                    if output_behaviour:
-                        monitors = create_neuron_monitors(
-                            test_object, test_object.sim_time
-                        )
-                        latest_time, latest_millis = print_time(
-                            "Got neuron monitors.", latest_time, latest_millis
-                        )
+                    # Add spike monitors in networkx graph representing SNN.
+                    # if output_behaviour:
+                    create_neuron_monitors(test_object, test_object.sim_time)
+                    # Report performance.
+                    latest_time, latest_millis = print_time(
+                        "Got neuron monitors.", latest_time, latest_millis
+                    )
 
                     # Run default tests on neurons and get counted degree from
                     # neurons after inhibition time.
@@ -128,10 +134,13 @@ class Test_counter(unittest.TestCase):
                         m,
                         neurons,
                         output_behaviour,
+                        seed,
                         sim_time,
                         size,
                         test_object,
                     )
+
+                    # Report performance.
                     latest_time, latest_millis = print_time(
                         "Ran simulation.", latest_time, latest_millis
                     )
@@ -142,14 +151,6 @@ class Test_counter(unittest.TestCase):
                     )
                     latest_time, latest_millis = print_time(
                         "Got counter neurons.", latest_time, latest_millis
-                    )
-
-                    # Check if expected counter nodes are selected.
-                    self.perform_integration_test_on_end_result(
-                        counter_neurons, G, m, iteration, test_object
-                    )
-                    latest_time, latest_millis = print_time(
-                        "Performed integration test.", latest_time, latest_millis
                     )
 
                     # Terminate loihi simulation for this run.
@@ -163,7 +164,15 @@ class Test_counter(unittest.TestCase):
                         seed,
                         size,
                     )
-                    load_pickle_and_plot(adaptation, iteration, m, seed,sim_time, size)
+                    load_pickle_and_plot(adaptation, iteration, m, seed, sim_time, size)
+
+                    # Check if expected counter nodes are selected.
+                    self.perform_integration_test_on_end_result(
+                        counter_neurons, G, m, iteration, test_object
+                    )
+                    latest_time, latest_millis = print_time(
+                        "Performed integration test.", latest_time, latest_millis
+                    )
 
     def run_test_degree_receiver_neurons_over_time(
         self,
@@ -174,6 +183,7 @@ class Test_counter(unittest.TestCase):
         m,
         neurons,
         output_behaviour,
+        seed,
         sim_time,
         size,
         test_object,
@@ -195,12 +205,18 @@ class Test_counter(unittest.TestCase):
                 f"Simulated SNN for t={t}.", latest_time, latest_millis
             )
 
-            # Store spike bools in networkx graph for plotting.
-            if adaptation and output_behaviour:
-                store_spike_values_in_neurons(test_object.get_degree, t)
             if output_behaviour:
+                # Store spike bools in networkx graph for plotting.
+                store_spike_values_in_neurons(test_object.get_degree, t)
                 plot_neuron_behaviour_over_time(
-                    test_object.get_degree, iteration, size, m, t, show=False
+                    adaptation,
+                    test_object.get_degree,
+                    iteration,
+                    seed,
+                    size,
+                    m,
+                    t,
+                    show=False,
                 )
 
         # raise Exception("Stop")
@@ -226,8 +242,8 @@ class Test_counter(unittest.TestCase):
             print(
                 f'{G_alipour.nodes[node]["countermarks"]}-{counter_neurons[node].u.get()}'
             )
-            # self.assertEqual(
-            #    G_alipour.nodes[node]["countermarks"],
-            #    counter_neurons[node].u.get(),
-            # )
+            self.assertEqual(
+                G_alipour.nodes[node]["countermarks"],
+                counter_neurons[node].u.get(),
+            )
         write_results_to_file(m, G, retry, G_alipour, counter_neurons)

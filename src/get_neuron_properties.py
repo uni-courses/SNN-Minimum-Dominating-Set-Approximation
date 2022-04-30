@@ -38,6 +38,7 @@ def create_neuron_monitors(test_object, sim_time):
             neuron = get_neuron_from_dict(
                 test_object.neuron_dict, test_object.neurons, node_name
             )
+
             if neuron is None:
                 raise Exception(
                     "Error, was not able to find the neuron for node:{node_name}"
@@ -65,6 +66,8 @@ def create_neuron_monitors(test_object, sim_time):
 def store_spike_values_in_neurons(get_degree, t):
     for node_name in get_degree.nodes:
         if node_name != "connecting_node":
+            # Add neuron as attribute of node.
+
             monitor = get_degree.nodes[node_name]["spike_monitor"]
             monitor_process_id = get_degree.nodes[node_name]["spike_monitor_id"]
 
