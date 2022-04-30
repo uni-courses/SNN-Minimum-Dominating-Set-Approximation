@@ -1,11 +1,11 @@
 \section{Methodology}\label{sec:methodology}
 The research methodology starts in \cref{subsec:algorithm} with a description of the MDS approximation algorithm by Alipour, the SNN implementation of this algorithm by Diehl et al., and the implemented form%TODO: form or forms? 
-of brain adaptation \cite{alipour}\cite{diehl}. Since the overarching research project aims at eventually performing physical radiation tests, \cref{subsec:hardware} specifies the hardware that is used for testing, and how the radiation effects are simulated. The test procedure is detailed in \cref{subsec:testing}.
+of brain adaptation \cite{alipour}\cite{diehl}. Since the overarching research project aims at performing physical radiation tests, \cref{subsec:hardware} specifies the hardware that is used for testing, and how the radiation effects are simulated. The test procedure is detailed in \cref{subsec:testing}.
 
 \subsection{Algorithm Selection}\label{subsec:algorithm}
-The minimum dominating set (MDS) approximation as presented by Alipour et al., is specified in \cref{alg:alipour}:
+The minimum dominating set (MDS) approximation as presented by Alipour et al., is specified in \cref{alg:alipour}.
 %Within the graph algorithms, some SNN algorithms may be naturally more robust than others. For example, SNN algorithms that calculate the shortest path within graphs may automatically re-route if radiation imposed neuron-death occurs. However, since this research aims at determining the effectivity of brain adaptation mechanisms, a stricter test is found in algorithms that can fail to produce meaningful output if a single neuronal or synaptic property is changed. Therefore, 
-\begin{algorithm}%[1]
+\begin{algorithm}[h]%[1]
     \caption{Distributed Algorithm for computing a total dominating set in a graph with given integer $m\geq 0$.}\label{alg:alipour}
     \KwData{Connected, planar, triangle-free graph of size $n$.}
     \KwResult{Set of nodes that form a minimum total dominating set (MDTS).}
@@ -23,21 +23,20 @@ The minimum dominating set (MDS) approximation as presented by Alipour et al., i
 Next, an SNN implementation of this algorithm is generated using Leaky-Integrate-and-Fire (LIF) neurons. This implementation is created by Diehl et al. \cite{diehl} using the open source lava software framework by Intel. This implementation takes in connected, triangle-free, planar graphs (E.g. \cref{fig:input_graph}) in the form of networkx objects. Then it converts these graphs into the specification of an SNN that is encoded in a new networkx graph (E.g. \cref{fig:encoded_snn}). A recursive method then takes a single neuron and converts the SNN encoded in the networkx graph, into an actual SNN that can be run on the Loihi (1 \& 2) chips, or simulated on a regular computer.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=8cm]{latex/Images/input_graph.png}
-    \caption{Example input graph. \textcolor{red}{TODO: change to triangle free planar graph}.%TODO:
-    }
+    \includegraphics[width=8cm]{latex/Images/input_graph_G_6_0.png}
+    \caption{Example input graph. For $m=1$ the algorithm still selects 3 nodes, \textcolor{red}{whereas for a longer runtime at $m=2$, the algorithm converges to a minimum dominating set of node 2 and 4.}}
     \label{fig:input_graph}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=8cm]{latex/Images/structured_graph.png}
+    \includegraphics[width=8cm]{latex/Images/structured_graph_snn_m0_n6_iter0_t77.png}
     \caption{Example SNN encoding of algorithm to approximate MDS on the input graph of \cref{fig:input_graph}. This module is connected in series where the mark counter neuron takes up the role of spike\_once neuron in the next round of the approximation algorithm. For a more detailed description of the SNN implementation the reader is referred to Diehl et al., or to the source code documentation \cite{}. %TODO: include citation. %TODO: update to match updated input graph.
     }
     \label{fig:encoded_snn}
 \end{figure}
 
-This SSN implementation of the MDS approximation algorithm is onwards referred to as the default network. This default network is then enhanced with strategically placed redundant neurons that are inhibited by the default network neurons. Next, space radiation damage is simulated on the Loihi 2 in the form of random neuron deaths. This neuron death implies a neuron is removed from the SNN, and it can occur to both the default network and the redundancy neurons. If a default network neuron dies, the inhibition to the redundant neuron should be removed, causing the SNN to use the alternative neural pathway to recover from this damage.
+\noindent This SSN implementation of the MDS approximation algorithm is onwards referred to as the default network. This default network is then enhanced with strategically placed redundant neurons that are inhibited by the default network neurons. Next, space radiation damage is simulated on the Loihi 2 in the form of random neuron deaths. This neuron death implies a neuron is removed from the SNN, and it can occur to both the default network and the redundancy neurons. If a default network neuron dies, the inhibition to the redundant neuron should be removed, causing the SNN to use the alternative neural pathway to recover from this damage.
 
 \subsection{Hardware}\label{subsec:hardware}
 Since at the time of writing no single-event effect (SEEs) propagation mechanisms are identified for space radiation exposure on the Loihi 1 \& 2 chips, a high-level software simulation of these single-event effects is performed. This is done by assuming the non-neuromorphic components of the chips are performing nominally, and that the SEEs propagate from for example transient bit-flips towards neuronal and synaptic parameter changes. The first assumptions may be accurate if local radiation hardening and redundancy is applied to the non-neuromorphic components. Weight and/or energy saving could be a motivation to apply these radiation counter-measures sparsely. The second assumption is based on the digital nature of the components that make up the neural components of the Loihi. The components that make up the neural compartments and synapses of the Loihi are visualised in \cref{fig:loihi_micro_architecture}.
@@ -53,32 +52,33 @@ Since at the time of writing no single-event effect (SEEs) propagation mechanism
 
 
 \subsection{Testing}\label{subsec:testing}
-To test whether the brain adaptation implementations are successful, \textcolor{red}{three/one} brain adaptation implementations are compared to a baseline without brain adaptation and among each other. 
+To test whether the brain adaptation implementation may be used to increase radiation robustness of neuromorphic space hardware, it is compared to a baseline without brain adaptation. 
 
 % TODO: verify subsubsections are allowed.
 \subsubsection{Metrics}\label{subsubsec:metrics}
 The metrics of the comparison are:
 \begin{enumerate}
     \item \textit{Radiation Robustness} - a score from 0 to 100\% indicating the ratio of successful solution generation on random input graphs.
-    \item \textit{Neuronal \& Synaptic Overcapcity} - a score from 0 to $n$\% indicating the ratio of redundant neurons and synapses with respect to the original implementation without adaptation implementation. % TODO: consistent default network naming see method/intro.
+    \item \textit{Neuronal \& Synaptic Overcapcity} - a factor from 0 to $n$, indicating the ratio of redundant neurons and synapses with respect to the original implementation without adaptation implementation. % TODO: consistent default network naming see method/intro.
     \item \textit{Energy Efficiency} - the number of spikes consumed by implementations.
     \item \textit{Time complexity} - the theoretical time complexity required for network initialisation and adaptation.
     \item \textit{Space Complexity} - the theoretical space complexity required for network initialisation and adaptation.
 \end{enumerate}
 
 \subsubsection{Simulated Radiation Damage}\label{subsubsec:simulated_radiation_damage}
-The following radiation damage is simulated:
-\begin{enumerate}
-    \item Neuron death.
-    \item \textcolor{red}{Synaptic death.}
-    \item \textcolor{red}{Neuron property changes in: $\delta u,\delta v, bias,vth$.}
-    \item \textcolor{red}{Synaptic property changes in: $sign,weight$.}
-\end{enumerate}
+This work simulates radiation damage propagation of SEEs as neuron deaths by setting the neuron thresholds $vth$ to infinite \textcolor{red}{at random times}. Neuron property changes in $\delta u,\delta v, bias$ are ignored along with, synaptic death, and synaptic property changes in: $sign,weight$.
 
-\subsubsection{Brain Adaptation Mechanisms}\label{subsubsec:brain_adaptation_mechanisms}
-The tests are performed on the following brain adaptation implementations:
-\begin{enumerate}
-    \item \textcolor{red}{An Neumann monitoring module that scans the entire SNN network probing its behaviour, and re-routing broken neurons and/or synapses to redundant neurons.}
-    \item Intelligently designed redundancies of inhibited neurons that automatically take over from deceased neurons.
-    \item \textcolor{red}{A rate-coding frequency adaptation to reduce the relative impact of radiation induced spike omission in a subnetwork of the complete SNN implementation of the MDS approximation.}
-\end{enumerate}
+\subsubsection{Brain Adaptation Mechanism}\label{subsubsec:brain_adaptation_mechanisms}
+The selected SNN implementation is enhanced with redundant neurons and neuronal pathways to realise simulated radiation robustness. A basic example is shown in \cref{fig:eg_brain_adaptation}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=8cm]{latex/Images/brain_adaptation.pdf}
+    \caption{Alternative neural pathway for a redundancy of the spike\_once neuron. If the spike\_once neuron dies due to simulated radiation-induced SEEs ($vth=inf$), the redundancy neuron inhibition is eliminated. Without inhibition, the redundant spike\_once neuron copies the spike\_once behaviour with a delay of 1 timestep.}
+    \label{fig:eg_brain_adaptation}
+\end{figure}
+
+\noindent The alternative neural pathway renders a single neuron $original_i$ with $a$ input synapses, and $b$ output synapses, redundant at the cost of $2a+2b$ synapses and 2 neurons. This cost can be reduced by implementing a controller that scans the network and manually redirects neural pathways to a smaller buffer network. However, that shifts the radiation robustness problem as that controller may also endure SEEs. % This does allow local shielding to be used, and may use components that are physically more robust than the SNN networks.
+One can also add triple/$n$-factor redundancy by including more redundant spike\_once neurons that are inhibited by the original spike\_once neuron and each other. This induces an additional delay of t=1 time step per redundant neuron.
+
+%\item \textcolor{red}{An Neumann monitoring module that scans the entire SNN network probing its behaviour, and re-routing broken neurons and/or synapses to redundant neurons.}
+%\item \textcolor{red}{A rate-coding frequency adaptation to reduce the relative impact of radiation induced spike omission in a subnetwork of the complete SNN implementation of the MDS approximation.}

@@ -617,6 +617,7 @@ def write_results_to_file(m, G, retry, G_alipour, counter_neurons):
     # Append-adds at last
     file1 = open("results.txt", "a")  # append mode
     now = datetime.now()
+
     file1.write(now.strftime("%Y-%m-%d %H:%M:%S\n"))
     file1.write(f"m={m}\n")
     file1.write(f"len(G)={len(G)}\n")

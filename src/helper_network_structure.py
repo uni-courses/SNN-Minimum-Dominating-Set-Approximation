@@ -574,6 +574,7 @@ def plot_neuron_behaviour_over_time(
         plt,
         f"test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}_t{t}",
     )
+
     # plt.savefig()
     plt.clf()
     plt.close()

@@ -11,3 +11,5 @@ To see how this redundancy can be implemented the following neural coding mechan
 Rate/frequency adjustments can be used to increase or lower the \textit{precision} % TODO: verify this is the correct word. 
 of the spiking representation of numbers. By increasing the frequency, the relative impact of radiation induced spike omission could be reduced. % TODO: include proof of concept.
 Similarly, with population coding, the population size adjustments can be used to lower the relative impact of radiation induced neuron deaths on numerical representation accuracies. No useful implementations for temporal coding and sparse coding are found in the context of radiation robustness of the generated SNN algorithm for the MDS approximation.
+
+In order to maximise the energy efficiency of the designed SNN implementation, no particular neural coding scheme has been used. Instead, some neurons pass a single spike based on input, whereas others spike continuously depending on their input.

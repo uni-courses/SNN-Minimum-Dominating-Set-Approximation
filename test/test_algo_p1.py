@@ -68,6 +68,7 @@ class Test_counter(unittest.TestCase):
 
             for retry in range(0, 1, 1):
                 graphs = []
+
                 for size in range(4, 5, 1):
                     #    graphs.append(create_triangle_free_planar_graph(size, 0.6, 42, False))
                     # for G in graphs:
