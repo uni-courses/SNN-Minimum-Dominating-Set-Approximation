@@ -678,7 +678,7 @@ def export_get_degree_graph(adaptation, G, get_degree, iteration, m, seed, size)
         pickle.dump([G, get_degree, iteration, m, seed, size], fh)
 
 
-def load_pickle_and_plot(adaptation, iteration, m, seed, size):
+def load_pickle_and_plot(adaptation, iteration, m, seed, sim_time,size):
     from src.helper_network_structure import plot_neuron_behaviour_over_time
 
     pickle_off = open(
@@ -686,5 +686,5 @@ def load_pickle_and_plot(adaptation, iteration, m, seed, size):
         "rb",
     )
     [G, get_degree, iteration, m, seed, size] = pickle.load(pickle_off)
-    for t in range(4):
-        plot_neuron_behaviour_over_time(get_degree, iteration, size, m, t, show=True)
+    for t in range(sim_time):
+        plot_neuron_behaviour_over_time(get_degree, iteration, size, m, t, show=False)

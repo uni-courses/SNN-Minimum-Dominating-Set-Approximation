@@ -62,17 +62,17 @@ class Test_counter(unittest.TestCase):
             # G = create_manual_graph_with_6_nodes_y_shape()  # Y
         return G
 
-    def test_snn_algorithm(self, adaptation=False, output_behaviour=False):
+    def test_snn_algorithm(self, adaptation=True, output_behaviour=False):
 
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
         monitors = None
         seed = 42
 
-        for m in range(0, 3):
+        for m in range(0, 2):
             plot_neuron_behaviour = True
             for iteration in range(0, 10, 1):
-                for size in range(3, 7, 1):
+                for size in range(3, 6, 1):
                     rad_dam = Radiation_damage(size, seed)
                     G = self.get_graphs_for_this_test(size=size, seed=seed)
 
@@ -163,7 +163,7 @@ class Test_counter(unittest.TestCase):
                         seed,
                         size,
                     )
-                    load_pickle_and_plot(adaptation, iteration, m, seed, size)
+                    load_pickle_and_plot(adaptation, iteration, m, seed,sim_time, size)
 
     def run_test_degree_receiver_neurons_over_time(
         self,
