@@ -68,14 +68,14 @@ class Test_counter(unittest.TestCase):
         delete_files_in_folder(f"latex/Images/graphs")
         monitors = None
         seed = 42
-        
+
         for m in range(1, 2):
             plot_neuron_behaviour = True
             for iteration in range(0, 1, 1):
                 for size in range(3, 4, 1):
                     rad_dam = Radiation_damage(size, seed)
                     G = self.get_graphs_for_this_test(size=size, seed=seed)
-                    for adaptation in ( False,True):
+                    for adaptation in (False, True):
 
                         # Start performance report.
                         latest_millis = int(round(time() * 1000))
@@ -118,13 +118,14 @@ class Test_counter(unittest.TestCase):
                                 latest_time,
                                 latest_millis,
                             ) = inject_adaptation_mechanism_to_networkx_and_snn(
+                                G,
+                                iteration,
                                 latest_millis,
                                 latest_time,
-                                G,
-                                test_object,
                                 m,
-                                iteration,
+                                rad_dam,
                                 size,
+                                test_object,
                             )
 
                         # Add spike monitors in networkx graph representing SNN.

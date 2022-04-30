@@ -32,3 +32,6 @@ class Radiation_damage:
         randomlist.append(n)
         print(randomlist)
         return randomlist
+
+    def inject_simulated_radiation():
+        pass

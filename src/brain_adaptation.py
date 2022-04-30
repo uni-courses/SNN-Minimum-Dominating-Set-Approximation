@@ -5,11 +5,40 @@ from src.networkx_to_snn import convert_networkx_graph_to_snn_with_one_neuron
 from test.create_testobject import add_monitor_to_dict
 
 
-def implement_adaptation_mechanism(G, get_degree, m, retry, size, test_object):
+def inject_adaptation_mechanism_to_networkx_and_snn(
+    G,
+    iteration,
+    latest_millis,
+    latest_time,
+    m,
+    rad_dam,
+    size,
+    test_object,
+):
+    # Implement brain adaptation on networkx graph.
+    implement_adaptation_mechanism(
+        G, test_object.get_degree, iteration, m, rad_dam, size, test_object
+    )
+    latest_time, latest_millis = print_time(
+        f"Get adapted networkx Graph.", latest_time, latest_millis
+    )
+
+    # Convert the graph with brain adaptation to an SNN.
+    test_object = convert_new_graph_to_snn(test_object)
+    latest_time, latest_millis = print_time(
+        f"Got adapted SNN.", latest_time, latest_millis
+    )
+    return latest_time, latest_millis
+
+
+def implement_adaptation_mechanism(
+    G, get_degree, iteration, m, rad_dam, size, test_object
+):
     d = 0.25 * (
         m + 1
     )  # Hardcoded duplicate of d in get_degree_graph_with_separate_wta_circuits.
     original_nodes = copy.deepcopy(get_degree.nodes)
+
     for node_name in original_nodes:
         # Get input synapses as dictionaries, one per node, store as node attribute.
         store_input_synapses(get_degree, node_name)
@@ -35,8 +64,11 @@ def implement_adaptation_mechanism(G, get_degree, m, retry, size, test_object):
 
         # Add recurrent self inhibitory synapse for some redundant nodes.
 
+    # Inject radiation
+    inject_radiation(get_degree, rad_dam)
+
     # Visualise new graph.
-    plot_coordinated_graph(get_degree, retry, size, show=False)
+    plot_coordinated_graph(get_degree, iteration, size, show=False)
     return get_degree
 
 
@@ -139,22 +171,3 @@ def convert_new_graph_to_snn(test_object):
             neuron, test_object.monitor_dict, test_object.sim_time
         )
     return test_object
-
-
-def inject_adaptation_mechanism_to_networkx_and_snn(
-    latest_millis, latest_time, G, test_object, m, retry, size
-):
-    # Implement brain adaptation on networkx graph.
-    implement_adaptation_mechanism(
-        G, test_object.get_degree, m, retry, size, test_object
-    )
-    latest_time, latest_millis = print_time(
-        f"Get adapted networkx Graph.", latest_time, latest_millis
-    )
-
-    # Convert the graph with brain adaptation to an SNN.
-    test_object = convert_new_graph_to_snn(test_object)
-    latest_time, latest_millis = print_time(
-        f"Got adapted SNN.", latest_time, latest_millis
-    )
-    return latest_time, latest_millis
