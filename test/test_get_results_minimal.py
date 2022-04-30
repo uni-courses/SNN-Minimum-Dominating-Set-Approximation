@@ -67,10 +67,10 @@ class Test_counter(unittest.TestCase):
         monitors = None
         seed = 42
 
-        for m in range(0, 1):
+        for m in range(1, 2):
             plot_neuron_behaviour = True
             for iteration in range(0, 1, 1):
-                for size in range(2, 3, 1):
+                for size in range(3, 4, 1):
                     rad_dam = Radiation_damage(size, seed)
                     G = self.get_graphs_for_this_test(size=size, seed=seed)
 
@@ -143,12 +143,12 @@ class Test_counter(unittest.TestCase):
                     )
 
                     # Check if expected counter nodes are selected.
-                    # self.perform_integration_test_on_end_result(
-                    #    counter_neurons, G, m, iteration, test_object
-                    # )
-                    # latest_time, latest_millis = print_time(
-                    #    "Performed integration test.", latest_time, latest_millis
-                    # )
+                    self.perform_integration_test_on_end_result(
+                       counter_neurons, G, m, iteration, test_object
+                    )
+                    latest_time, latest_millis = print_time(
+                       "Performed integration test.", latest_time, latest_millis
+                    )
 
                     # Terminate loihi simulation for this run.
                     starter_neuron.stop()
