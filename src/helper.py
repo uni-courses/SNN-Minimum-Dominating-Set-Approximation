@@ -1,11 +1,12 @@
-import collections
 from datetime import datetime
 import itertools
 import os
+import pickle
 import random
 import shutil
 import networkx as nx
 import traceback
+
 
 from src.helper_snns import print_neuron_properties
 from test.contains_neurons_of_type_x import get_n_neurons
@@ -622,7 +623,7 @@ def write_results_to_file(m, G, retry, G_alipour, counter_neurons):
     for edge in G.edges:
         file1.write(f"{str(edge)}\n")
     file1.write(f"retry={retry}\n")
-    file1.write("G_alipour countermarks-SNN counter current")
+    file1.write("G_alipour countermarks-SNN counter current\n")
     for node in G.nodes:
         file1.write(
             f'{G_alipour.nodes[node]["countermarks"]}-{counter_neurons[node].u.get()}\n'
@@ -666,3 +667,22 @@ def print_time(status, previous_time, previous_millis):
     duration_millis = now_millis - previous_millis
     print(f"{str(now.time())[:8]}, Duration:{duration_millis} [ms], status:{status}")
     return now, now_millis
+
+
+def export_get_degree_graph(G, get_degree, iteration, m, seed, size):
+
+    with open(
+        f"pickles/test_object_seed{seed}_size{size}_m{m}_iter{iteration}.pkl", "wb"
+    ) as fh:
+        pickle.dump([G, get_degree, iteration, m, seed, size], fh)
+
+
+def load_pickle_and_plot(iteration, m, seed, size):
+    from src.helper_network_structure import plot_neuron_behaviour_over_time
+
+    pickle_off = open(
+        f"pickles/test_object_seed{seed}_size{size}_m{m}_iter{iteration}.pkl", "rb"
+    )
+    [G, get_degree, iteration, m, seed, size] = pickle.load(pickle_off)
+    for t in range(4):
+        plot_neuron_behaviour_over_time(get_degree, iteration, size, m, t, show=True)

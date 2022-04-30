@@ -1,14 +1,8 @@
-import copy
-from gettext import npgettext
-from pprint import pprint
 import numpy as np
 import networkx as nx
 import pylab as plt
-from networkx.drawing.nx_agraph import graphviz_layout
-from src.create_planar_triangle_free_graph import plot_basic_graph
-from src.export_data.Plot_to_tex import Plot_to_tex
-from src.export_data.helper_tex_editing import export_python_export_code
 from src.helper import get_y_position
+from src.export_data.Plot_to_tex import Plot_to_tex
 
 
 def get_weight_receiver_synapse_paths_fully_connected(G):
