@@ -85,8 +85,8 @@ def compute_vth_for_delay(get_degree, node_name):
         or node_name[:16] == "degree_receiver_"
     ):
         vth = get_degree.nodes[node_name]["vth"] + 1
-        if node_name == "spike_once_0_0":
-            vth=9999
+        if node_name == "spike_once_0":
+            vth = 9999
     else:
         vth = get_degree.nodes[node_name]["vth"]
     return vth

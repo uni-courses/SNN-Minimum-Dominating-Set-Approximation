@@ -584,7 +584,15 @@ def get_labels(G, current=True):
     if current:
         for node_name in G.nodes:
             if node_name != "connecting_node":
+                # print u.
                 node_labels[node_name] = G.nodes[node_name]["neuron"].u.get()[0]
+
+                # Print u and vth
+                # node_labels[node_name] = (
+                #    f"u:"
+                #    + f'{G.nodes[node_name]["neuron"].u.get()[0]}'
+                #    + f',vth:{G.nodes[node_name]["neuron"].vth.get()[0]}'
+                # )
             else:
                 node_labels[node_name] = "0"
     else:
