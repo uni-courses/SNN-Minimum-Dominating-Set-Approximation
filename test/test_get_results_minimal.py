@@ -155,9 +155,15 @@ class Test_counter(unittest.TestCase):
                     # Terminate loihi simulation for this run.
                     starter_neuron.stop()
                     export_get_degree_graph(
-                        test_object.G, test_object.get_degree, iteration, m, seed, size
+                        adaptation,
+                        test_object.G,
+                        test_object.get_degree,
+                        iteration,
+                        m,
+                        seed,
+                        size,
                     )
-                    load_pickle_and_plot(iteration, m, seed, size)
+                    load_pickle_and_plot(adaptation, iteration, m, seed, size)
 
     def run_test_degree_receiver_neurons_over_time(
         self,

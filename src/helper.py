@@ -669,19 +669,21 @@ def print_time(status, previous_time, previous_millis):
     return now, now_millis
 
 
-def export_get_degree_graph(G, get_degree, iteration, m, seed, size):
+def export_get_degree_graph(adaptation, G, get_degree, iteration, m, seed, size):
 
     with open(
-        f"pickles/test_object_seed{seed}_size{size}_m{m}_iter{iteration}.pkl", "wb"
+        f"pickles/test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        "wb",
     ) as fh:
         pickle.dump([G, get_degree, iteration, m, seed, size], fh)
 
 
-def load_pickle_and_plot(iteration, m, seed, size):
+def load_pickle_and_plot(adaptation, iteration, m, seed, size):
     from src.helper_network_structure import plot_neuron_behaviour_over_time
 
     pickle_off = open(
-        f"pickles/test_object_seed{seed}_size{size}_m{m}_iter{iteration}.pkl", "rb"
+        f"pickles/test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        "rb",
     )
     [G, get_degree, iteration, m, seed, size] = pickle.load(pickle_off)
     for t in range(4):

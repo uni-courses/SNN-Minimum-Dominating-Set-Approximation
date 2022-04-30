@@ -153,3 +153,16 @@ G_alipour countermarks-SNN counter current
 1-[0.]
 
 
+2022-04-30 03:53:38
+m=0
+len(G)=3
+edges
+(0, 1)
+(0, 2)
+retry=0
+G_alipour countermarks-SNN counter current
+2-[1.]
+1-[0.]
+0-[2.]
+
+
