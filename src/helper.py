@@ -690,7 +690,7 @@ def export_get_degree_graph(
 ):
     remove_monitors_from_get_degree(get_degree)
     with open(
-        f"pickles/probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        f"pickles/probability_{neuron_death_probability}_adapt_{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
         "wb",
     ) as fh:
         pickle.dump([G, get_degree, iteration, m, run_result, seed, size], fh)
@@ -709,22 +709,29 @@ def load_pickle_and_plot(
     from src.helper_network_structure import plot_neuron_behaviour_over_time
 
     pickle_off = open(
-        f"pickles/probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        f"pickles/probability_{neuron_death_probability}_adapt_{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
         "rb",
     )
     [G, get_degree, iteration, m, run_result, seed, size] = pickle.load(pickle_off)
 
     print(f"m={m}")
-    print(f"run_result.dead_neuron_names={run_result.dead_neuron_names}")
-    print(f"run_result.has_passed={run_result.has_passed}")
-    print(f"run_result.amount_of_neurons={run_result.amount_of_neurons}")
-    print(f"run_result.amount_synapses={run_result.amount_synapses}")
-    print(f"run_result.has_adaptation={run_result.has_adaptation}")
+    print(f"adaptation={adaptation}")
+    print(f"seed={seed}")
+    print(f"size={size}")
+    print(f"m={m}")
+    print(f"iteration={iteration}")
+    print(f"neuron_death_probability={neuron_death_probability}")
+
+    print(f"dead_neuron_names={run_result.dead_neuron_names}")
+    print(f"has_passed={run_result.has_passed}")
+    print(f"amount_of_neurons={run_result.amount_of_neurons}")
+    print(f"amount_synapses={run_result.amount_synapses}")
+    print(f"has_adaptation={run_result.has_adaptation}")
 
     for t in range(sim_time - 1):
         plot_neuron_behaviour_over_time(
             adaptation,
-            f"pickle_probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}",
+            f"pickle_probability_{neuron_death_probability}_adapt_{adaptation}_{seed}_size{size}_m{m}_iter{iteration}_t{t}",
             get_degree,
             iteration,
             seed,

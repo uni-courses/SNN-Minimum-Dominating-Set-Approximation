@@ -156,7 +156,6 @@ def full_alipour(
         G.nodes[node]["inhibited_weight"] = G.nodes[node]["weight"] - inhibition
 
     if show or export:
-
         plot_alipour("0rand_mark", iteration, seed, size, 0, G, show=show)
         plot_alipour("1weight", iteration, seed, size, 0, G, show=show)
         plot_alipour("2inhib_weight", iteration, seed, size, 0, G, show=show)

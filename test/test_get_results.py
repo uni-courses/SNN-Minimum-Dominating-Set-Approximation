@@ -51,7 +51,7 @@ class Test_counter(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_counter, self).__init__(*args, **kwargs)
 
-    def test_snn_algorithm(self, adaptation=True, output_behaviour=True):
+    def test_snn_algorithm(self, output_behaviour=False):
 
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
@@ -62,14 +62,15 @@ class Test_counter(unittest.TestCase):
         for m in range(0, 1):
             for iteration in range(0, 1, 1):
                 for size in range(3, 4, 1):
-                    for neuron_death_probability in [0.1, 0.25, 0.50]:
+                    # for neuron_death_probability in [0.1, 0.25, 0.50]:
+                    for neuron_death_probability in [0, 0.1]:
                         rad_dam = Radiation_damage(
                             size, neuron_death_probability, seed, True
                         )
                         graphs = used_graphs.get_graphs(size)
                         for G in graphs:
                             # G = self.get_graphs_for_this_test(size=None, seed=None)
-                            for adaptation in [True]:
+                            for adaptation in [False, True]:
 
                                 # Start performance report.
                                 latest_millis = int(round(time() * 1000))
@@ -81,21 +82,6 @@ class Test_counter(unittest.TestCase):
                                 test_object = create_test_object(
                                     adaptation, G, iteration, m, False, False
                                 )
-
-                                # Show alipour
-                                # Compute the Alipour graph.
-                                # G_alipour = full_alipour(
-                                #    test_object.delta,
-                                #    test_object.inhibition,
-                                #    iteration,
-                                #    G,
-                                #    test_object.rand_ceil,
-                                #    test_object.rand_nrs,
-                                #    test_object.m,
-                                #    seed,
-                                #    len(test_object.G),
-                                #    export=True,
-                                # )
 
                                 # Specify simulation duration.
                                 # sim_time = test_object.inhibition * (m + 1) + 10
@@ -123,6 +109,8 @@ class Test_counter(unittest.TestCase):
                                         size,
                                         test_object,
                                     )
+                                else:
+                                    dead_neuron_names = []
 
                                 # Add spike monitors in networkx graph representing SNN.
                                 # if output_behaviour:
@@ -259,12 +247,12 @@ class Test_counter(unittest.TestCase):
                 f"Simulated SNN for t={t}.", latest_time, latest_millis
             )
 
+            # Store spike bools in networkx graph for plotting.
+            store_spike_values_in_neurons(test_object.get_degree, t)
             if output_behaviour:
-                # Store spike bools in networkx graph for plotting.
-                store_spike_values_in_neurons(test_object.get_degree, t)
                 plot_neuron_behaviour_over_time(
                     adaptation,
-                    f"probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}",
+                    f"probability_{neuron_death_probability}_adapt_{adaptation}_{seed}_size{size}_m{m}_iter{iteration}_t{t}",
                     test_object.get_degree,
                     iteration,
                     seed,
@@ -298,7 +286,7 @@ class Test_counter(unittest.TestCase):
             test_object.m,
             seed,
             len(test_object.G),
-            export=True,
+            export=False,
         )
 
         # Compare the counts per node and assert they are equal.
