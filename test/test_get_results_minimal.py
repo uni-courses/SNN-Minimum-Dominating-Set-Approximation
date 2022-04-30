@@ -75,7 +75,7 @@ class Test_counter(unittest.TestCase):
                 for size in range(3, 4, 1):
                     rad_dam = Radiation_damage(size, seed, True)
                     G = self.get_graphs_for_this_test(size=size, seed=seed)
-                    for adaptation in [True]:
+                    for adaptation in [False, True]:
 
                         # Start performance report.
                         latest_millis = int(round(time() * 1000))
