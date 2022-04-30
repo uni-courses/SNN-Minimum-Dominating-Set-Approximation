@@ -76,9 +76,13 @@ def create_redundant_node(d, get_degree, node_name):
 
 def compute_vth_for_delay(get_degree, node_name):
     """Increases vth with 1 to realise a delay of t=1 for
-    the redunant spike_once neurons and the rand_ neurons.
+    the redunant spike_once neurons, rand neurons and selector neurons.
     Returns dv of default node otherwise."""
-    if node_name[:11] == "spike_once_" or node_name[:5] == "rand_":
+    if (
+        node_name[:11] == "spike_once_"
+        or node_name[:5] == "rand_"
+        or node_name[:9] == "selector_"
+    ):
         vth = get_degree.nodes[node_name]["vth"] + 1
     else:
         vth = get_degree.nodes[node_name]["vth"]
