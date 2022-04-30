@@ -7,6 +7,7 @@ import networkx as nx
 from numpy import sort
 from lava.magma.core.run_conditions import RunSteps
 from lava.magma.core.run_configs import Loihi1SimCfg
+from src.Radiation_damage import Radiation_damage
 from src.brain_adaptation import (
     inject_adaptation_mechanism_to_networkx_and_snn,
 )
@@ -64,12 +65,14 @@ class Test_counter(unittest.TestCase):
         # delete_dir_if_exists(f"latex/Images/graphs")
         delete_files_in_folder(f"latex/Images/graphs")
         monitors = None
+        seed = 42
 
-        for m in range(1, 2):
+        for m in range(0, 1):
             plot_neuron_behaviour = True
             for iteration in range(0, 1, 1):
-                for size in range(3, 4, 1):
-                    G = self.get_graphs_for_this_test(size=size, seed=42)
+                for size in range(2, 3, 1):
+                    rad_dam = Radiation_damage(size, seed)
+                    G = self.get_graphs_for_this_test(size=size, seed=seed)
 
                     latest_millis = int(round(time() * 1000))
                     latest_time, latest_millis = print_time(
@@ -77,9 +80,11 @@ class Test_counter(unittest.TestCase):
                     )
 
                     # Initialise paramers used for testing.
-                    test_object = create_test_object(G, iteration, m, False, False)
-                    # sim_time = test_object.inhibition + 10
-                    sim_time = 18
+                    test_object = create_test_object(
+                        adaptation, G, iteration, m, False, False
+                    )
+                    sim_time = test_object.inhibition + 10
+                    # sim_time = 18
                     latest_time, latest_millis = print_time(
                         "Created object.", latest_time, latest_millis
                     )

@@ -22,7 +22,13 @@ from test.contains_neurons_of_type_x import get_n_neurons
 
 
 def create_test_object(
-    G, iteration, m, plot_input_graph=False, plot_snn_graph=False, export=True
+    adaptation,
+    G,
+    iteration,
+    m,
+    plot_input_graph=False,
+    plot_snn_graph=False,
+    export=True,
 ):
     test_object = Test_properties()
     ## Specify the expected neuron properties.
@@ -91,6 +97,7 @@ def create_test_object(
     )
 
     test_object.sim_time = test_object.inhibition + 11
+
     ## Convert the fully connected graph into a networkx graph that
     # stores the snn properties.
     # rand_ceil+1 because the maximum random number is rand_ceil which should map
@@ -103,36 +110,35 @@ def create_test_object(
         m,
     )
 
-    # try:
     if plot_snn_graph or export:
         plot_coordinated_graph(
             test_object.get_degree, iteration, len(G), plot_snn_graph
         )
-    # except:
-    #    pass
-    # raise Exception("stop")
 
-    ## Convert the snn networkx graph into a Loihi implementation.
-    (
-        test_object.converted_nodes,
-        test_object.lhs_neuron,
-        test_object.neurons,
-        test_object.lhs_node,
-        test_object.neuron_dict,
-    ) = convert_networkx_graph_to_snn_with_one_neuron(test_object.get_degree)
+    ## Convert the snn networkx graph into a Loihi SNN if no adapted
+    # version is generated.
+    if not adaptation:
+        (
+            test_object.converted_nodes,
+            test_object.lhs_neuron,
+            test_object.neurons,
+            test_object.lhs_node,
+            test_object.neuron_dict,
+        ) = convert_networkx_graph_to_snn_with_one_neuron(test_object.get_degree)
 
-    # Create monitor dict
-    test_object.monitor_dict = {}
-    for neuron in test_object.neurons:
-        test_object.monitor_dict = add_monitor_to_dict(
-            neuron, test_object.monitor_dict, test_object.sim_time
-        )
-    # Specify boolean array that stores whether a winner has been found in WTA
-    # circuits.
-    test_object.found_winner = [False] * len(test_object.G)
-    # degree_receiver_x_y neurons will get first input spike from selector
-    # neuron at t=2
-    test_object.found_winner_at_t = [2] * len(test_object.G)
+    #### Create monitor dict
+    ###test_object.monitor_dict = {}
+    ###for neuron in test_object.neurons:
+    ###    test_object.monitor_dict = add_monitor_to_dict(
+    ###        neuron, test_object.monitor_dict, test_object.sim_time
+    ###    )
+
+    #### Specify boolean array that stores whether a winner has been found in WTA
+    #### circuits.
+    ###test_object.found_winner = [False] * len(test_object.G)
+    #### degree_receiver_x_y neurons will get first input spike from selector
+    #### neuron at t=2
+    ###test_object.found_winner_at_t = [2] * len(test_object.G)
 
     return test_object
 
