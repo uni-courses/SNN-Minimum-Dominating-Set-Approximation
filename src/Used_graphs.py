@@ -203,20 +203,25 @@ class Used_graphs:
 class Run:
     def __init__(
         self,
-        died_neurons,
+        dead_neuron_names,
         G,
         get_degree,
         has_adaptation,
+        iteration,
+        neuron_death_probability,
         m,
-        pass_fail,
+        has_passed,
         rand_ceil,
         rand_values,
         selected_alipour_nodes,
         selected_snn_nodes,
         sim_time,
+        size,
     ):
         """Called at end of run."""
-        self.pass_fail = pass_fail
+        self.iteration = iteration
+        self.neuron_death_probability = neuron_death_probability
+        self.has_passed = has_passed
         self.selected_alipour_nodes = selected_alipour_nodes
         self.selected_snn_nodes = selected_snn_nodes
         self.rand_ceil = rand_ceil
@@ -225,7 +230,7 @@ class Run:
         self.G = G
         self.has_adaptation = has_adaptation
         self.get_degree = get_degree
-        self.died_neurons = died_neurons
+        self.dead_neuron_names = dead_neuron_names
         self.sim_time = sim_time
 
         self.amount_of_neurons = self.get_amount_of_neurons(self.get_degree)

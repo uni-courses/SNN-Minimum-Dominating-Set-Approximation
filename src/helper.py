@@ -677,13 +677,23 @@ def print_time(status, previous_time, previous_millis):
     return now, now_millis
 
 
-def export_get_degree_graph(adaptation, G, get_degree, iteration, m, seed, size):
+def export_get_degree_graph(
+    adaptation,
+    G,
+    get_degree,
+    iteration,
+    m,
+    neuron_death_probability,
+    run_result,
+    seed,
+    size,
+):
     remove_monitors_from_get_degree(get_degree)
     with open(
-        f"pickles/test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        f"pickles/test_object_seed_probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
         "wb",
     ) as fh:
-        pickle.dump([G, get_degree, iteration, m, seed, size], fh)
+        pickle.dump([G, get_degree, iteration, m, run_result, seed, size], fh)
 
 
 def remove_monitors_from_get_degree(get_degree):
@@ -693,14 +703,24 @@ def remove_monitors_from_get_degree(get_degree):
         get_degree.nodes[node_name]["spike_monitor_id"] = None
 
 
-def load_pickle_and_plot(adaptation, iteration, m, seed, sim_time, size):
+def load_pickle_and_plot(
+    adaptation, iteration, m, neuron_death_probability, seed, sim_time, size
+):
     from src.helper_network_structure import plot_neuron_behaviour_over_time
 
     pickle_off = open(
-        f"pickles/test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
+        f"pickles/test_object_seed_probability_{neuron_death_probability}_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
         "rb",
     )
-    [G, get_degree, iteration, m, seed, size] = pickle.load(pickle_off)
+    [G, get_degree, iteration, m, run_result, seed, size] = pickle.load(pickle_off)
+
+    print(f"m={m}")
+    print(f"run_result.dead_neuron_names={run_result.dead_neuron_names}")
+    print(f"run_result.has_passed={run_result.has_passed}")
+    print(f"run_result.amount_of_neurons={run_result.amount_of_neurons}")
+    print(f"run_result.amount_synapses={run_result.amount_synapses}")
+    print(f"run_result.has_adaptation={run_result.has_adaptation}")
+
     for t in range(sim_time - 1):
         plot_neuron_behaviour_over_time(
             adaptation,

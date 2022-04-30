@@ -592,12 +592,15 @@ def plot_neuron_behaviour_over_time(
 
 def get_labels(G, current=True):
     node_labels = {}
+    reset_labels = False
     if current:
         for node_name in G.nodes:
             if node_name != "connecting_node":
                 # print u.
-                node_labels[node_name] = G.nodes[node_name]["neuron"].u.get()[0]
-
+                if not G.nodes[node_name]["neuron"] is None:
+                    node_labels[node_name] = G.nodes[node_name]["neuron"].u.get()[0]
+                else:
+                    reset_labels = True
                 # Print u and vth
                 # node_labels[node_name] = (
                 #    f"u:"
@@ -607,6 +610,10 @@ def get_labels(G, current=True):
             else:
                 node_labels[node_name] = "0"
     else:
+        node_labels = nx.get_node_attributes(G, "")
+
+    # If neurons were not stored in run, they are None, then get default labels.
+    if reset_labels:
         node_labels = nx.get_node_attributes(G, "")
     return node_labels
 

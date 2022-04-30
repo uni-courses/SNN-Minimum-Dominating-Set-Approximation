@@ -166,18 +166,6 @@ class Test_counter(unittest.TestCase):
                                     "Got counter neurons.", latest_time, latest_millis
                                 )
 
-                                # Terminate loihi simulation for this run.
-                                export_get_degree_graph(
-                                    adaptation,
-                                    test_object.G,
-                                    test_object.get_degree,
-                                    iteration,
-                                    m,
-                                    seed,
-                                    size,
-                                )
-                                # load_pickle_and_plot(adaptation, iteration, m, seed, sim_time, size)
-
                                 # Check if expected counter nodes are selected.
                                 (
                                     alipour_count,
@@ -204,6 +192,8 @@ class Test_counter(unittest.TestCase):
                                     G,
                                     test_object.get_degree,
                                     adaptation,
+                                    iteration,
+                                    neuron_death_probability,
                                     m,
                                     has_passed,
                                     test_object.rand_ceil,
@@ -211,8 +201,30 @@ class Test_counter(unittest.TestCase):
                                     alipour_count,
                                     snn_count,
                                     sim_time,
+                                    size,
                                 )
                             # Export run object results.
+                            # Terminate loihi simulation for this run.
+                            export_get_degree_graph(
+                                adaptation,
+                                test_object.G,
+                                test_object.get_degree,
+                                iteration,
+                                m,
+                                neuron_death_probability,
+                                run_result,
+                                seed,
+                                size,
+                            )
+                            load_pickle_and_plot(
+                                adaptation,
+                                iteration,
+                                m,
+                                neuron_death_probability,
+                                seed,
+                                sim_time,
+                                size,
+                            )
 
     def run_test_degree_receiver_neurons_over_time(
         self,
