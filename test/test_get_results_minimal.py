@@ -70,12 +70,12 @@ class Test_counter(unittest.TestCase):
         seed = 42
 
         for m in range(0, 1):
-            plot_neuron_behaviour = True
             for iteration in range(0, 1, 1):
                 for size in range(3, 4, 1):
                     rad_dam = Radiation_damage(size, seed, True)
                     G = self.get_graphs_for_this_test(size=size, seed=seed)
-                    for adaptation in [False, True]:
+                    # G = self.get_graphs_for_this_test(size=None, seed=None)
+                    for adaptation in [True]:
 
                         # Start performance report.
                         latest_millis = int(round(time() * 1000))
@@ -105,7 +105,7 @@ class Test_counter(unittest.TestCase):
 
                         # Specify simulation duration.
                         sim_time = test_object.inhibition * (m + 1) + 10
-                        # sim_time = 2
+                        # sim_time = 10
 
                         # Report performance.
                         latest_time, latest_millis = print_time(

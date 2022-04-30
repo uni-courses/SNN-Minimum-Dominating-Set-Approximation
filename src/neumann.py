@@ -206,5 +206,5 @@ def full_alipour(
             plot_alipour("1weight", iteration, seed, size, loop, G, show=show)
             plot_alipour("2inhib_weight", iteration, seed, size, loop, G, show=show)
         for node in G.nodes:
-            print(f'{node},{G.nodes[node]["countermarks"]}')
+            print(f'node:{node}, ali-mark:{G.nodes[node]["countermarks"]}')
     return G
