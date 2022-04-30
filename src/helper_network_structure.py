@@ -498,7 +498,7 @@ def plot_coordinated_graph(G, iteration, size, show=False):
 
 
 def plot_neuron_behaviour_over_time(
-    adaptation, G, iteration, seed, size, m, t, show=False
+    adaptation, G, iteration, seed, size, m, t, show=False, current=True
 ):
 
     # options = {"edgecolors": "red"}
@@ -517,7 +517,7 @@ def plot_neuron_behaviour_over_time(
         edge_color=edge_color_map,
         **options,
     )
-    node_labels = get_labels(G)
+    node_labels = get_labels(G, current)
     pos = {node: (x, y) for (node, (x, y)) in nx.get_node_attributes(G, "pos").items()}
     nx.draw_networkx_labels(G, pos, labels=node_labels)
     edge_labels = nx.get_edge_attributes(G, "weight")
@@ -548,10 +548,9 @@ def get_labels(G, current=True):
             if node_name != "connecting_node":
                 node_labels[node_name] = G.nodes[node_name]["neuron"].u.get()[0]
             else:
-                node_labels[node_name] = "ignore"
+                node_labels[node_name] = "0"
     else:
         node_labels = nx.get_node_attributes(G, "")
-    print(f"node_labels={node_labels}")
     return node_labels
 
 

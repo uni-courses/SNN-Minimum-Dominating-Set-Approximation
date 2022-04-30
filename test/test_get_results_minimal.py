@@ -89,7 +89,7 @@ class Test_counter(unittest.TestCase):
 
                     # Specify simulation duration.
                     # sim_time = test_object.inhibition + 10
-                    sim_time = 2
+                    sim_time = 3
 
                     # Report performance.
                     latest_time, latest_millis = print_time(
@@ -154,7 +154,6 @@ class Test_counter(unittest.TestCase):
                     )
 
                     # Terminate loihi simulation for this run.
-                    starter_neuron.stop()
                     export_get_degree_graph(
                         adaptation,
                         test_object.G,
@@ -173,6 +172,7 @@ class Test_counter(unittest.TestCase):
                     latest_time, latest_millis = print_time(
                         "Performed integration test.", latest_time, latest_millis
                     )
+                    starter_neuron.stop()
 
     def run_test_degree_receiver_neurons_over_time(
         self,

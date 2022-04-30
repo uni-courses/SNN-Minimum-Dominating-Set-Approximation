@@ -670,12 +670,19 @@ def print_time(status, previous_time, previous_millis):
 
 
 def export_get_degree_graph(adaptation, G, get_degree, iteration, m, seed, size):
-
+    remove_monitors_from_get_degree(get_degree)
     with open(
         f"pickles/test_object_seed_adaptation{adaptation}_{seed}_size{size}_m{m}_iter{iteration}.pkl",
         "wb",
     ) as fh:
         pickle.dump([G, get_degree, iteration, m, seed, size], fh)
+
+
+def remove_monitors_from_get_degree(get_degree):
+    for node_name in get_degree.nodes:
+        get_degree.nodes[node_name]["neuron"] = None
+        get_degree.nodes[node_name]["spike_monitor"] = None
+        get_degree.nodes[node_name]["spike_monitor_id"] = None
 
 
 def load_pickle_and_plot(adaptation, iteration, m, seed, sim_time, size):
@@ -686,5 +693,15 @@ def load_pickle_and_plot(adaptation, iteration, m, seed, sim_time, size):
         "rb",
     )
     [G, get_degree, iteration, m, seed, size] = pickle.load(pickle_off)
-    for t in range(sim_time):
-        plot_neuron_behaviour_over_time(get_degree, iteration, size, m, t, show=False)
+    for t in range(sim_time - 1):
+        plot_neuron_behaviour_over_time(
+            adaptation,
+            get_degree,
+            iteration,
+            seed,
+            size,
+            m,
+            t + 1,
+            show=False,
+            current=False,
+        )
