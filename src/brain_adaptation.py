@@ -65,8 +65,9 @@ def implement_adaptation_mechanism(
 
         # Add recurrent self inhibitory synapse for some redundant nodes.
 
-    # Inject radiation
-    inject_radiation(get_degree, rad_dam)
+    # Inject radiation by setting arbitrary neuron thresholds to 1000
+    # before converting the networkx to snn.
+    rad_dam.inject_simulated_radiation(get_degree)
 
     # Visualise new graph.
     plot_coordinated_graph(get_degree, iteration, size, show=False)
@@ -118,8 +119,6 @@ def compute_vth_for_delay(get_degree, node_name):
         or node_name[:16] == "degree_receiver_"
     ):
         vth = get_degree.nodes[node_name]["vth"] + 1
-        if node_name == "spike_once_0":
-            vth = 9999
     else:
         vth = get_degree.nodes[node_name]["vth"]
     return vth

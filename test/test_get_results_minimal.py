@@ -69,13 +69,13 @@ class Test_counter(unittest.TestCase):
         monitors = None
         seed = 42
 
-        for m in range(1, 2):
+        for m in range(0, 1):
             plot_neuron_behaviour = True
             for iteration in range(0, 1, 1):
                 for size in range(3, 4, 1):
-                    rad_dam = Radiation_damage(size, seed)
+                    rad_dam = Radiation_damage(size, seed, True)
                     G = self.get_graphs_for_this_test(size=size, seed=seed)
-                    for adaptation in [False]:
+                    for adaptation in [True]:
 
                         # Start performance report.
                         latest_millis = int(round(time() * 1000))

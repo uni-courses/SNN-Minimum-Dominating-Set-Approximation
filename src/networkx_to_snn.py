@@ -158,12 +158,14 @@ def create_neuron_from_node(G, converted_nodes, neurons, node):
     # If spike_once_neuron, create recurrent synapse
     if node[0:11] == "spike_once_" or node[0:5] == "rand_":
         neuron = create_recurrent_synapse(neuron, -2)
+    if node[0:15] == "red_spike_once_" or node[0:9] == "red_rand_":
+        neuron = create_recurrent_synapse(neuron, -2)
 
-    if node[0:16] == "degree_receiver_":
+    if node[0:16] == "degree_receiver_" or node[0:20] == "red_degree_receiver_":
         neuron = create_recurrent_synapse(neuron, -20)
     # if node[0:6] == "count_":
     #    neuron = create_recurrent_synapse(neuron, -1)
-    if node[0:6] == "delay_":
+    if node[0:6] == "delay_" or node[0:10] == "red_delay_":
         neuron = create_recurrent_synapse(neuron, -(len(G) * 2 - 1) - 2)  # TODO: or -1?
 
     neurons.append(neuron)
