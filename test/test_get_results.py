@@ -64,17 +64,17 @@ class Test_counter(unittest.TestCase):
         seed = 42
 
         for m in range(0, 1):
-            for iteration in range(0, 4, 1):
+            for iteration in range(0, 10, 1):
                 for size in range(3, 4, 1):
                     # for neuron_death_probability in [0.1, 0.25, 0.50]:
-                    for neuron_death_probability in [0.5, 0.75, 0.9]:
+                    for neuron_death_probability in [0.01,0.05,0.1,0.2,.25]:
                         rad_dam = Radiation_damage(
                             size, neuron_death_probability, seed, True
                         )
                         graphs = used_graphs.get_graphs(size)
                         for G in graphs:
                             # G = self.get_graphs_for_this_test(size=None, seed=None)
-                            for adaptation in [True, False]:
+                            for adaptation in [True,False]:
 
                                 # Start performance report.
                                 latest_millis = int(round(time() * 1000))
@@ -83,8 +83,8 @@ class Test_counter(unittest.TestCase):
                                 )
 
                                 # Initialise paramers used for testing.
-                                test_object = create_test_object(
-                                    adaptation, G, iteration, m, False, False
+                                test_object, dead_neuron_names = create_test_object(
+                                    adaptation, G, iteration, m, rad_dam, False, False
                                 )
 
                                 # Specify simulation duration.
@@ -113,8 +113,6 @@ class Test_counter(unittest.TestCase):
                                         size,
                                         test_object,
                                     )
-                                else:
-                                    dead_neuron_names = []
 
                                 # Add spike monitors in networkx graph representing SNN.
                                 # if output_behaviour:

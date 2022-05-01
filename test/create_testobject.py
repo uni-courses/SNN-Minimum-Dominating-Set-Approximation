@@ -26,6 +26,7 @@ def create_test_object(
     G,
     iteration,
     m,
+    rad_dam,
     plot_input_graph=False,
     plot_snn_graph=False,
     export=True,
@@ -110,6 +111,11 @@ def create_test_object(
         m,
     )
 
+    # Inject radiation
+    dead_neuron_names = rad_dam.inject_simulated_radiation(
+        test_object.get_degree, rad_dam.neuron_death_probability
+    )
+
     if plot_snn_graph or export:
         plot_coordinated_graph(
             test_object.get_degree, iteration, len(G), plot_snn_graph
@@ -140,7 +146,7 @@ def create_test_object(
     #### neuron at t=2
     ###test_object.found_winner_at_t = [2] * len(test_object.G)
 
-    return test_object
+    return test_object, dead_neuron_names
 
 
 def get_degree_receiver_previous_property_dicts(test_object, degree_receiver_neurons):

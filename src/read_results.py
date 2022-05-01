@@ -6,7 +6,13 @@ import os
 def get_results():
     run_results = load_run_results()
 
-    compute_robustness_again(run_results)
+    probability_success_without_adaptation = print_neuron_death_probabilities(
+        run_results, False
+    )
+    probability_success_with_adaptation = print_neuron_death_probabilities(
+        run_results, True
+    )
+
     neuron_overcapacity, synapse_overcapacity = compute_overcapacity(run_results)
     print(f"neuron_overcapacity={neuron_overcapacity}")
     compute_neuron_over_capacity_per_graph_size(neuron_overcapacity, run_results)
@@ -16,15 +22,7 @@ def get_results():
     nr_of_spikes = compute_energy_efficiency(run_results)
     print(f"nr_of_spikes={nr_of_spikes}")
     compute_spike_over_capacity_per_graph_size(nr_of_spikes, run_results)
-
-
-def compute_robustness_again(run_results):
-    probability_success_without_adaptation = print_neuron_death_probabilities(
-        run_results, False
-    )
-    probability_success_with_adaptation = print_neuron_death_probabilities(
-        run_results, True
-    )
+    
 
 
 def compute_neuron_over_capacity_per_graph_size(neuron_overcapacity, run_results):
@@ -85,7 +83,11 @@ def print_neuron_death_probabilities(run_results, has_adaptation):
     probability_success = {}
     neuron_death_probabilities = get_all_neuron_death_probabilities(run_results)
 
-    
+    if has_adaptation:
+        print(f"with adaptation")
+    else:
+        print(f"without adaptation")
+
     for neuron_death_probability in get_all_neuron_death_probabilities(run_results):
         robustness = compute_robustness(
             run_results, has_adaptation, neuron_death_probability, redundancy_level=None
@@ -179,14 +181,10 @@ def compute_robustness(
     correct = 0
     incorrect = 0
     found_result = False
-    if count_for_adaptation:
-        print(f'with adaptation')
-    else:
-        print(f'without adaptation')
     for run_result in run_results:
-        #print(f"has adaptation:{run_result.has_adaptation}, {run_result.dead_neuron_names}")
-        #print(f"size={len(run_result.G)}")
-        #if len(run_result.G) == 3:
+        # print(f"has adaptation:{run_result.has_adaptation}, {run_result.dead_neuron_names}")
+        # print(f"size={len(run_result.G)}")
+        # if len(run_result.G) == 3:
         #    print(
         #        f"{run_result.neuron_death_probability} passed: {run_result.has_passed:}"
         #    )
@@ -199,7 +197,6 @@ def compute_robustness(
                     incorrect += 1
     if found_result:
         ratio = float(float(correct) / (float(correct) + float(incorrect)))
-        print(f'ratio={ratio}')
         return ratio
     else:
         return None
