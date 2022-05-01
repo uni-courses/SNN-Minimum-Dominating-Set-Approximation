@@ -7,7 +7,7 @@ class Used_graphs:
     def __init__(self):
         self.three = self.get_graphs_with_3_neurons()
         self.four = self.get_graphs_with_4_neurons()
-        self.Five = self.get_graphs_with_5_neurons()
+        self.five = self.get_graphs_with_5_neurons()
 
     def get_graphs(self, size):
         if size == 3:
