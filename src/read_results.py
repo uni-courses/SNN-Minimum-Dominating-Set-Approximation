@@ -6,10 +6,10 @@ def get_results():
     run_results = load_run_results()
     print_neuron_death_probabilities(run_results, False)
     print_neuron_death_probabilities(run_results, True)
-    neuron_overcapacity=compute_overcapacity(run_results)
-    print(f'neuron_overcapacity={neuron_overcapacity}')
-
-    
+    neuron_overcapacity = compute_overcapacity(run_results)
+    print(f"neuron_overcapacity={neuron_overcapacity}")
+    nr_of_spikes = compute_energy_efficiency(run_results)
+    print(f"nr_of_spikes={nr_of_spikes}")
 
 
 def print_neuron_death_probabilities(run_results, has_adaptation):
@@ -130,14 +130,16 @@ def compute_overcapacity(run_results, redundancy_level=None):
 
     run_results_without = get_run_results_without_adaptation(run_results)
     run_results_with = get_run_results_with_adaptation(run_results)
-    #print(f'len={run_results_without}')
-    #print(f'len={run_results_with}')
+    # print(f'len={run_results_without}')
+    # print(f'len={run_results_with}')
     for run_result_without in run_results_without:
         for run_result_with in run_results_with:
-            #print(f'without:{sorted(set(run_result_without.G.edges()))}')
-            #print(f'with:{sorted(set(run_result_with.G.edges()))}')
-            if sorted(set(run_result_without.G.edges())) == sorted(set(run_result_with.G.edges())):
-                #print(f"found graph")
+            # print(f'without:{sorted(set(run_result_without.G.edges()))}')
+            # print(f'with:{sorted(set(run_result_with.G.edges()))}')
+            if sorted(set(run_result_without.G.edges())) == sorted(
+                set(run_result_with.G.edges())
+            ):
+                # print(f"found graph")
                 edges_without_adaptation = len(run_result_with.get_degree.edges())
                 edges_with_adaptation = len(run_result_with.get_degree.edges())
                 neuron_overcapacity.append(
@@ -149,6 +151,56 @@ def compute_overcapacity(run_results, redundancy_level=None):
                 )
 
     return neuron_overcapacity
+
+
+def compute_energy_efficiency(run_results, redundancy_level=None):
+    """
+    Input
+    output: Dictionary:graph size, neuron overcapacity
+    output: Dictionary:graph size, synapse overcapacity
+     compute:
+      # Per radiation death probability:
+         # Without adaptation (Per redundancy level=100%): Nr of neurons
+        # With adaptation (Per redundancy level=100%): Nr of neurons
+        # divide with by without and print that fraction
+    """
+    nr_of_spikes = []
+
+    run_results_without = get_run_results_without_adaptation(run_results)
+    run_results_with = get_run_results_with_adaptation(run_results)
+    # print(f'len={run_results_without}')
+    # print(f'len={run_results_with}')
+    for run_result_without in run_results_without:
+        for run_result_with in run_results_with:
+            # Check if same graph
+            if sorted(set(run_result_without.G.edges())) == sorted(
+                set(run_result_with.G.edges())
+            ):
+                # print(f"found graph")
+                nr_of_spikes_without_adaptation = compute_nr_of_spikes(
+                    run_results_without.get_degree
+                )
+                nr_of_spikes_with_adaptation = len(run_result_with.get_degree)
+                nr_of_spikes.append(
+                    [
+                        len(run_result_without.G),
+                        nr_of_spikes_without_adaptation,
+                        nr_of_spikes_with_adaptation,
+                    ]
+                )
+
+    return nr_of_spikes
+
+
+def compute_nr_of_spikes(get_degree):
+    nr_of_spikes = 0
+    for node_name in get_degree.nodes:
+        if get_degree.nodes[node_name]["spike"] != {}:
+            # for node in G:
+            for t, spike in get_degree.nodes[node_name]["spike"].items():
+                if spike:
+                    nr_of_spikes += 1
+    return nr_of_spikes
 
 
 def get_run_results_without_adaptation(run_results):

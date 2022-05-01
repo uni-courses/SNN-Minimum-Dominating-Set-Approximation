@@ -192,28 +192,28 @@ class Test_counter(unittest.TestCase):
                                     sim_time,
                                     size,
                                 )
-                            # Export run object results.
-                            # Terminate loihi simulation for this run.
-                            export_get_degree_graph(
-                                adaptation,
-                                test_object.G,
-                                test_object.get_degree,
-                                iteration,
-                                m,
-                                neuron_death_probability,
-                                run_result,
-                                seed,
-                                size,
-                            )
-                            load_pickle_and_plot(
-                                adaptation,
-                                iteration,
-                                m,
-                                neuron_death_probability,
-                                seed,
-                                sim_time,
-                                size,
-                            )
+                                # Export run object results.
+                                # Terminate loihi simulation for this run.
+                                export_get_degree_graph(
+                                    adaptation,
+                                    test_object.G,
+                                    test_object.get_degree,
+                                    iteration,
+                                    m,
+                                    neuron_death_probability,
+                                    run_result,
+                                    seed,
+                                    size,
+                                )
+                                load_pickle_and_plot(
+                                    adaptation,
+                                    iteration,
+                                    m,
+                                    neuron_death_probability,
+                                    seed,
+                                    sim_time,
+                                    size,
+                                )
 
     def run_test_degree_receiver_neurons_over_time(
         self,
