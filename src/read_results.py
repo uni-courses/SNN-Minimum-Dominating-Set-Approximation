@@ -6,6 +6,10 @@ def get_results():
     run_results = load_run_results()
     print_neuron_death_probabilities(run_results, False)
     print_neuron_death_probabilities(run_results, True)
+    neuron_overcapacity=compute_overcapacity(run_results)
+    print(f'neuron_overcapacity={neuron_overcapacity}')
+
+    
 
 
 def print_neuron_death_probabilities(run_results, has_adaptation):
@@ -126,11 +130,14 @@ def compute_overcapacity(run_results, redundancy_level=None):
 
     run_results_without = get_run_results_without_adaptation(run_results)
     run_results_with = get_run_results_with_adaptation(run_results)
-
+    #print(f'len={run_results_without}')
+    #print(f'len={run_results_with}')
     for run_result_without in run_results_without:
         for run_result_with in run_results_with:
-            if set(run_result_without.G.edges()) == set(run_result_with.G.edges()):
-                print(f"found graph")
+            #print(f'without:{sorted(set(run_result_without.G.edges()))}')
+            #print(f'with:{sorted(set(run_result_with.G.edges()))}')
+            if sorted(set(run_result_without.G.edges())) == sorted(set(run_result_with.G.edges())):
+                #print(f"found graph")
                 edges_without_adaptation = len(run_result_with.get_degree.edges())
                 edges_with_adaptation = len(run_result_with.get_degree.edges())
                 neuron_overcapacity.append(
