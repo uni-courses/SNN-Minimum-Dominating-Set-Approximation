@@ -5,7 +5,7 @@ import os
 
 def get_results():
     run_results = load_run_results()
-    
+
     compute_robustness_again(run_results)
     neuron_overcapacity, synapse_overcapacity = compute_overcapacity(run_results)
     print(f"neuron_overcapacity={neuron_overcapacity}")
@@ -17,10 +17,16 @@ def get_results():
     print(f"nr_of_spikes={nr_of_spikes}")
     compute_spike_over_capacity_per_graph_size(nr_of_spikes, run_results)
 
+
 def compute_robustness_again(run_results):
-    probability_success_without_adaptation =print_neuron_death_probabilities(run_results, False)
-    probability_success_with_adaptation =print_neuron_death_probabilities(run_results, True)
-    
+    probability_success_without_adaptation = print_neuron_death_probabilities(
+        run_results, False
+    )
+    probability_success_with_adaptation = print_neuron_death_probabilities(
+        run_results, True
+    )
+
+
 def compute_neuron_over_capacity_per_graph_size(neuron_overcapacity, run_results):
     graph_sizes = get_all_graph_sizes(run_results)
     neuron_overcapacities = {}
@@ -76,7 +82,7 @@ def compute_spike_over_capacity_per_graph_size(spike_overcapacity, run_results):
 
 
 def print_neuron_death_probabilities(run_results, has_adaptation):
-    probability_success={}
+    probability_success = {}
     neuron_death_probabilities = get_all_neuron_death_probabilities(run_results)
 
     print(f"has adaptation:{has_adaptation}:neuron_death_probability,robustness")
@@ -84,10 +90,11 @@ def print_neuron_death_probabilities(run_results, has_adaptation):
         robustness = compute_robustness(
             run_results, has_adaptation, neuron_death_probability, redundancy_level=None
         )
-        probability_success[neuron_death_probability]=robustness
+        probability_success[neuron_death_probability] = robustness
 
         print(f"{neuron_death_probability},{robustness}")
     return probability_success
+
 
 def get_all_graph_sizes(run_results):
     graph_sizes = []

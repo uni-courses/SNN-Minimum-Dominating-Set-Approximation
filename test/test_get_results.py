@@ -67,14 +67,14 @@ class Test_counter(unittest.TestCase):
             for iteration in range(0, 1, 1):
                 for size in range(3, 4, 1):
                     # for neuron_death_probability in [0.1, 0.25, 0.50]:
-                    for neuron_death_probability in [0, 0.1]:
+                    for neuron_death_probability in [0, 0.1, 0.25, 0.5]:
                         rad_dam = Radiation_damage(
                             size, neuron_death_probability, seed, True
                         )
                         graphs = used_graphs.get_graphs(size)
                         for G in graphs:
                             # G = self.get_graphs_for_this_test(size=None, seed=None)
-                            for adaptation in [False, True]:
+                            for adaptation in [True, False]:
 
                                 # Start performance report.
                                 latest_millis = int(round(time() * 1000))
@@ -89,7 +89,7 @@ class Test_counter(unittest.TestCase):
 
                                 # Specify simulation duration.
                                 sim_time = test_object.inhibition * (m + 1) + 10
-                                #sim_time = 3
+                                # sim_time = 3
 
                                 # Report performance.
                                 latest_time, latest_millis = print_time(
