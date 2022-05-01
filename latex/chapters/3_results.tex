@@ -18,33 +18,33 @@
 
 %If  multiple brain adaptation mechanisms are implemented before the deadline, use line type to distinguish between these implementations, and generate 3 plots, or use line colour to distinguish between redundancy levels. (Depending on what is most insightful).
 
-\subsection{Neuronal \& Synaptic Overcapacity}\label{subsec:results_neuronal_synaptic_overcapacity}
+\subsection{Neuronal, Synaptic \& Energy Costs}\label{subsec:results_neuronal_synaptic_overcapacity}
 %By taking this factor into account, a context can be provided for the added value of using brain-inspired radiation robustness implementations in neuromorphic hardware.
 
 \begin{table}[H]
 \caption{The multiple of the amount of neurons and synapses used by adaptation implementation, compared to the default SNN implementation.}\label{tab:overcapacity}
-\begin{tabular}{lll}
-           & \multicolumn{2}{l}{Average Overcapacity of Adaptation Mechanism} \\ \cmidrule{2-3}
-           Graph Size & Neuronal     & Synaptic                   \\ \hline 
-3       & 5.7          & 8.3                        \\
-4      & 0            & 0                          \\
-5      & 0            & 0                         
+\begin{tabular}{llll}
+           & \multicolumn{3}{l}{Average Cost of Adaptation Mechanism} \\ \cmidrule{2-4}
+           Graph Size & Neuronal     & Synaptic & Spikes                   \\ \hline 
+3       & 5.7          & 8.3        & 32                \\
+4      & 5.8            & 10        & 37.5                  \\
+5      & 5.8            & 10.2           & 64              
 \end{tabular}
 \end{table}
 Note this is the average overcapacity for $m=0$ and $m=1$ combined.
 
-\subsection{Energy Consumption}\label{subsec:results_energy_consumption}
-\begin{table}[H]
-\caption{Fraction of additional spikes consumed by adaptation mechanism.}
-\begin{tabular}{llllll}
-           & \multicolumn{5}{l}{Neuron Death Percentage in SNN.} \\ \cmidrule{2-6} % Neuron Death in SNN: with/ without adaption%
-          Graph Size & 0\%    & 10\%    & 25\%    & 50\% \\ \hline
-3      & 32    & 4     & 4       & 4             \\
-4      & 4      & 4       & 4       & 4            \\
-5      & 4      & 4       & 4       & 4          
-\end{tabular}
-\end{table}
-Note this is the average overcapacity for $m=0$ and $m=1$ combined.
+%\subsection{}\label{subsec:results_energy_consumption}
+%\begin{table}[H]
+%\caption{Fraction of additional spikes consumed by adaptation mechanism.}
+%\begin{tabular}{llllll}
+%           & \multicolumn{5}{l}{Neuron Death Percentage in SNN.} \\ %\cmidrule{2-6} % Neuron Death in SNN: with/ without adaption%
+%          Graph Size & 0\%    & 10\%    & 25\%    & 50\% \\ \hline
+%3      & 32    & 4     & 4       & 4             \\
+%4      & 37.5      & 4       & 4       & 4            \\
+%5      & 4      & 4       & 4       & 4          
+%\end{tabular}
+%\end{table}
+%Note this is the average overcapacity for $m=0$ and $m=1$ combined.
 %\textit{Depending on the radiation test method, the energy consumption may be monitored hardwarematically, or estimated softwarematically. This may be challenging in the case of reliance on neuromorphic cloud architectures for testing, as some may not provide the ability to measure and/or report energy consumption. An approximation to the energy consumption could be counting the occurrence of neuron spikes. This is because neuromorphic architectures are considered to only consume significant amounts of energy when they spike.}
 
 %\subsection{Time Complexity}\label{subsec:time_complexity}
