@@ -1,6 +1,7 @@
 import copy
 from datetime import datetime
 from pprint import pprint
+import random
 from time import time
 import unittest
 import networkx as nx
@@ -50,6 +51,7 @@ class Test_counter(unittest.TestCase):
     # Initialize test object
     def __init__(self, *args, **kwargs):
         super(Test_counter, self).__init__(*args, **kwargs)
+        self.unique_run_id = random.randrange(1, 10**6)
 
     def test_snn_algorithm(self, output_behaviour=False):
 
@@ -57,6 +59,8 @@ class Test_counter(unittest.TestCase):
         delete_files_in_folder(f"latex/Images/graphs")
         used_graphs = Used_graphs()
         monitors = None
+        # Specify User randomnes to prevent overwriting identical runs.
+
         seed = 42
 
         for m in range(0, 1):
@@ -204,6 +208,7 @@ class Test_counter(unittest.TestCase):
                                     run_result,
                                     seed,
                                     size,
+                                    self.unique_run_id,
                                 )
                                 load_pickle_and_plot(
                                     adaptation,
@@ -213,6 +218,7 @@ class Test_counter(unittest.TestCase):
                                     seed,
                                     sim_time,
                                     size,
+                                    self.unique_run_id,
                                 )
 
     def run_test_degree_receiver_neurons_over_time(
