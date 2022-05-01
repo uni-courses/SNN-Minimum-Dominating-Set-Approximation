@@ -189,7 +189,7 @@ def compute_robustness(
                 else:
                     incorrect += 1
     if found_result:
-        return correct / (correct + incorrect)
+        return float(float(correct) / (float(correct) + float(incorrect)))
     else:
         return None
 
