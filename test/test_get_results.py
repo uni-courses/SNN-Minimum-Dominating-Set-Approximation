@@ -65,7 +65,7 @@ class Test_counter(unittest.TestCase):
 
         for m in range(0, 1):
             for iteration in range(0, 1, 1):
-                for size in range(3, 4, 1):
+                for size in range(5, 6, 1):
                     # for neuron_death_probability in [0.1, 0.25, 0.50]:
                     for neuron_death_probability in [0, 0.1, 0.25, 0.5]:
                         rad_dam = Radiation_damage(

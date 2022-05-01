@@ -117,7 +117,9 @@ def load_run_results():
         G, get_degree, iteration, m, run_result, seed, size = load_pickle_from_file(
             filepath
         )
-        run_results.append(run_result)
+        if run_result.sim_time > 12:
+            print(f"append:{filepath}")
+            run_results.append(run_result)
 
     return run_results
 

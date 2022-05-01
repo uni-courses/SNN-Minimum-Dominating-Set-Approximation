@@ -14,7 +14,7 @@ class Used_graphs:
             return self.three
         elif size == 4:
             return self.four
-        elif size == 4:
+        elif size == 5:
             return self.five
 
     def get_graphs_with_3_neurons(self):
