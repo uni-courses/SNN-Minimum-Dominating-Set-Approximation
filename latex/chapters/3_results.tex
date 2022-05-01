@@ -6,13 +6,13 @@
 \subsection{Radiation Robustness}\label{subsec:algorithm_performance}
 
 \begin{table}[H]
-\caption{Fraction of correct outputs of the SNN implementation \textit{Without/With} adaptation. Neuron deaths occur in both the default SNN neurons as well as in redundant neurons when present.}
+\caption{Average fraction of correct outputs of the SNN implementation with and without adaptation. Neuron deaths can occur in default and redundant LIF neurons.}
 \begin{tabular}{llllll}
         & \multicolumn{5}{l}{Neuron Death Percentage in SNN} \\ \cmidrule{2-6}
-        Redundancy & 0\%    & 10\%    & 25\%    & 50\%     \\ \hline
-        10\%       & 0.1/0.9    & 0.05/0.2     & 0/0       & 0/0       \\
-        100\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.1            \\
-        200\%      & 0.05/1      & 0.05/1       & 0.05/1       & 0/0.4    
+        Adaptation & 0\%    & 10\%    & 25\%    & 50\%     \\ \hline
+        Without      & 1      & 1       & 1       & 1            \\
+        With      & 1      & 1       & 0       & 1            \\
+        
 \end{tabular}
 \end{table}
 
@@ -22,12 +22,13 @@
 %By taking this factor into account, a context can be provided for the added value of using brain-inspired radiation robustness implementations in neuromorphic hardware.
 
 \begin{table}[H]
+\caption{The multiple of the amount of neurons and synapses used by adaptation implementation, compared to the default SNN implementation.}\label{tab:overcapacity}
 \begin{tabular}{lll}
            & \multicolumn{2}{l}{Average Overcapacity of Adaptation Mechanism} \\ \cmidrule{2-3}
            Graph Size & Neuronal     & Synaptic                   \\ \hline 
-3       & 1.1          & 2.5                        \\
-4      & 2            & 9.6                          \\
-5      & 3            & 11.5                         
+3       & 5.7          & 8.3                        \\
+4      & 0            & 0                          \\
+5      & 0            & 0                         
 \end{tabular}
 \end{table}
 Note this is the average overcapacity for $m=0$ and $m=1$ combined.
@@ -38,16 +39,16 @@ Note this is the average overcapacity for $m=0$ and $m=1$ combined.
 \begin{tabular}{llllll}
            & \multicolumn{5}{l}{Neuron Death Percentage in SNN.} \\ \cmidrule{2-6} % Neuron Death in SNN: with/ without adaption%
           Graph Size & 0\%    & 10\%    & 25\%    & 50\% \\ \hline
-3      & 1    & 1.07     & 4       & 4             \\
-4      & 1      & 4       & 4       & 4            \\
-5      & 1      & 4       & 4       & 3           
+3      & 32    & 4     & 4       & 4             \\
+4      & 4      & 4       & 4       & 4            \\
+5      & 4      & 4       & 4       & 4          
 \end{tabular}
 \end{table}
 Note this is the average overcapacity for $m=0$ and $m=1$ combined.
 %\textit{Depending on the radiation test method, the energy consumption may be monitored hardwarematically, or estimated softwarematically. This may be challenging in the case of reliance on neuromorphic cloud architectures for testing, as some may not provide the ability to measure and/or report energy consumption. An approximation to the energy consumption could be counting the occurrence of neuron spikes. This is because neuromorphic architectures are considered to only consume significant amounts of energy when they spike.}
 
-\subsection{Time Complexity}\label{subsec:time_complexity}
-TODO:Presents the time complexity of the default SNN as two terms: network initialisation and network runtime. Then presents the same parameters for the adapted SNN. If relevant, as a function of the level of redundancy.
+%\subsection{Time Complexity}\label{subsec:time_complexity}
+%TODO:Presents the time complexity of the default SNN as two terms: network initialisation and network runtime. Then presents the same parameters for the adapted SNN. If relevant, as a function of the level of redundancy.
 
-\subsection{Space Complexity}\label{subsec:space_complexity}
-TODO:Presents the space complexity of the default SNN as two terms: network initialisation and network runtime. Then presents the same parameters for the adapted SNN. If relevant, as a function of the level of redundancy.
+%\subsection{Space Complexity}\label{subsec:space_complexity}
+%TODO:Presents the space complexity of the default SNN as two terms: network initialisation and network runtime. Then presents the same parameters for the adapted SNN. If relevant, as a function of the level of redundancy.
