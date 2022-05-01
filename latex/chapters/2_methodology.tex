@@ -1,6 +1,6 @@
 \section{Methodology}\label{sec:methodology}
 The research methodology starts in \cref{subsec:algorithm} with a description of the minimum dominating set (MDS) approximation algorithm by Alipour, the SNN implementation of this algorithm by Diehl et al., and the implemented form %TODO: form or forms? 
-of brain adaptation \cite{alipour}\cite{diehl}. Since the overarching research project aims at performing physical radiation tests, \cref{subsec:hardware} specifies the hardware that is used for testing, and how the radiation effects are simulated. The test procedure is detailed in \cref{subsec:testing}.
+of brain adaptation \cite{alipour2020distributed}\cite{diehl}. Since the overarching research project aims at performing physical radiation tests, \cref{subsec:hardware} specifies the hardware that is used for testing, and how the radiation effects are simulated. The test procedure is detailed in \cref{subsec:testing}.
 
 \subsection{Algorithm Selection}\label{subsec:algorithm}
 The MDS approximation as presented by Alipour et al., is specified in \cref{alg:alipour}.
@@ -21,17 +21,17 @@ The MDS approximation as presented by Alipour et al., is specified in \cref{alg:
 \end{algorithm}
 
 Next, an SNN implementation of this algorithm is generated using Leaky-Integrate-and-Fire (LIF) neurons. This implementation is created by Diehl et al. \cite{diehl} using the open source lava software framework by Intel. This implementation takes in connected, triangle-free, planar graphs (E.g. \cref{fig:input_graph}) in the form of networkx objects. Then it converts these graphs into the specification of an SNN that is encoded in a new networkx graph (E.g. \cref{fig:encoded_snn}). A recursive method then takes a single neuron and converts the SNN encoded in the networkx graph, into an actual SNN that can be run on the Loihi (1 \& 2) chips, or simulated on a regular computer.
-\begin{figure}[H]
+\begin{figure}[]
     \centering
     \includegraphics[width=8cm]{latex/Images/input_graph_G_6_0_alternative1.png}
     \caption{Example input graph. For $m=1$ the algorithm still selects 3 nodes, \textcolor{red}{whereas for a longer runtime at $m=2$, the algorithm converges to a minimum dominating set of node 2 and 4.}}
     \label{fig:input_graph}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[]
     \centering
     \includegraphics[width=8cm]{latex/Images/structured_graph_snn_m0_n6_iter0_t77.png}
-    \caption{Example SNN encoding of algorithm to approximate MDS on the input graph of \cref{fig:input_graph}. This module is connected in series where the mark counter neuron takes up the role of spike\_once neuron in the next round of the approximation algorithm. For a more detailed description of the SNN implementation the reader is referred to Diehl et al., or to the source code documentation \cite{}. %TODO: include citation. %TODO: update to match updated input graph.
+    \caption{Example SNN encoding of algorithm to approximate MDS on the input graph of \cref{fig:input_graph}. This module is connected in series where the mark counter neuron takes up the role of spike\_once neuron in the next round of the approximation algorithm. For a more detailed description of the SNN implementation the reader is referred to Diehl et al. \cite{diehl}. %TODO: update to match updated input graph.
     }
     \label{fig:encoded_snn}
 \end{figure}
