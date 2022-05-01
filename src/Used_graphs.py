@@ -232,6 +232,7 @@ class Run:
         self.get_degree = get_degree
         self.dead_neuron_names = dead_neuron_names
         self.sim_time = sim_time
+        self.size = size
 
         self.amount_of_neurons = self.get_amount_of_neurons(self.get_degree)
         self.amount_synapses = self.get_amount_synapses(self.get_degree)

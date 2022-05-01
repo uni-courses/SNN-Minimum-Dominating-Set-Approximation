@@ -85,7 +85,7 @@ def print_neuron_death_probabilities(run_results, has_adaptation):
     probability_success = {}
     neuron_death_probabilities = get_all_neuron_death_probabilities(run_results)
 
-    print(f"has adaptation:{has_adaptation}:neuron_death_probability,robustness")
+    
     for neuron_death_probability in get_all_neuron_death_probabilities(run_results):
         robustness = compute_robustness(
             run_results, has_adaptation, neuron_death_probability, redundancy_level=None
@@ -118,7 +118,6 @@ def load_run_results():
             filepath
         )
         if run_result.sim_time > 12:
-            print(f"append:{filepath}")
             run_results.append(run_result)
 
     return run_results
@@ -180,7 +179,17 @@ def compute_robustness(
     correct = 0
     incorrect = 0
     found_result = False
+    if count_for_adaptation:
+        print(f'with adaptation')
+    else:
+        print(f'without adaptation')
     for run_result in run_results:
+        #print(f"has adaptation:{run_result.has_adaptation}, {run_result.dead_neuron_names}")
+        #print(f"size={len(run_result.G)}")
+        #if len(run_result.G) == 3:
+        #    print(
+        #        f"{run_result.neuron_death_probability} passed: {run_result.has_passed:}"
+        #    )
         if run_result.has_adaptation == count_for_adaptation:
             if run_result.neuron_death_probability == neuron_death_probability:
                 found_result = True
@@ -189,7 +198,9 @@ def compute_robustness(
                 else:
                     incorrect += 1
     if found_result:
-        return float(float(correct) / (float(correct) + float(incorrect)))
+        ratio = float(float(correct) / (float(correct) + float(incorrect)))
+        print(f'ratio={ratio}')
+        return ratio
     else:
         return None
 
