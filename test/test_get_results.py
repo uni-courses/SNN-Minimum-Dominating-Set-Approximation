@@ -88,8 +88,8 @@ class Test_counter(unittest.TestCase):
                                 )
 
                                 # Specify simulation duration.
-                                # sim_time = test_object.inhibition * (m + 1) + 10
-                                sim_time = 3
+                                sim_time = test_object.inhibition * (m + 1) + 10
+                                #sim_time = 3
 
                                 # Report performance.
                                 latest_time, latest_millis = print_time(
