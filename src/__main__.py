@@ -6,14 +6,7 @@
 import networkx as nx
 
 # Project code imports.
-from src.helper_network_structure import create_graph_of_network_degree_computation
-from .create_planar_triangle_free_graph import (
-    create_triangle_free_graph,
-    create_triangle_free_planar_graph,
-    get_graph,
-)
-from .neumann import compute_mtds
-from .neumann_a_t_0 import compute_mtds_a_t_0
+from src.read_results import get_results
 from .arg_parser import parse_cli_args
 
 # Export data import.
@@ -39,8 +32,9 @@ args = parse_cli_args()
 # G = create_triangle_free_planar_graph(nr_nodes, edge_probability, seed, False)
 
 # Create graph for network structure with WTA.
-G = nx.complete_graph(4)
-create_graph_of_network_degree_computation(G)
+get_results()
+# G = nx.complete_graph(4)
+# create_graph_of_network_degree_computation(G)
 
 
 ## Run data export code if any argument is given.
