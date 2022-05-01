@@ -1,3 +1,4 @@
+import math
 import pickle
 import os
 
@@ -6,11 +7,60 @@ def get_results():
     run_results = load_run_results()
     print_neuron_death_probabilities(run_results, False)
     print_neuron_death_probabilities(run_results, True)
-    neuron_overcapacity = compute_overcapacity(run_results)
+    neuron_overcapacity,synapse_overcapacity = compute_overcapacity(run_results)
     print(f"neuron_overcapacity={neuron_overcapacity}")
+    compute_neuron_over_capacity_per_graph_size(neuron_overcapacity,run_results)
+    print(f"synapse_overcapacity={synapse_overcapacity}")
+    compute_synapse_over_capacity_per_graph_size(synapse_overcapacity,run_results)
+
     nr_of_spikes = compute_energy_efficiency(run_results)
     print(f"nr_of_spikes={nr_of_spikes}")
+    compute_spike_over_capacity_per_graph_size(nr_of_spikes,run_results)
 
+def compute_neuron_over_capacity_per_graph_size(neuron_overcapacity,run_results):
+    graph_sizes=get_all_graph_sizes(run_results)
+    neuron_overcapacities={}
+    for graph_size in graph_sizes:
+        neuron_overcapacities[graph_size]=[]
+    for graph_size in graph_sizes:
+        for run in neuron_overcapacity:
+            if run[0] == graph_size:
+                neuron_overcapacities[graph_size].append(run[1]/run[0])
+        #print(f'neuron_overcapacities[graph_size]={neuron_overcapacities[graph_size]}')
+        avg=sum(neuron_overcapacities[graph_size])/len(neuron_overcapacities[graph_size])
+        neuron_overcapacities[graph_size]=avg
+    print(f'Graph Size: AVG neuronal overcapacity')
+    print(f'{graph_size}:{round(neuron_overcapacities[graph_size],1)}')
+
+def compute_synapse_over_capacity_per_graph_size(synapse_overcapacity,run_results):
+    graph_sizes=get_all_graph_sizes(run_results)
+    synapse_overcapacities={}
+    for graph_size in graph_sizes:
+        synapse_overcapacities[graph_size]=[]
+    for graph_size in graph_sizes:
+        for run in synapse_overcapacity:
+            if run[0] == graph_size:
+                synapse_overcapacities[graph_size].append(run[1]/run[0])
+        #print(f'synapse_overcapacities[graph_size]={synapse_overcapacities[graph_size]}')
+        avg=sum(synapse_overcapacities[graph_size])/len(synapse_overcapacities[graph_size])
+        synapse_overcapacities[graph_size]=avg
+    print(f'Graph Size: AVG synapse overcapacity')
+    print(f'{graph_size}:{round(synapse_overcapacities[graph_size],1)}')
+
+def compute_spike_over_capacity_per_graph_size(spike_overcapacity,run_results):
+    graph_sizes=get_all_graph_sizes(run_results)
+    spike_overcapacities={}
+    for graph_size in graph_sizes:
+        spike_overcapacities[graph_size]=[]
+    for graph_size in graph_sizes:
+        for run in spike_overcapacity:
+            if run[0] == graph_size:
+                spike_overcapacities[graph_size].append(run[1]/run[0])
+        #print(f'spike_overcapacities[graph_size]={spike_overcapacities[graph_size]}')
+        avg=sum(spike_overcapacities[graph_size])/len(spike_overcapacities[graph_size])
+        spike_overcapacities[graph_size]=avg
+    print(f'Graph Size: AVG spike cost (multiples)')
+    print(f'{graph_size}:{round(spike_overcapacities[graph_size],1)}')
 
 def print_neuron_death_probabilities(run_results, has_adaptation):
     neuron_death_probabilities = get_all_neuron_death_probabilities(run_results)
@@ -23,6 +73,11 @@ def print_neuron_death_probabilities(run_results, has_adaptation):
 
         print(f"{neuron_death_probability},{robustness}")
 
+def get_all_graph_sizes(run_results):
+    graph_sizes = []
+    for run_result in run_results:
+        graph_sizes.append(len(run_result.G))
+    return list(sorted(set(graph_sizes)))
 
 def get_all_neuron_death_probabilities(run_results):
     neuron_death_probabilities = []
@@ -127,6 +182,7 @@ def compute_overcapacity(run_results, redundancy_level=None):
     correct = 0
     incorrect = 0
     neuron_overcapacity = []
+    synapse_overcapacity = []
 
     run_results_without = get_run_results_without_adaptation(run_results)
     run_results_with = get_run_results_with_adaptation(run_results)
@@ -140,9 +196,16 @@ def compute_overcapacity(run_results, redundancy_level=None):
                 set(run_result_with.G.edges())
             ):
                 # print(f"found graph")
-                edges_without_adaptation = len(run_result_with.get_degree.edges())
+                edges_without_adaptation = len(run_result_without.get_degree.edges())
                 edges_with_adaptation = len(run_result_with.get_degree.edges())
                 neuron_overcapacity.append(
+                    [
+                        len(run_result_without.G),
+                        len(run_result_without.get_degree),
+                        len(run_result_with.get_degree),
+                    ]
+                )
+                synapse_overcapacity.append(
                     [
                         len(run_result_without.G),
                         edges_without_adaptation,
@@ -150,7 +213,7 @@ def compute_overcapacity(run_results, redundancy_level=None):
                     ]
                 )
 
-    return neuron_overcapacity
+    return neuron_overcapacity,synapse_overcapacity
 
 
 def compute_energy_efficiency(run_results, redundancy_level=None):
@@ -178,7 +241,7 @@ def compute_energy_efficiency(run_results, redundancy_level=None):
             ):
                 # print(f"found graph")
                 nr_of_spikes_without_adaptation = compute_nr_of_spikes(
-                    run_results_without.get_degree
+                    run_result_without.get_degree
                 )
                 nr_of_spikes_with_adaptation = len(run_result_with.get_degree)
                 nr_of_spikes.append(
