@@ -7,7 +7,7 @@
 
 ## Specify global variables that are used in this script.
 
-REPORT_FILENAME="sample-sigconf"
+REPORT_FILENAME="main"
 PATH_TO_REPORT_TEX="latex"
 PATH_TO_REPORT_TEX_FILE="$PATH_TO_REPORT_TEX/$REPORT_FILENAME.tex"
 OUTPUT_DIR="output"
@@ -30,6 +30,18 @@ verify_texlive_lang_europe_exists() {
 	fi
 }
 verify_texlive_lang_europe_exists
+
+# Verify the algorithm2e.sty file exists, to display algorithms.
+verify_texlive_science_exists() {
+	if ! installed texlive-science; then
+    	## Perform installation of required packages
+		yes | sudo apt-get install texlive-science
+	else
+	    echo "texlive-science is installed."
+	fi
+}
+verify_texlive_science_exists
+
 
 # Install the roboto font used by the TU Delft style files.
 verify_fonts_roboto_exists() {
@@ -232,6 +244,7 @@ mkdir -p $OUTPUT_PATH/$PATH_TO_REPORT_TEX
 assert_dir_exists $OUTPUT_PATH/$PATH_TO_REPORT_TEX
 
 # Copy zotero.bib file into output directory
+echo $PWD
 assert_file_exists "../zotero.bib"
 cp ../zotero.bib $OUTPUT_PATH/zotero.bib
 assert_file_exists "$OUTPUT_PATH/zotero.bib"
